@@ -19,15 +19,14 @@ DB_USER=
 DB_PASSWORD=
 
 PORT=3000
-SECRET=AAA
 ````
 
 ## Run
 
 1. Start Server
 
-> npm start
+> npx nodemon (resets server when file changes are saved)
 
 2. Open in url or using an Endpoint tester (postman)
 
-> http://127.0.0.1:3000/
+> http://localhost:3000/
