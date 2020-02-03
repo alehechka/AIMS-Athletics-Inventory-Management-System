@@ -38,6 +38,8 @@ const db = new Sequelize(DB_DATABASE, DB_USER, DB_PASSWORD, {
     }
 });
 
+/////// USERS ///////////////////////////////////////////////////////////////////////////
+
 const users = db.define('users', {
     school_id: { type: Sequelize.STRING, unique: true, allowNull: false },
     first_name: { type: Sequelize.STRING, allowNull: false },
@@ -58,8 +60,98 @@ const users = db.define('users', {
     timestamps: true
 });
 
-//Uncomment when making changes to the table or need to create table in new environment
-//users.sync({ alter: true });
+/////// ROLES ///////////////////////////////////////////////////////////////////////////
 
-module.exports = users;
+const roles = db.define('roles', {
+    name: { type: Sequelize.STRING, allowNull: false },
+    description: { type: Sequelize.STRING, allowNull: true },
+    check_in: { type: Sequelize.BOOLEAN, allowNull: true },
+    check_out: { type: Sequelize.BOOLEAN, allowNull: true },
+}, {
+    timestamps: true
+});
+
+users.hasOne(roles);
+roles.belongsTo(users);
+
+/////// SPORTS ///////////////////////////////////////////////////////////////////////////
+
+const sports =  db.define('sports', {
+    name: { type: Sequelize.STRING, allowNull: false },
+    gender: { type: Sequelize.STRING(1), allowNull: false}
+}, {
+    timestamps: true
+});
+
+/////// INVENTORY ///////////////////////////////////////////////////////////////////////////
+
+const inventory = db.define('inventory', {
+    name: { type: Sequelize.STRING, allowNull: false },
+    description: { type: Sequelize.STRING, allowNull: true },
+    size: { type: Sequelize.STRING, allowNull: false },
+    remaining: { type: Sequelize.INTEGER, allowNull: false },
+    price: { type: Sequelize.INTEGER, allowNull: true },
+    total: { type: Sequelize.INTEGER, allowNull: false },
+}, {
+    timestamps: true
+});
+
+sports.hasMany(inventory);
+inventory.belongsTo(sports);
+
+
+/////// EQUIPMENT ///////////////////////////////////////////////////////////////////////////
+
+const equipment = db.define('equipment', {
+    size: { type: Sequelize.STRING, allowNull: false },
+    count: { type: Sequelize.INTEGER, allowNull: false },
+    returned_on: { type: Sequelize.DATE, allowNull: true }
+}, {
+    timestamps: true
+});
+
+users.hasMany(equipment);
+equipment.belongsTo(users);
+
+inventory.hasMany(equipment);
+equipment.belongsTo(inventory);
+
+/////// TRANSACTIONS ///////////////////////////////////////////////////////////////////////////
+
+const transactions = db.define('transactions', {
+    amount: { type: Sequelize.INTEGER, allowNull: false }
+}, {
+    timestamps: true
+});
+
+equipment.hasMany(transactions);
+transactions.belongsTo(equipment);
+
+users.hasMany(transactions, {
+    foreignKey: 'issued_by'
+  });
+transactions.belongsTo(users, {
+    foreignKey: 'issued_by'
+  });
+  
+users.hasMany(transactions, {
+    foreignKey: 'issued_to'
+  });
+transactions.belongsTo(users, {
+    foreignKey: 'issued_to'
+  });
+
+/////// PLAYER_SIZES ///////////////////////////////////////////////////////////////////////////
+// Add categories from Front Rush
+// const player_sizes = db.define('player_sizes', {
+
+// });
+
+// users.hasOne(player_sizes);
+// player_sizes.belongsTo(users);
+
+//Uncomment when making changes to the table or need to create table in new environment
+//db.sync({ force: true, alter: true });
+
+module.exports = users, roles, inventory, equipment, transactions;
 
