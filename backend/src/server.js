@@ -5,6 +5,7 @@ const cookieParser = require("cookie-parser");
 const cors = require('cors');
 const helmet = require("helmet");
 const userRouter = require("./routes/userRouter");
+const sportRouter = require("./routes/sportRouter");
 
 // Load .env Enviroment Variables to process.env
 
@@ -39,6 +40,7 @@ app.get('/', (req, res) => {
 // Assign Routes
 const baseRoute = `/api/v${API_VER}/`;
 app.use(baseRoute + 'users', userRouter);
+app.use(baseRoute + 'sports', sportRouter);
 
 // This middleware adds the json header to every response
 app.use('*', (req, res, next) => {

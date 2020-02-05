@@ -55,10 +55,19 @@ const users = db.define('users', {
     gender: { type: Sequelize.STRING(1), allowNull: true },
     height: { type: Sequelize.INTEGER, comment: 'in inches', allowNull: true },
     weight: { type: Sequelize.INTEGER, comment: 'in pounds', allowNull: true },
-    academic_year: { type: Sequelize.STRING, allowNull: true },
 }, {
     timestamps: true
 });
+
+/////// STATUS ///////////////////////////////////////////////////////////////////////////
+
+const status = db.define('statuses', {
+    name: { type: Sequelize.STRING, allowNull: false },
+    academic: { type: Sequelize.INTEGER, allowNull: true }
+});
+
+status.hasMany(users);
+users.belongsTo(status);
 
 /////// ROLES ///////////////////////////////////////////////////////////////////////////
 
@@ -71,26 +80,34 @@ const roles = db.define('roles', {
     timestamps: true
 });
 
-users.hasOne(roles);
-roles.belongsTo(users);
+roles.hasMany(users);
+users.belongsTo(roles);
 
 /////// SPORTS ///////////////////////////////////////////////////////////////////////////
 
 const sports =  db.define('sports', {
     name: { type: Sequelize.STRING, allowNull: false },
     gender: { type: Sequelize.STRING(1), allowNull: false}
-}, {
-    timestamps: true
 });
+
+/////// PLAYER_SPORTS ///////////////////////////////////////////////////////////////////////////
+
+const player_sports =  db.define('player_sports', {});
+
+users.hasMany(player_sports);
+player_sports.belongsTo(users);
+
+sports.hasMany(player_sports);
+player_sports.belongsTo(sports);
 
 /////// INVENTORY ///////////////////////////////////////////////////////////////////////////
 
-const inventory = db.define('inventory', {
+const inventory = db.define('inventories', {
     name: { type: Sequelize.STRING, allowNull: false },
     description: { type: Sequelize.STRING, allowNull: true },
     size: { type: Sequelize.STRING, allowNull: false },
     remaining: { type: Sequelize.INTEGER, allowNull: false },
-    price: { type: Sequelize.INTEGER, allowNull: true },
+    price: { type: Sequelize.DOUBLE, allowNull: true },
     total: { type: Sequelize.INTEGER, allowNull: false },
 }, {
     timestamps: true
@@ -143,15 +160,36 @@ transactions.belongsTo(users, {
 
 /////// PLAYER_SIZES ///////////////////////////////////////////////////////////////////////////
 // Add categories from Front Rush
-// const player_sizes = db.define('player_sizes', {
+const player_sizes = db.define('player_sizes', {
+    bottom: { type: Sequelize.DATE, allowNull: true },
+    socks: { type: Sequelize.DATE, allowNull: true },
+    shows: { type: Sequelize.DATE, allowNull: true },
+    womens_polo: { type: Sequelize.DATE, allowNull: true },
+    bags: { type: Sequelize.DATE, allowNull: true },
+    t_shirt: { type: Sequelize.DATE, allowNull: true },
+    mens_shoes: { type: Sequelize.DATE, allowNull: true },
+    shorts: { type: Sequelize.DATE, allowNull: true },
+    sweat_top: { type: Sequelize.DATE, allowNull: true },
+    sports_bra: { type: Sequelize.DATE, allowNull: true },
+    womens_shoes: { type: Sequelize.DATE, allowNull: true },
+    flex_fit_hats: { type: Sequelize.DATE, allowNull: true },
+    womens_bottom: { type: Sequelize.DATE, allowNull: true },
+    womens_jacket: { type: Sequelize.DATE, allowNull: true },
+    sweatshirt: { type: Sequelize.DATE, allowNull: true },
+    mens_polo: { type: Sequelize.DATE, allowNull: true },
+    generic_apperel: { type: Sequelize.DATE, allowNull: true },
+    jacket: { type: Sequelize.DATE, allowNull: true },
+    sweat_pants: { type: Sequelize.DATE, allowNull: true },
+    tights: { type: Sequelize.DATE, allowNull: true },
+}, {
+    timestamps: true
+});
 
-// });
-
-// users.hasOne(player_sizes);
-// player_sizes.belongsTo(users);
+users.hasOne(player_sizes);
+player_sizes.belongsTo(users);
 
 //Uncomment when making changes to the table or need to create table in new environment
 //db.sync({ force: true, alter: true });
 
-module.exports = users, roles, inventory, equipment, transactions;
+module.exports = { users, roles, inventory, equipment, transactions, player_sizes, player_sports, sports, status };
 

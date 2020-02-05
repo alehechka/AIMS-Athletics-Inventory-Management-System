@@ -1,22 +1,40 @@
 "use strict";
 
 const express = require("express");
-const users = require('../models/database');
-
+const { users, roles, inventory, equipment, transactions, player_sizes, player_sports, sports, status } = require('../models/database');
+//const users = require('../models/database');
 const userRouter = express.Router();
 
 //POST /api/v#/users
 //Create new user
-userRouter.post("/", async (req, res) => {
+userRouter.post("/", async (req, res, next) => {
     const user = req.body;
     try {
         let createdUser = await users.create({
             ...user
         })
-        res.json(createdUser)
+        //Async makes it so adding the sports happens after res.json() returns, must fix this.
+        if (user.sports) {
+            createdUser.sports = [];
+            await user.sports.forEach(async sport => {
+                let createdSport = await player_sports.create({
+                    sportId: sport, 
+                    userId: createdUser.id
+                })
+                await createdUser.sports.push(
+                    createdSport
+                );
+            })
+            console.log('Sports:', createdUser.sports);
+            res.json(createdUser);
+        } else {
+            res.json(createdUser);
+        }
+        //createdUser.sports = await player_sports.findAll({where: {userId: createdUser.id}});
     } catch (err) {
         //Add error handling for duplicate students and other SQL issues
-        console.log(err);
+        console.error(err);
+        return next(err.message);
     }
 });
 
