@@ -1,7 +1,7 @@
 "use strict";
 
 const express = require("express");
-const { users, roles, inventory, equipment, transactions, player_sizes, player_sports, sports, status } = require('../models/database');
+const { Sport } = require('../models/database');
 
 const sportRouter = express.Router();
 
@@ -10,7 +10,7 @@ const sportRouter = express.Router();
 sportRouter.post("/", async (req, res) => {
     const sport = req.body;
     try {
-        let createdSport = await sports.create({
+        let createdSport = await Sport.create({
             ...sport
         })
         res.json(createdSport)

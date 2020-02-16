@@ -1,7 +1,7 @@
 "use strict";
 
 const express = require("express");
-const { users, roles, inventory, equipment, transactions, player_sizes, player_sports, sports, status } = require('../models/database');
+const { User, PlayerSport, Sport } = require('../models/database');
 //const users = require('../models/database');
 const userRouter = express.Router();
 
@@ -10,27 +10,22 @@ const userRouter = express.Router();
 userRouter.post("/", async (req, res, next) => {
     const user = req.body;
     try {
-        let createdUser = await users.create({
+        let createdUser = await User.create({
             ...user
         })
-        //Async makes it so adding the sports happens after res.json() returns, must fix this.
-        if (user.sports) {
-            createdUser.sports = [];
-            await user.sports.forEach(async sport => {
-                let createdSport = await player_sports.create({
-                    sportId: sport, 
-                    userId: createdUser.id
-                })
-                await createdUser.sports.push(
-                    createdSport
-                );
+        for(let sport of user.sports) {
+            await PlayerSport.create({
+                sportId: sport, 
+                userId: createdUser.id
             })
-            console.log('Sports:', createdUser.sports);
-            res.json(createdUser);
-        } else {
-            res.json(createdUser);
         }
-        //createdUser.sports = await player_sports.findAll({where: {userId: createdUser.id}});
+        const newUser = await User.findOne({
+            where: {
+                id: createdUser.id
+            },
+            include: [{model: PlayerSport, include: [Sport]}]
+        });
+        res.json(newUser);
     } catch (err) {
         //Add error handling for duplicate students and other SQL issues
         console.error(err);
@@ -42,7 +37,7 @@ userRouter.post("/", async (req, res, next) => {
 //Retrieve all users
 userRouter.get("/", async (req, res) => {
     try {
-        let allUsers = await users.findAll();
+        let allUsers = await User.findAll({include: [{model: PlayerSport, include: [Sport]}]});
         res.json(allUsers)
     } catch (err) {
         //Add error handling for duplicate students and other SQL issues
@@ -52,12 +47,13 @@ userRouter.get("/", async (req, res) => {
 
 //GET /api/v#/users/:id
 //Retrieves single user
-userRouter.get("/:id", async (req, res, next) => {
+userRouter.get("/:id", async (req, res) => {
     try {
-        let user = await users.findAll({
+        let user = await User.findOne({
             where: {
                 school_id: req.params.id
-            }
+            },
+            include: [{model: PlayerSport, include: [Sport]}]
         });
         res.json(user)
     } catch (err) {

@@ -40,18 +40,18 @@ const db = new Sequelize(DB_DATABASE, DB_USER, DB_PASSWORD, {
 
 /////// USERS ///////////////////////////////////////////////////////////////////////////
 
-const users = db.define('users', {
-    school_id: { type: Sequelize.STRING, unique: true, allowNull: false },
-    first_name: { type: Sequelize.STRING, allowNull: false },
-    last_name: { type: Sequelize.STRING, allowNull: false },
+const User = db.define('users', {
+    schoolId: { type: Sequelize.STRING, unique: true, allowNull: false },
+    firstName: { type: Sequelize.STRING, allowNull: false },
+    lastName: { type: Sequelize.STRING, allowNull: false },
     email: { type: Sequelize.STRING, validate: { isEmail: true }, allowNull: true },
     address: { type: Sequelize.STRING, allowNull: true },
     city: { type: Sequelize.STRING, allowNull: true },
     state: { type: Sequelize.STRING, allowNull: true },
     zip: { type: Sequelize.INTEGER, min: 10000, max: 99999, allowNull: true },
     phone: { type: Sequelize.INTEGER, allowNull: true },
-    locker_number: { type: Sequelize.INTEGER, allowNull: true },
-    locker_code: { type: Sequelize.INTEGER, allowNull: true },
+    lockerNumber: { type: Sequelize.INTEGER, allowNull: true },
+    lockerCode: { type: Sequelize.INTEGER, allowNull: true },
     gender: { type: Sequelize.STRING(1), allowNull: true },
     height: { type: Sequelize.INTEGER, comment: 'in inches', allowNull: true },
     weight: { type: Sequelize.INTEGER, comment: 'in pounds', allowNull: true },
@@ -61,48 +61,57 @@ const users = db.define('users', {
 
 /////// STATUS ///////////////////////////////////////////////////////////////////////////
 
-const status = db.define('statuses', {
+const Status = db.define('statuses', {
     name: { type: Sequelize.STRING, allowNull: false },
     academic: { type: Sequelize.INTEGER, allowNull: true }
 });
 
-status.hasMany(users);
-users.belongsTo(status);
+Status.hasMany(User);
+User.belongsTo(Status);
 
 /////// ROLES ///////////////////////////////////////////////////////////////////////////
 
-const roles = db.define('roles', {
+const Role = db.define('roles', {
     name: { type: Sequelize.STRING, allowNull: false },
     description: { type: Sequelize.STRING, allowNull: true },
-    check_in: { type: Sequelize.BOOLEAN, allowNull: true },
-    check_out: { type: Sequelize.BOOLEAN, allowNull: true },
+    checkIn: { type: Sequelize.BOOLEAN, allowNull: true },
+    checkOut: { type: Sequelize.BOOLEAN, allowNull: true },
 }, {
     timestamps: true
 });
 
-roles.hasMany(users);
-users.belongsTo(roles);
+Role.hasMany(User);
+User.belongsTo(Role);
 
 /////// SPORTS ///////////////////////////////////////////////////////////////////////////
-
-const sports =  db.define('sports', {
+/*
+    sizes: [
+        {
+            name: "T-shirt",
+            values: ["XL", "L", "M", "S"]
+        }
+    ]
+*/
+//All players will be contained inside a "base sport" that will contain the standard equipment that all athletes need
+const Sport =  db.define('sports', {
     name: { type: Sequelize.STRING, allowNull: false },
-    gender: { type: Sequelize.STRING(1), allowNull: false}
+    gender: { type: Sequelize.STRING(1), allowNull: false},
+    sizes: { type: Sequelize.JSON, allowNull: true, comment: 'only used when sport has additional custom equipment'}
 });
 
 /////// PLAYER_SPORTS ///////////////////////////////////////////////////////////////////////////
 
-const player_sports =  db.define('player_sports', {});
+const PlayerSport = db.define('player_sports', {});
 
-users.hasMany(player_sports);
-player_sports.belongsTo(users);
+User.hasMany(PlayerSport);
+PlayerSport.belongsTo(User);
 
-sports.hasMany(player_sports);
-player_sports.belongsTo(sports);
+Sport.hasMany(PlayerSport);
+PlayerSport.belongsTo(Sport);
 
 /////// INVENTORY ///////////////////////////////////////////////////////////////////////////
-
-const inventory = db.define('inventories', {
+//Inventory that the school has.
+const Inventory = db.define('inventories', {
     name: { type: Sequelize.STRING, allowNull: false },
     description: { type: Sequelize.STRING, allowNull: true },
     size: { type: Sequelize.STRING, allowNull: false },
@@ -113,83 +122,71 @@ const inventory = db.define('inventories', {
     timestamps: true
 });
 
-sports.hasMany(inventory);
-inventory.belongsTo(sports);
+Sport.hasMany(Inventory);
+Inventory.belongsTo(Sport);
 
 
 /////// EQUIPMENT ///////////////////////////////////////////////////////////////////////////
-
-const equipment = db.define('equipment', {
+//Equipment that users have.
+const Equipment = db.define('equipment', {
     size: { type: Sequelize.STRING, allowNull: false },
     count: { type: Sequelize.INTEGER, allowNull: false },
-    returned_on: { type: Sequelize.DATE, allowNull: true }
+    returnedOn: { type: Sequelize.DATE, allowNull: true }
 }, {
     timestamps: true
 });
 
-users.hasMany(equipment);
-equipment.belongsTo(users);
+User.hasMany(Equipment);
+Equipment.belongsTo(User);
 
-inventory.hasMany(equipment);
-equipment.belongsTo(inventory);
+Inventory.hasMany(Equipment);
+Equipment.belongsTo(Inventory);
 
 /////// TRANSACTIONS ///////////////////////////////////////////////////////////////////////////
 
-const transactions = db.define('transactions', {
+const Transaction = db.define('transactions', {
     amount: { type: Sequelize.INTEGER, allowNull: false }
 }, {
     timestamps: true
 });
 
-equipment.hasMany(transactions);
-transactions.belongsTo(equipment);
+Equipment.hasMany(Transaction);
+Transaction.belongsTo(Equipment);
 
-users.hasMany(transactions, {
-    foreignKey: 'issued_by'
+User.hasMany(Transaction, {
+    foreignKey: 'issuedBy'
   });
-transactions.belongsTo(users, {
-    foreignKey: 'issued_by'
+  Transaction.belongsTo(User, {
+    foreignKey: 'issuedBy'
   });
   
-users.hasMany(transactions, {
-    foreignKey: 'issued_to'
+  User.hasMany(Transaction, {
+    foreignKey: 'issuedTo'
   });
-transactions.belongsTo(users, {
-    foreignKey: 'issued_to'
+  Transaction.belongsTo(User, {
+    foreignKey: 'issuedTo'
   });
 
 /////// PLAYER_SIZES ///////////////////////////////////////////////////////////////////////////
-// Add categories from Front Rush
-const player_sizes = db.define('player_sizes', {
-    bottom: { type: Sequelize.DATE, allowNull: true },
-    socks: { type: Sequelize.DATE, allowNull: true },
-    shows: { type: Sequelize.DATE, allowNull: true },
-    womens_polo: { type: Sequelize.DATE, allowNull: true },
-    bags: { type: Sequelize.DATE, allowNull: true },
-    t_shirt: { type: Sequelize.DATE, allowNull: true },
-    mens_shoes: { type: Sequelize.DATE, allowNull: true },
-    shorts: { type: Sequelize.DATE, allowNull: true },
-    sweat_top: { type: Sequelize.DATE, allowNull: true },
-    sports_bra: { type: Sequelize.DATE, allowNull: true },
-    womens_shoes: { type: Sequelize.DATE, allowNull: true },
-    flex_fit_hats: { type: Sequelize.DATE, allowNull: true },
-    womens_bottom: { type: Sequelize.DATE, allowNull: true },
-    womens_jacket: { type: Sequelize.DATE, allowNull: true },
-    sweatshirt: { type: Sequelize.DATE, allowNull: true },
-    mens_polo: { type: Sequelize.DATE, allowNull: true },
-    generic_apperel: { type: Sequelize.DATE, allowNull: true },
-    jacket: { type: Sequelize.DATE, allowNull: true },
-    sweat_pants: { type: Sequelize.DATE, allowNull: true },
-    tights: { type: Sequelize.DATE, allowNull: true },
+/*
+  sizes: [
+      {
+          name: "T-Shirt",
+          value: "XL"
+      }
+  ]
+*/
+const PlayerSize = db.define('player_sizes', {
+    sizes: { type: Sequelize.JSON, allowNull: false}
 }, {
     timestamps: true
 });
 
-users.hasOne(player_sizes);
-player_sizes.belongsTo(users);
+User.hasOne(PlayerSize);
+PlayerSize.belongsTo(User);
 
 //Uncomment when making changes to the table or need to create table in new environment
 //db.sync({ force: true, alter: true });
 
-module.exports = { users, roles, inventory, equipment, transactions, player_sizes, player_sports, sports, status };
+module.exports = { User, Role, Inventory, Equipment, Transaction, PlayerSize, PlayerSport, Sport, Status };
 
