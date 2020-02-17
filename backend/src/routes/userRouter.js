@@ -23,7 +23,7 @@ userRouter.post("/", async (req, res, next) => {
             where: {
                 id: createdUser.id
             },
-            include: [{model: PlayerSport, include: [Sport]}]
+            include: [{model: PlayerSport, attributes: ['id'], include: [Sport]}]
         });
         res.json(newUser);
     } catch (err) {
@@ -37,7 +37,7 @@ userRouter.post("/", async (req, res, next) => {
 //Retrieve all users
 userRouter.get("/", async (req, res) => {
     try {
-        let allUsers = await User.findAll({include: [{model: PlayerSport, include: [Sport]}]});
+        let allUsers = await User.findAll({include: [{model: PlayerSport, attributes: ['id'], include: [Sport]}]});
         res.json(allUsers)
     } catch (err) {
         //Add error handling for duplicate students and other SQL issues
@@ -51,9 +51,9 @@ userRouter.get("/:id", async (req, res) => {
     try {
         let user = await User.findOne({
             where: {
-                school_id: req.params.id
+                schoolId: req.params.id
             },
-            include: [{model: PlayerSport, include: [Sport]}]
+            include: [{model: PlayerSport, attributes: ['id'], include: [Sport]}]
         });
         res.json(user)
     } catch (err) {

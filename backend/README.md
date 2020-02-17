@@ -8,18 +8,7 @@
 
 2. Install Dependencies
 
-> npm run setup
-
-3. Create .env with following content
-
-````
-DB_HOST=
-DB_DATABASE=
-DB_USER=
-DB_PASSWORD=
-
-PORT=3000
-````
+> npm install
 
 ## Run
 
@@ -29,4 +18,4 @@ PORT=3000
 
 2. Open in url or using an Endpoint tester (postman)
 
-> http://localhost:3000/
+> http://localhost:5000/
