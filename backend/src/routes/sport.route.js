@@ -15,8 +15,7 @@ sportRouter.post("/", async (req, res) => {
         })
         res.json(createdSport)
     } catch (err) {
-        //Add error handling for duplicate students and other SQL issues
-        console.log(err);
+        next(err);
     }
 });
 
@@ -27,8 +26,7 @@ sportRouter.get("/", async (req, res) => {
         let sports = await Sport.findAll();
         res.json(sports)
     } catch (err) {
-        //Add error handling for duplicate students and other SQL issues
-        console.log(err);
+        next(err);
     }
 });
 
@@ -43,8 +41,7 @@ sportRouter.get("/:id", async (req, res) => {
         });
         res.json(sport)
     } catch (err) {
-        //Add error handling for duplicate students and other SQL issues
-        console.log(err);
+        next(err);
     }
 });
 
@@ -70,8 +67,7 @@ sportRouter.put("/:id", async (req, res) => {
             res.json(sport)
         }
     } catch (err) {
-        //Add error handling for duplicate students and other SQL issues
-        console.log(err);
+        next(err);
     }
 });
 
@@ -86,8 +82,7 @@ sportRouter.delete("/:id", async (req, res) => {
         });
         res.json({success: true})
     } catch (err) {
-        //Add error handling for duplicate students and other SQL issues
-        console.log(err);
+        next(err);
     }
 });
 

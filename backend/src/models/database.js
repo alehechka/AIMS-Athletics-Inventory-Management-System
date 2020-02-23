@@ -14,9 +14,8 @@ const {
     DB_PASSWORD
 } = process.env;
 
-
-
-const Sequelize = require( "sequelize");
+const bcrypt = require("bcrypt");
+const Sequelize = require("sequelize");
 
 const db = new Sequelize(DB_DATABASE, DB_USER, DB_PASSWORD, {
     host: DB_HOST,
@@ -40,6 +39,19 @@ const db = new Sequelize(DB_DATABASE, DB_USER, DB_PASSWORD, {
 
 /////// USERS ///////////////////////////////////////////////////////////////////////////
 
+const Credential = db.define('credentials', {
+    email: { type: Sequelize.STRING, unique: true, validate: { isEmail: true }, allowNull: false },
+    username: { type: Sequelize.STRING, unique: true, allowNull: false },
+    password: { type: Sequelize.STRING, unique: false, allowNull: false }
+}, {
+    hooks: {
+        beforeValidate: ( async (credential, options) => {
+            credential.username = credential.email.split("@")[0];
+            credential.password = await bcrypt.hash(credential.password, 10);
+        })
+    }
+});
+
 const User = db.define('users', {
     schoolId: { type: Sequelize.STRING, unique: true, allowNull: false },
     firstName: { type: Sequelize.STRING, allowNull: false },
@@ -58,6 +70,9 @@ const User = db.define('users', {
 }, {
     timestamps: true
 });
+
+Credential.hasOne(User, { foreignKey: { allowNull: false, unique: true }, onDelete: 'CASCADE' });
+User.belongsTo(Credential, { foreignKey: { allowNull: false, unique: true }, onDelete: 'CASCADE' });
 
 /////// STATUS ///////////////////////////////////////////////////////////////////////////
 
@@ -80,8 +95,8 @@ const Role = db.define('roles', {
     timestamps: true
 });
 
-Role.hasMany(User);
-User.belongsTo(Role);
+Role.hasMany(Credential);
+Credential.belongsTo(Role);
 
 /////// SPORTS ///////////////////////////////////////////////////////////////////////////
 /*
@@ -93,10 +108,10 @@ User.belongsTo(Role);
     ]
 */
 //All players will be contained inside a "base sport" that will contain the standard equipment that all athletes need
-const Sport =  db.define('sports', {
+const Sport = db.define('sports', {
     name: { type: Sequelize.STRING, allowNull: false },
-    gender: { type: Sequelize.STRING(1), allowNull: false},
-    sizes: { type: Sequelize.JSON, allowNull: true, comment: 'only used when sport has additional custom equipment'}
+    gender: { type: Sequelize.STRING(1), allowNull: false },
+    sizes: { type: Sequelize.JSON, allowNull: true, comment: 'only used when sport has additional custom equipment' }
 });
 
 /////// PLAYER_SPORTS ///////////////////////////////////////////////////////////////////////////
@@ -155,17 +170,17 @@ Transaction.belongsTo(Equipment);
 
 User.hasMany(Transaction, {
     foreignKey: 'issuedBy'
-  });
-  Transaction.belongsTo(User, {
+});
+Transaction.belongsTo(User, {
     foreignKey: 'issuedBy'
-  });
-  
-  User.hasMany(Transaction, {
+});
+
+User.hasMany(Transaction, {
     foreignKey: 'issuedTo'
-  });
-  Transaction.belongsTo(User, {
+});
+Transaction.belongsTo(User, {
     foreignKey: 'issuedTo'
-  });
+});
 
 /////// PLAYER_SIZES ///////////////////////////////////////////////////////////////////////////
 /*
@@ -177,7 +192,7 @@ User.hasMany(Transaction, {
   ]
 */
 const PlayerSize = db.define('player_sizes', {
-    sizes: { type: Sequelize.JSON, allowNull: false}
+    sizes: { type: Sequelize.JSON, allowNull: false }
 }, {
     timestamps: true
 });
@@ -188,5 +203,5 @@ PlayerSize.belongsTo(User);
 //Uncomment when making changes to the table or need to create table in new environment
 //db.sync({ force: true, alter: true });
 
-module.exports = { User, Role, Inventory, Equipment, Transaction, PlayerSize, PlayerSport, Sport, Status };
+module.exports = { User, Role, Inventory, Equipment, Transaction, PlayerSize, PlayerSport, Sport, Status, Credential };
 

@@ -1,26 +1,44 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import axios from 'axios';
+
+const apiUrl = "http://localhost:5000/api/v1";
+
+class App extends React.Component {
+
+  state = {
+    credentials: {},
+    email: React.createRef(),
+    password: React.createRef()
+  }
+
+  handleSubmit = async (e) => {
+    e.preventDefault();
+    this.login(this.state.email.current.value, this.state.password.current.value);
+  }
+
+  login = async (email, password) => {
+    await axios.post(`${apiUrl}/credentials/login`, 
+        { email, password },
+    ).then(res => {
+        this.setState({credentials: res.data});
+    })
+}
+
+  render() {
+    return (
+      <div className="App">
+        <form onSubmit={this.handleSubmit}>
+          <input ref={this.state.email} placeholder="email" />
+          <input ref={this.state.password} type="password" placeholder="password" />
+          <button type="submit">Login</button>
+        </form>
+        <p>{JSON.stringify(this.state.credentials)}</p>
+      </div>
+    );
+  }
+  
 }
 
 export default App;
