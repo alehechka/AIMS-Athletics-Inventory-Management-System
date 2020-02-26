@@ -18,14 +18,18 @@ const apiUrl = "http://localhost:5000/api/v1";
 
 
 class Login extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       credentials: {},
       email: "",
       password: "",
       invalid: false
     }
+  }
+  componentDidMount(){
+    console.log(this.props);
+    //Add warning message
   }
   handleEmailChange =(e) =>{
     this.setState(Object.assign(this.state, {email: e.target.value}));

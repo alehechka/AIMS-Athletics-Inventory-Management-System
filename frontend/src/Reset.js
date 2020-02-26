@@ -13,8 +13,8 @@ import { withSnackbar } from 'notistack';
 
 //const apiUrl = "http://localhost:5000/api/v1";
 class Reset extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       email: "",
     }

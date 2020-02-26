@@ -13,8 +13,8 @@ import {
 import Cookies from 'js-cookie';
 
 class App extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     const auth = Cookies.get('auth');
     let authorized = false;
     //Add validation for jwt
@@ -33,7 +33,7 @@ class App extends React.Component {
             {this.state.authorized? "Dashboard" :<Redirect
                 to={{
                   pathname: "/login",
-                  state: { from: window.location }
+                  state: { referrer: "dashboard" }
                 }}
               />}
           </Route>
@@ -41,7 +41,7 @@ class App extends React.Component {
           {this.state.authorized? <Redirect
               to={{
                 pathname: "/",
-                state: { from: window.location }
+                state: { referrer: "reset" }
               }}
             />:<Reset/>}
           </Route>
@@ -49,7 +49,7 @@ class App extends React.Component {
             {this.state.authorized? <Redirect
                 to={{
                   pathname: "/",
-                  state: { from: window.location }
+                  state: { referrer: "login" }
                 }}
               />:<Login/>}
           </Route>
