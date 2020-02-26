@@ -6,6 +6,7 @@ import TextField from '@material-ui/core/TextField';
 import VpnKeyIcon from '@material-ui/icons/VpnKey';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
+import { withSnackbar } from 'notistack';
 
 //Uncomment after adding api for pwd reset
 //import axios from 'axios';
@@ -25,7 +26,17 @@ class Reset extends React.Component {
     e.preventDefault();
     const email = this.state.email;
     //Pwd Reset API code here
-    window.location.href ='/?email=' + email;
+    
+    this.props.enqueueSnackbar("Sent Password Reset Instructions to " + email + " !", {
+      variant: 'success',
+      anchorOrigin: {
+          vertical: 'top',
+          horizontal: 'center',
+      },
+      preventDuplicate: true,
+      autoHideDuration: 30000,
+    });
+    setTimeout(()=>{ window.location.href ='/?email=' + email;},3000);
   }
   render() {
     return (
@@ -67,4 +78,4 @@ class Reset extends React.Component {
   }
 }
 
-export default Reset;
+export default withSnackbar(Reset);

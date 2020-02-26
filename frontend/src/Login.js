@@ -9,17 +9,22 @@ import Link from '@material-ui/core/Link';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
+import { withSnackbar } from 'notistack';
 
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const apiUrl = "http://localhost:5000/api/v1";
+
+
 class Login extends React.Component {
   constructor() {
     super();
     this.state = {
       credentials: {},
       email: "",
-      password: ""
+      password: "",
+      invalid: false
     }
   }
   handleEmailChange =(e) =>{
@@ -33,7 +38,38 @@ class Login extends React.Component {
         { email, password},
     ).then(res => {
         this.setState(Object.assign(this.state, {credentials: res.data}));
-    });
+        const jwtoken = res.data.token;
+        const remember = document.getElementById("remember").checked;
+        //Cookie stored for 30 days if checkbox checked
+        if(remember) {
+            Cookies.set("auth", jwtoken, { expires: 30 });
+        }
+        else {
+            Cookies.set("auth", jwtoken);
+        }
+        this.props.enqueueSnackbar("Logging in...", {
+            variant: 'success',
+            anchorOrigin: {
+                vertical: 'top',
+                horizontal: 'center',
+            },
+            preventDuplicate: true,
+            autoHideDuration: 30000,
+        });
+        setTimeout(()=>{ window.location ='/';},3000);
+    }).catch(error=>{
+        this.setState(Object.assign(this.state, {invalid: true}));
+        this.props.enqueueSnackbar("Invalid Credentials", {
+            variant: 'error',
+            anchorOrigin: {
+                vertical: 'top',
+                horizontal: 'center',
+            },
+            preventDuplicate: true,
+            autoHideDuration: 30000,
+        });
+    }
+    );
   }
   render() {
     return (
@@ -73,7 +109,7 @@ class Login extends React.Component {
               autoComplete="current-password"
             />
             <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
+              control={<Checkbox value="remember" id = "remember" color="primary" />}
               label="Remember me"
             />
             <Link href="reset" variant="body" style ={{float: "right", marginTop: "8px"}}>
@@ -94,4 +130,4 @@ class Login extends React.Component {
   }
 }
 
-export default Login;
+export default withSnackbar(Login);
