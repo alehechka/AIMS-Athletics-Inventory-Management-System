@@ -7,6 +7,7 @@ const helmet = require("helmet");
 const userRouter = require("./routes/user.route");
 const sportRouter = require("./routes/sport.route");
 const credentialRouter = require("./routes/credential.route");
+const roleRouter = require("./routes/role.route");
 
 // Load .env Enviroment Variables to process.env
 
@@ -58,6 +59,7 @@ const baseRoute = `/api/v${API_VER}/`;
 app.use(baseRoute + 'users', userRouter);
 app.use(baseRoute + 'sports', sportRouter);
 app.use(baseRoute + 'credentials', credentialRouter);
+app.use(baseRoute + 'roles', roleRouter );
 
 // This middleware adds the json header to every response
 app.use('*', (req, res, next) => {

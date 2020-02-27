@@ -46,10 +46,10 @@ class Login extends React.Component {
         const remember = document.getElementById("remember").checked;
         //Cookie stored for 30 days if checkbox checked
         if(remember) {
-            Cookies.set("auth", jwtoken, { expires: 30 });
+            Cookies.set("authorization", jwtoken, { expires: 30 });
         }
         else {
-            Cookies.set("auth", jwtoken);
+            Cookies.set("authorization", jwtoken);
         }
         this.props.enqueueSnackbar("Logging in...", {
             variant: 'success',
