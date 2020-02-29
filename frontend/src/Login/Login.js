@@ -15,8 +15,6 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 const apiUrl = "http://localhost:5000/api/v1";
-
-
 class Login extends React.Component {
   constructor(props) {
     super(props);

@@ -1,6 +1,6 @@
 import React from 'react';
-import Login from './Login';
-import Reset from './Reset';
+import Login from './Login/Login';
+import Reset from './Login/Reset';
 import { withSnackbar } from 'notistack';
 
 import {
@@ -10,19 +10,34 @@ import {
   Redirect
 } from "react-router-dom";
 
+import axios from 'axios';
 import Cookies from 'js-cookie';
 
+const apiUrl = "http://localhost:5000/api/v1";
 class App extends React.Component {
   constructor(props) {
     super(props);
-    const auth = Cookies.get('auth');
     let authorized = false;
     //Add validation for jwt
-    if (auth) {
-      authorized = true;
-    }
     this.state ={
       authorized
+    }
+  }
+  componentDidMount() {
+    const auth = Cookies.get('authorization');    
+    const config ={
+      headers:{
+        authorization: auth,
+      }
+    };
+    if (auth) {
+      axios.get(`${apiUrl}/credentials/current`,config
+      ).then(res => {
+        console.log(res);
+        this.setState(Object.assign(this.state,{authorized: true}));
+      }).catch(err =>{
+        this.setState(Object.assign(this.state, {authorized: false}));
+      });
     }
   }
   render(){
