@@ -12,6 +12,18 @@ import { withSnackbar } from 'notistack';
 //import axios from 'axios';
 
 //const apiUrl = "http://localhost:5000/api/v1";
+
+/**
+ * TODO - This Component contains the password reset page along with reset logic.
+ * 
+ * State variables:
+ * email - string - email of the user 
+ * 
+ * Props passed down from Snackbar provider.
+ * 
+ * enqueuesnackbar - function - shows a snackbar.
+ * closesnackbar - function - closes a snackbar.  
+ */
 class Reset extends React.Component {
   constructor(props) {
     super(props);
@@ -19,9 +31,22 @@ class Reset extends React.Component {
       email: "",
     }
   }
+   /**
+   * Updates the email state variable
+   * 
+   * @param e event triggered if textbox changes
+   */ 
   handleEmailChange =(e) =>{
     this.setState(Object.assign(this.state, {email: e.target.value}));
   }
+  /**
+   * TODO
+   * Email is sent to the API.
+   * 
+   * redirect back to login page if email valid.
+   * 
+   * @param e event triggered when form is submitted.
+   */
   handleSubmit = async (e) => {
     e.preventDefault();
     const email = this.state.email;

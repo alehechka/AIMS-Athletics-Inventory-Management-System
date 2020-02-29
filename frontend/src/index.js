@@ -7,12 +7,14 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseOutlinedIcon from '@material-ui/icons/CloseOutlined';
 import * as serviceWorker from './serviceWorker';
 
-//Add button to snackbars
+//Adds dismiss button button to snackbars
 const notistackRef = React.createRef();
 const onClickDismiss = key => () => { 
     notistackRef.current.closeSnackbar(key);
 }
-
+/**
+ * Snackbar provider is a wrapper class that provides the option to add snackbars to the UI easily.
+ */
 ReactDOM.render(
     <SnackbarProvider 
         maxSnack={1} 

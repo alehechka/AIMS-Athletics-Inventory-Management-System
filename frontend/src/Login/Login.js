@@ -15,6 +15,21 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 const apiUrl = "http://localhost:5000/api/v1";
+/**
+ * This Component contains the login page along with user authorization logic.
+ * 
+ * State variables:
+ * credentials - json - stores the json response from login request.
+ * email - string - email of the user 
+ * password - string- password entered by the user
+ * invalid - bool - state variable keeping track of invalid attempts by user
+ * noOfAttempts - int - number of login attempts made by the user
+ * 
+ * Props passed down from Snackbar provider.
+ * 
+ * enqueuesnackbar - function - shows a snackbar.
+ * closesnackbar - function - closes a snackbar.  
+ */
 class Login extends React.Component {
   constructor(props) {
     super(props);
@@ -22,54 +37,95 @@ class Login extends React.Component {
       credentials: {},
       email: "",
       password: "",
-      invalid: false
+      remember: false,
+      invalid: false,
+      noOfAttempts: 0
     }
   }
-  componentDidMount(){
-    console.log(this.props);
-    //Add warning message
+  /**
+   * showMessage
+   * 
+   * Displays a snackbar
+   */
+  showMessage = (msg, type = "success", duration = "30000") =>{
+    this.props.enqueueSnackbar(msg, {
+      variant: type,
+      anchorOrigin: {
+          vertical: 'top',
+          horizontal: 'center',
+      },
+      preventDuplicate: true,
+      autoHideDuration: duration,
+  });
   }
+  /**
+   * Updates the email state variable
+   * 
+   * @param e event triggered if textbox changes
+   */ 
   handleEmailChange =(e) =>{
     this.setState(Object.assign(this.state, {email: e.target.value}));
   }
+  /**
+   * Updates the password state variable
+   * 
+   * @param e event triggered if textbox changes
+   */ 
+  handlePasswordChange =(e) =>{
+    this.setState(Object.assign(this.state, {password: e.target.value}));
+  }
+  /**
+   * Updates the Remember state variable
+   * 
+   * @param e event triggered if checkbox changes
+   */ 
+  handleRememberChange =(e) =>{
+    console.log(e.target.checked);
+    this.setState(Object.assign(this.state, {remember: e.target.checked}));
+  }
+  /**
+   * 
+   * Email and password are sent to the API.
+   * 
+   * the server returns a JWT which is stored in a cookie if credentials are valid.
+   * 
+   * @param e event triggered when form is submitted.
+   */
   handleSubmit = async (e) => {
     e.preventDefault();
+
+    this.setState(Object.assign(this.state, {noOfAttempts: this.state.noOfAttempts + 1}));
     const email = this.state.email;
-    const password = document.getElementById("password").value;
+    const password = this.state.password;
+    const remember = this.state.remember;
+
     await axios.post(`${apiUrl}/credentials/login`,
         { email, password},
     ).then(res => {
         this.setState(Object.assign(this.state, {credentials: res.data}));
         const jwtoken = res.data.token;
-        const remember = document.getElementById("remember").checked;
-        //Cookie stored for 30 days if checkbox checked
-        if(remember) {
+        
+        //Cookie stored for 30 days if checkbox checked else cookie only stored for session
+        if (remember) {
             Cookies.set("authorization", jwtoken, { expires: 30 });
         }
         else {
             Cookies.set("authorization", jwtoken);
         }
-        this.props.enqueueSnackbar("Logging in...", {
-            variant: 'success',
-            anchorOrigin: {
-                vertical: 'top',
-                horizontal: 'center',
-            },
-            preventDuplicate: true,
-            autoHideDuration: 30000,
-        });
+        this.showMessage("Logging in...");
+
+        //redirect to homepage
         setTimeout(()=>{ window.location ='/';},3000);
     }).catch(error=>{
         this.setState(Object.assign(this.state, {invalid: true}));
-        this.props.enqueueSnackbar("Invalid Credentials", {
-            variant: 'error',
-            anchorOrigin: {
-                vertical: 'top',
-                horizontal: 'center',
-            },
-            preventDuplicate: true,
-            autoHideDuration: 30000,
-        });
+        //show invalid creds and tell user to reset password if attempts > 3.
+        if (this.state.noOfAttempts< 3) {
+          this.showMessage("Invalid Credentials", "error");
+        }
+        else{
+          this.showMessage("Invalid Credentials", "error", "5000");
+          setTimeout(this.showMessage("Did you forget your password? \n Click on Forgot password to reset your password.", "warning", "20000"), 5100);
+        }  
     }
     );
   }
@@ -109,9 +165,15 @@ class Login extends React.Component {
               type="password"
               id="password"
               autoComplete="current-password"
+              value = {this.state.password}
+              onChange ={this.handlePasswordChange}
             />
             <FormControlLabel
-              control={<Checkbox value="remember" id = "remember" color="primary" />}
+              control={<Checkbox 
+                value="remember" 
+                checked = {this.state.remember} 
+                onChange ={this.handleRememberChange}
+                id = "remember" color="primary" />}
               label="Remember me"
             />
             <Link href="reset" variant="body" style ={{float: "right", marginTop: "8px"}}>
@@ -125,7 +187,9 @@ class Login extends React.Component {
             >
               Log In
             </Button>
-            
+            <Link href="signup" variant="body" style ={{display: "block", textAlign: "center", marginTop: "16px"}}>
+              Don't have an account? Click here to Sign Up.
+            </Link>
           </form>
         </div>
       </Container>);
