@@ -68,6 +68,7 @@ class App extends React.Component {
     };
     //if cookie exists validate jwt stored in cookie. 
     if (auth) {
+      this.setState(Object.assign(this.state, {authorized: true}));
       axios.get(`${apiUrl}/credentials/current`,config
       ).then(res => {
         const newState = Object.assign({authorized: true, authorization: auth}, res.data);

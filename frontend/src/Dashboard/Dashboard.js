@@ -1,5 +1,7 @@
 import React from 'react';
 import { withSnackbar } from 'notistack';
+import Navbar from './Navbar';
+import Cookies from 'js-cookie';
 
 /**
  * This component contains the UI logic for Dashboard.
@@ -20,11 +22,27 @@ import { withSnackbar } from 'notistack';
  * closesnackbar - function - closes a snackbar. 
  */
 class Dashboard extends React.Component {
+    openProfile = () => {
+        alert("profile");
+    };
+    logOutUser =() => {
+        Cookies.remove('authorization');
+        window.location = '/';
+    }
     render() {
+        
         const username = this.props.username;
         const [checkIn, checkOut] = [this.props.role.checkIn, this.props.role.checkOut];
         return(
-            <p>Welcome {username}, you can {checkIn?"checkIn":""}, {checkOut?"checkOut":""}</p>
+            <React.Fragment>
+                <Navbar
+                    username = {username}
+                    noOfItemsCheckedOut = {3}
+                    openProfile = {this.openProfile}
+                    logOutUser = {this.logOutUser}
+                />
+                <p>Welcome {username}, you can {checkIn?"checkIn":""}, {checkOut?"checkOut":""}</p>
+            </React.Fragment>
         );
     }
 }
