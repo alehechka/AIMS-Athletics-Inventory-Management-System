@@ -97,6 +97,12 @@ function Navbar(props) {
     const username = props.username;
     const [menuOpen, setMenuOpen] = React.useState(false);
     const [dialogOpen, setDialogOpen] = React.useState(false);
+    const menuItems = {
+        "Home": <DashboardIcon/>,
+        "Athletes": <Icon className="fas fa-swimmer" />,
+        "Inventory": <ListIcon/>,
+        "Staff": <PersonIcon/>
+    };
     /**
      * Toggles menuOpen state
      */
@@ -172,40 +178,16 @@ function Navbar(props) {
                     
                 </div>
                 <List>
-                    
-                    <Tooltip title="Dashboard" placement="right">
-                        <ListItem button key="Dashboard">
-                            <ListItemIcon>
-                                    <DashboardIcon/>
-                            </ListItemIcon>
-                            <ListItemText primary="Dashboard" />
-                        </ListItem>
-                    </Tooltip>
-                    
-                    <Tooltip title="Athletes" placement="right">
-                        <ListItem button key="Athletes">
-                            <ListItemIcon>
-                                <Icon className="fas fa-swimmer" />
-                            </ListItemIcon>
-                            <ListItemText primary="Athletes" />
-                        </ListItem>
-                    </Tooltip>
-                    <Tooltip title="Inventory" placement="right">
-                        <ListItem button key="Inventory">
-                            <ListItemIcon>
-                                    <ListIcon/>
-                            </ListItemIcon>
-                            <ListItemText primary="Inventory" />
-                        </ListItem> 
-                    </Tooltip>
-                    <Tooltip title="Staff" placement="right">
-                        <ListItem button key="Staff">
-                            <ListItemIcon>
-                                    <PersonIcon/>
-                            </ListItemIcon>
-                            <ListItemText primary="Staff" />
-                        </ListItem>
-                    </Tooltip>
+                    {Object.entries(menuItems).map(([key,value])=>(
+                        <Tooltip title={key} key={key + Math.random()} placement="right">
+                            <ListItem button key={key + Math.random()} onClick ={()=>(window.location.href=`/${key.toLowerCase()}`)}>
+                                <ListItemIcon>
+                                    {value}
+                                </ListItemIcon>
+                                <ListItemText primary={key} />
+                            </ListItem>
+                        </Tooltip>
+                    ))}
                 </List>
             </Drawer>
             <Dialog

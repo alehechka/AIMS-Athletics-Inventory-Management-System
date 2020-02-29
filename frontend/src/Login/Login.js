@@ -43,22 +43,6 @@ class Login extends React.Component {
     }
   }
   /**
-   * showMessage
-   * 
-   * Displays a snackbar
-   */
-  showMessage = (msg, type = "success", duration = "30000") =>{
-    this.props.enqueueSnackbar(msg, {
-      variant: type,
-      anchorOrigin: {
-          vertical: 'top',
-          horizontal: 'center',
-      },
-      preventDuplicate: true,
-      autoHideDuration: duration,
-  });
-  }
-  /**
    * Updates the email state variable
    * 
    * @param e event triggered if textbox changes
@@ -112,7 +96,7 @@ class Login extends React.Component {
         else {
             Cookies.set("authorization", jwtoken);
         }
-        this.showMessage("Logging in...");
+        this.props.showMessage("Logging in...");
 
         //redirect to homepage
         setTimeout(()=>{ window.location ='/';},3000);
@@ -120,11 +104,11 @@ class Login extends React.Component {
         this.setState(Object.assign(this.state, {invalid: true}));
         //show invalid creds and tell user to reset password if attempts > 3.
         if (this.state.noOfAttempts< 3) {
-          this.showMessage("Invalid Credentials", "error");
+          this.props.showMessage("Invalid Credentials", "error");
         }
         else{
-          this.showMessage("Invalid Credentials", "error", "5000");
-          setTimeout(this.showMessage("Did you forget your password? \n Click on Forgot password to reset your password.", "warning", "20000"), 5100);
+          this.props.showMessage("Invalid Credentials", "error", "5000");
+          setTimeout(this.props.showMessage("Did you forget your password? \n Click on Forgot password to reset your password.", "warning", "20000"), 5100);
         }  
     }
     );

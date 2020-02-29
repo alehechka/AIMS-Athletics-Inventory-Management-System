@@ -9,7 +9,7 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Redirect
+  Redirect,
 } from "react-router-dom";
 
 import axios from 'axios';
@@ -50,6 +50,22 @@ class App extends React.Component {
     }
   }
   /**
+   * showMessage
+   * 
+   * Displays a snackbar
+   */
+  showMessage = (msg, type = "success", duration = "30000", vertical = "top", horizontal = "center") =>{
+    this.props.enqueueSnackbar(msg, {
+      variant: type,
+      anchorOrigin: {
+          vertical,
+          horizontal,
+      },
+      preventDuplicate: true,
+      autoHideDuration: duration,
+    });
+  }
+  /**
    * Lifecycle method that is executed only once.
    * 
    * Get the cookies if they exist to get the jwt.
@@ -80,7 +96,8 @@ class App extends React.Component {
   }
   render(){
     const dashboardApp = (
-      <Dashboard 
+      <Dashboard
+        showMessage ={this.showMessage} 
         authorization = {this.state.authorization}
         email = {this.state.email}
         username = {this.state.username}
@@ -98,20 +115,17 @@ class App extends React.Component {
     return(
       <Router>
         <Switch>
-            <Route path="/dashboard">
-              {this.state.authorized ? dashboardApp : redir("dashboard", "/login")}
-            </Route>
             <Route path="/reset">
-              {this.state.authorized ? redir("reset", "/") : <Reset/>}
+              {this.state.authorized ? redir("reset", "/") : <Reset showMessage ={this.showMessage}/>}
             </Route>
             <Route path="/login">
-              {this.state.authorized ? redir("login", "/"): <Login/>}
+              {this.state.authorized ? redir("login", "/"): <Login showMessage ={this.showMessage}/>}
             </Route>
             <Route path="/signup">
-              {this.state.authorized ? redir("signup", "/"): <Signup/>}
+              {this.state.authorized ? redir("signup", "/"): <Signup showMessage ={this.showMessage}/>}
             </Route>
             <Route path="/">
-              {this.state.authorized? dashboardApp : <Login />}
+              {this.state.authorized? dashboardApp : <Login showMessage ={this.showMessage}/>}
             </Route>
           </Switch>
         </Router>

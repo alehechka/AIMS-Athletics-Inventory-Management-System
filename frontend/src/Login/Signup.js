@@ -9,15 +9,21 @@ import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import { withSnackbar } from 'notistack';
 
+import axios from 'axios';
+import Cookies from 'js-cookie';
+
+const apiUrl = "http://localhost:5000/api/v1";
 /**
  * This Component contains the sign up page along with sign up logic.
  * 
  * State variables:
  * credentials - json - stores the json response from sign up request.
+ * username - string - username
  * email - string - email of the user 
  * password1 - string- password entered by the user
  * password2 - string- password reentered by the user
- * passwordValid - bool - state variable keeping track of password matching
+ * password1Valid - bool - state variable keeping track of password length
+ * password2Valid - bool - state variable keeping track of password matching
  * 
  * Props passed down from Snackbar provider.
  * 
@@ -29,28 +35,46 @@ class Signup extends React.Component {
         super(props);
         this.state = {
             credentials: {},
+            username:"", 
             email: "",
             password1: "",
             password2: "",
-            passwordValid: false,
+            usernameValid: "",
+            emailValid: "",
+            password1Valid: false,
+            password2Valid: false,
         }
     }
+  /**
+   * Updates the username state variable
+   * 
+   * @param e event triggered if textbox changes
+   */ 
+  handleUsernameChange =(e) =>{
+    const username = e.target.value;
+    this.setState(Object.assign(this.state, {username}));
+    Object.assign(this.state, {usernameValid : username.length >= 5});
+  }
  /**
-   * Updates the email state variable
+   * Updates the email state variable and checks if @ is present
    * 
    * @param e event triggered if textbox changes
    */ 
   handleEmailChange =(e) =>{
-    this.setState(Object.assign(this.state, {email: e.target.value}));
+    const email = e.target.value;
+    this.setState(Object.assign(this.state, {email}));
+    Object.assign(this.state, {emailValid : email.includes("@")});
   }
   /**
-   * Updates the password state variable
+   * Updates the password state variable and checks its length
    * 
    * @param e event triggered if textbox changes
    */ 
   handlePassword1Change =(e) =>{
     this.setState(Object.assign(this.state, {password1: e.target.value}));
-    Object.assign(this.state, {passwordValid : this.state.password1 === this.state.password2});
+    const passLen = this.state.password1.length;
+    Object.assign(this.state, {password1Valid : passLen > 7 && passLen < 33});
+    Object.assign(this.state, {password2Valid : this.state.password1 === this.state.password2});
   }
   /**
    * Updates the password2 state variable and checks if theyre equal
@@ -59,7 +83,8 @@ class Signup extends React.Component {
    */ 
   handlePassword2Change =(e) =>{
     this.setState(Object.assign(this.state, {password2: e.target.value}));
-    Object.assign(this.state, {passwordValid : this.state.password1 === this.state.password2});
+    const password2Len = this.state.password2.length;
+    Object.assign(this.state, {password2Valid : this.state.password1.substr(0, password2Len) === this.state.password2});
   }
   /**
    * TODO:
@@ -73,21 +98,35 @@ class Signup extends React.Component {
     e.preventDefault();
     
     const email = this.state.email;
-    //const password = this.state.password1;
-
-    //TODO logic
-    this.props.enqueueSnackbar("You have successfully signed up " + email + " !", {
-        variant: 'success',
-        anchorOrigin: {
-            vertical: 'top',
-            horizontal: 'center',
-        },
-        preventDuplicate: true,
-        autoHideDuration: 30000,
-      });
-    setTimeout(()=>{ window.location.href ='/?email=' + email;},3000);
+    const password = this.state.password1;
+    const username = this.state.username;
+    const formValid =  this.state.usernameValid && this.state.emailValid && this.state.password1Valid && this.state.password2Valid;
+    if(formValid) {
+      //TODO logic
+      await axios.post(`${apiUrl}/credentials/signup`,
+            { email,username, password},
+        ).then(res => {
+            this.setState(Object.assign(this.state, {credentials: res.data}));
+            const jwtoken = res.data.token;
+            
+            this.props.showMessage(`You have successfully signed up ${email}, Redirecting...!`);
+            Cookies.set("authorization", jwtoken, { expires: 30 });
+            setTimeout(()=>(window.location.href ='/?email=' + email), 3000);
+        }).catch(error=>{
+          this.props.showMessage(`An account holder already exists for this information. Redirecting to login...!`, "error");
+          setTimeout(()=>(window.location.href ='/?email=' + email), 5000);
+        });
+    }
+    else {
+      this.props.showMessage("Please ensure all fields are non-empty and error-free.", "warning");
+    }
   }
 render() {
+    const usernameError = !this.state.usernameValid && this.state.username.length > 0;
+    const emailError = !this.state.emailValid && this.state.email.length > 10;
+    const password1Error = !this.state.password1Valid && this.state.password1.length>0;
+    const password2Error = !this.state.password2Valid && this.state.password2.length>0;
+    
     return (
       <Container component="main" maxWidth="xs">
         <CssBaseline />
@@ -100,6 +139,21 @@ render() {
             Sign Up
           </Typography>
           <form style ={{ marginTop: "16px"}} onSubmit={this.handleSubmit} noValidate>
+          <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="username"
+              label="Username"
+              name="username"
+              autoComplete="username"
+              value = {this.state.username}
+              onChange ={this.handleUsernameChange}
+              autoFocus
+              error ={usernameError}
+              helperText = {usernameError?"Username needs to be at least 5 characters long":""}
+            />
             <TextField
               variant="outlined"
               margin="normal"
@@ -111,7 +165,8 @@ render() {
               autoComplete="email"
               value = {this.state.email}
               onChange ={this.handleEmailChange}
-              autoFocus
+              error ={emailError}
+              helperText = {emailError?"Please enter a valid email address":""}
             />
             <TextField
               variant="outlined"
@@ -125,10 +180,11 @@ render() {
               autoComplete="current-password"
               value = {this.state.password1}
               onChange ={this.handlePassword1Change}
+              error ={password1Error}
+              helperText = {password1Error?"Password needs to be between 8 and 32 characters long":""}
             />
-            {!this.state.passwordValid&& this.state.password2.length>0?
             <TextField
-              error
+              error = {password2Error}
               variant="outlined"
               margin="normal"
               required
@@ -140,22 +196,8 @@ render() {
               autoComplete="current-password"
               value = {this.state.password2}
               onChange ={this.handlePassword2Change}
-              helperText="Passwords don't match."
-            />:
-            <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                name="password2"
-                label="Reenter Password"
-                type="password"
-                id="password2"
-                autoComplete="current-password"
-                value = {this.state.password2}
-                onChange ={this.handlePassword2Change}
+              helperText = {password2Error?"Passwords don't match.":""}
             />
-            } 
             <Button
               type="submit"
               fullWidth
