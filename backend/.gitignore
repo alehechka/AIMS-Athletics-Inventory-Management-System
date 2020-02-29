@@ -59,4 +59,6 @@ typings/
 
 node_modules
 
-.env
+# Production build will use seperate .env file
+# The one included in Github is dev only. 
+#.env

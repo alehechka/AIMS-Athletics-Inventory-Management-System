@@ -12,10 +12,6 @@ const roleRouter = require("./routes/role.route");
 // Load .env Enviroment Variables to process.env
 
 require('mandatoryenv').load([
-    'DB_HOST',
-    'DB_DATABASE',
-    'DB_USER',
-    'DB_PASSWORD',
     'PORT',
     'API_VER'
 ]);
@@ -34,7 +30,7 @@ var corsOptions = {
       callback(new Error('Not allowed by CORS'))
     }
   },
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  methods: "GET,PUT,POST,DELETE",
   allowedHeaders: ['x-access-token', 'authorization', 'Content-Type', 'Accept', 'Origin', 'X-Request-With'],
   credentials: true
 }

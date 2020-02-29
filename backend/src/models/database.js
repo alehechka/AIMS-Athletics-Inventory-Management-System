@@ -3,9 +3,7 @@ require('mandatoryenv').load([
     'DB_HOST',
     'DB_DATABASE',
     'DB_USER',
-    'DB_PASSWORD',
-    'PORT',
-    'API_VER'
+    'DB_PASSWORD'
 ]);
 const {
     DB_HOST,
@@ -26,6 +24,7 @@ const db = new Sequelize(DB_DATABASE, DB_USER, DB_PASSWORD, {
         idle: 10000
     },
     dialect: 'postgres',
+    logging: false, 
     dialectOptions: {
         options: {
             useUTC: false,
@@ -46,7 +45,7 @@ const Credential = db.define('credentials', {
 }, {
     hooks: {
         beforeValidate: ( async (credential, options) => {
-            credential.username = credential.email.split("@")[0];
+            credential.username = credential.username === null ? credential.email.split("@")[0] : credential.username;
             credential.password = await bcrypt.hash(credential.password, 10);
         })
     }
@@ -56,7 +55,6 @@ const User = db.define('users', {
     schoolId: { type: Sequelize.STRING, unique: true, allowNull: false },
     firstName: { type: Sequelize.STRING, allowNull: false },
     lastName: { type: Sequelize.STRING, allowNull: false },
-    email: { type: Sequelize.STRING, validate: { isEmail: true }, allowNull: true },
     address: { type: Sequelize.STRING, allowNull: true },
     city: { type: Sequelize.STRING, allowNull: true },
     state: { type: Sequelize.STRING, allowNull: true },

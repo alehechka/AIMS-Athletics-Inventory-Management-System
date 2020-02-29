@@ -1,5 +1,10 @@
 const jwt = require("jsonwebtoken");
 
+require('mandatoryenv').load([
+  'PRIVATE_KEY'
+]);
+const { PRIVATE_KEY } = process.env;
+
 module.exports = function(req, res, next) {
   //get the token from the header if present
   const token = req.headers["x-access-token"] || req.headers["authorization"];
@@ -8,7 +13,7 @@ module.exports = function(req, res, next) {
 
   try {
     //if can verify the token, set req.user and pass to next middleware
-    const decoded = jwt.verify(token, "myprivatekey");
+    const decoded = jwt.verify(token, PRIVATE_KEY);
     req.user = decoded;
     next();
   } catch (ex) {

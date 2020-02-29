@@ -190,7 +190,7 @@ render() {
               required
               fullWidth
               name="password2"
-              label="Reenter Password"
+              label="Confirm Password"
               type="password"
               id="password2"
               autoComplete="current-password"

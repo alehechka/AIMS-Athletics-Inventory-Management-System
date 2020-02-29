@@ -1,4 +1,4 @@
-# Athletics Iventory Management System
+# Athletics Inventory Management System
 
 # Install
 
