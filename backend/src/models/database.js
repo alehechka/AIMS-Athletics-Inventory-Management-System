@@ -41,11 +41,15 @@ const db = new Sequelize(DB_DATABASE, DB_USER, DB_PASSWORD, {
 const Credential = db.define('credentials', {
     email: { type: Sequelize.STRING, unique: true, validate: { isEmail: true }, allowNull: false },
     username: { type: Sequelize.STRING, unique: true, allowNull: false },
-    password: { type: Sequelize.STRING, unique: false, allowNull: false }
+    password: { type: Sequelize.STRING, unique: false, allowNull: false },
+    isAdmin: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
+    isEmployee: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
+    isAthlete: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
+    isCoach: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
 }, {
     hooks: {
         beforeValidate: ( async (credential, options) => {
-            credential.username = credential.username === null ? credential.email.split("@")[0] : credential.username;
+            credential.username = credential.username ? credential.username: credential.email.split("@")[0];
             credential.password = await bcrypt.hash(credential.password, 10);
         })
     }
@@ -76,25 +80,11 @@ User.belongsTo(Credential, { foreignKey: { allowNull: false, unique: true }, onD
 
 const Status = db.define('statuses', {
     name: { type: Sequelize.STRING, allowNull: false },
-    academic: { type: Sequelize.INTEGER, allowNull: true }
+    academicYear: { type: Sequelize.INTEGER, allowNull: true }
 });
 
 Status.hasMany(User);
 User.belongsTo(Status);
-
-/////// ROLES ///////////////////////////////////////////////////////////////////////////
-
-const Role = db.define('roles', {
-    name: { type: Sequelize.STRING, allowNull: false },
-    description: { type: Sequelize.STRING, allowNull: true },
-    checkIn: { type: Sequelize.BOOLEAN, allowNull: true },
-    checkOut: { type: Sequelize.BOOLEAN, allowNull: true },
-}, {
-    timestamps: true
-});
-
-Role.hasMany(Credential);
-Credential.belongsTo(Role);
 
 /////// SPORTS ///////////////////////////////////////////////////////////////////////////
 /*
@@ -109,7 +99,7 @@ Credential.belongsTo(Role);
 const Sport = db.define('sports', {
     name: { type: Sequelize.STRING, allowNull: false },
     gender: { type: Sequelize.STRING(1), allowNull: false },
-    sizes: { type: Sequelize.JSON, allowNull: true, comment: 'only used when sport has additional custom equipment' }
+    sizes: { type: Sequelize.JSON, allowNull: true, defaultValue: [], comment: 'only used when sport has additional custom equipment' }
 });
 
 /////// PLAYER_SPORTS ///////////////////////////////////////////////////////////////////////////
@@ -131,6 +121,7 @@ const Inventory = db.define('inventories', {
     remaining: { type: Sequelize.INTEGER, allowNull: false },
     price: { type: Sequelize.DOUBLE, allowNull: true },
     total: { type: Sequelize.INTEGER, allowNull: false },
+    surplus: { type: Sequelize.BOOLEAN, allowNull: true }
 }, {
     timestamps: true
 });
@@ -144,7 +135,6 @@ Inventory.belongsTo(Sport);
 const Equipment = db.define('equipment', {
     size: { type: Sequelize.STRING, allowNull: false },
     count: { type: Sequelize.INTEGER, allowNull: false },
-    returnedOn: { type: Sequelize.DATE, allowNull: true }
 }, {
     timestamps: true
 });
@@ -158,7 +148,8 @@ Equipment.belongsTo(Inventory);
 /////// TRANSACTIONS ///////////////////////////////////////////////////////////////////////////
 
 const Transaction = db.define('transactions', {
-    amount: { type: Sequelize.INTEGER, allowNull: false }
+    amount: { type: Sequelize.INTEGER, allowNull: false },
+    return: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false }
 }, {
     timestamps: true
 });
@@ -190,7 +181,7 @@ Transaction.belongsTo(User, {
   ]
 */
 const PlayerSize = db.define('player_sizes', {
-    sizes: { type: Sequelize.JSON, allowNull: false }
+    sizes: { type: Sequelize.JSON, allowNull: false, defaultValue: [] }
 }, {
     timestamps: true
 });
@@ -201,5 +192,5 @@ PlayerSize.belongsTo(User);
 //Uncomment when making changes to the table or need to create table in new environment
 //db.sync({ force: true, alter: true });
 
-module.exports = { User, Role, Inventory, Equipment, Transaction, PlayerSize, PlayerSport, Sport, Status, Credential };
+module.exports = { User, Inventory, Equipment, Transaction, PlayerSize, PlayerSport, Sport, Status, Credential, db };
 

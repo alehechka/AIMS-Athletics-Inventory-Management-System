@@ -1,0 +1,37 @@
+{
+  "statuses": [
+    {
+      "name": "Freshman",
+      "academicYear": 1
+    }
+  ],
+  "credentials": [{ "email": "test@test.com", "password": "test" }],
+  "users": [
+    {
+      "schoolId": 12345,
+      "firstName": "Test",
+      "lastName": "Tester",
+      "_comments": [
+        "Number of users has to match Number of credentials",
+        "School ID must be unique to each user"
+      ]
+    }
+  ],
+  "sports": [
+    {
+      "name": "Baseball",
+      "gender": "M",
+      "sizes": [{ "name": "T-Shirt", "values": ["XL", "L", "M", "S"] }],
+      "_comments": ["For generating, add at least one size with at least one value to all sports"]
+    }
+  ],
+  "inventories": [{
+      "name": "T-Shirt",
+      "description": "Black UNO T-Shirt",
+      "size": "XL",
+      "remaining": 10,
+      "price": 20.99,
+      "total": 20,
+      "surplus": false
+  }]
+}

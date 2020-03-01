@@ -46,6 +46,7 @@
         "typescript": "^3.6.3"
     },
     "devDependencies": {
-        "nodemon": "^2.0.2"
+        "nodemon": "^2.0.2",
+        "prettier": "^1.19.1"
     }
 }
