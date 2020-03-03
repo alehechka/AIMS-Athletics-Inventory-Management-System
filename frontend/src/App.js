@@ -46,7 +46,7 @@ class App extends React.Component {
       authorization: "",
       email: "",
       username: "",
-      role: {}
+      role: ""
     }
   }
   /**
@@ -54,7 +54,7 @@ class App extends React.Component {
    * 
    * Displays a snackbar
    */
-  showMessage = (msg, type = "success", duration = "30000", vertical = "top", horizontal = "center") =>{
+  showMessage = (msg, type = "success", duration = 30000, vertical = "top", horizontal = "center") =>{
     this.props.enqueueSnackbar(msg, {
       variant: type,
       anchorOrigin: {
@@ -64,6 +64,27 @@ class App extends React.Component {
       preventDuplicate: true,
       autoHideDuration: duration,
     });
+  }
+  /**
+   * sets role based on JSON received
+   *
+   * @param {*} creds JSON response
+   */
+  setRole = (creds) => {
+    let role = "athlete";
+    if (creds.isAdmin){
+      role = "admin";
+    }
+    if (creds.isEmployee){
+      role = "employee";
+    }
+    else if(creds.isCoach){
+      role = "coach"
+    }
+    else if(creds.isAthlete){
+      role ="athlete"
+    }
+    this.setState(Object.assign(this.state, {role}));
   }
   /**
    * Lifecycle method that is executed only once.
@@ -95,6 +116,7 @@ class App extends React.Component {
         creds = JSON.parse(creds);
         const newState = Object.assign({authorized: true, authorization: auth}, creds);
         this.setState(Object.assign(this.state, newState));
+        this.setRole(creds);
       }
       else {
         axios.get(`${apiUrl}/credentials/current`,config
@@ -102,6 +124,7 @@ class App extends React.Component {
           sessionStorage.setItem('creds', JSON.stringify(res.data));
           const newState = Object.assign({authorized: true, authorization: auth}, res.data);
           this.setState(Object.assign(this.state, newState));
+          this.setRole(res.data);
         }).catch(err =>{
           this.setState(Object.assign(this.state, {authorized: false}));
         });

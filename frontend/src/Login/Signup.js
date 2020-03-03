@@ -25,6 +25,10 @@ const apiUrl = "http://localhost:5000/api/v1";
  * password1Valid - bool - state variable keeping track of password length
  * password2Valid - bool - state variable keeping track of password matching
  * 
+ * Props passed down from app.js
+ * 
+ * showmessage - custom function to enqueue snackbar
+ * 
  * Props passed down from Snackbar provider.
  * 
  * enqueuesnackbar - function - shows a snackbar.

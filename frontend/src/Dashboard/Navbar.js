@@ -86,15 +86,17 @@ const useStyles = makeStyles(theme => ({
  * dialogOpen, setDialogOpen - logout dialog toggle
  * 
  * Props passed down from Dashboard
- * username string
- * noOfItemsCheckedOut int 
- * openProfile func reference 
- * logOutUser func reference
+ * username string current username
+ * noOfItemsCheckedOut int placeholder for number of items user has checked out
+ * openProfile func reference redirects user
+ * logOutUser func reference logs out user
+ * 
  * @param {*} props passed from Dashboard
  */
 function Navbar(props) {
     const classes = useStyles();
     const username = props.username;
+    const allowedViews = props.allowedViews;
     const [menuOpen, setMenuOpen] = React.useState(false);
     const [dialogOpen, setDialogOpen] = React.useState(false);
     const menuItems = {
@@ -178,7 +180,7 @@ function Navbar(props) {
                     
                 </div>
                 <List>
-                    {Object.entries(menuItems).map(([key,value])=>(
+                    {Object.entries(menuItems).filter(([key, value])=>(allowedViews.includes(key))).map(([key,value])=>(
                         <Tooltip title={key} key={key + Math.random()} placement="right">
                             <ListItem button key={key + Math.random()} onClick ={()=>(window.location.href=`/${key.toLowerCase()}`)}>
                                 <ListItemIcon>

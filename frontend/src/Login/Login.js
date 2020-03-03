@@ -25,6 +25,10 @@ const apiUrl = "http://localhost:5000/api/v1";
  * invalid - bool - state variable keeping track of invalid attempts by user
  * noOfAttempts - int - number of login attempts made by the user
  * 
+ * Props passed down from app.js
+ * 
+ * showmessage - custom function to enqueue snackbar
+ * 
  * Props passed down from Snackbar provider.
  * 
  * enqueuesnackbar - function - shows a snackbar.
@@ -99,11 +103,11 @@ class Login extends React.Component {
         this.props.showMessage("Logging in...");
 
         //redirect to homepage
-        setTimeout(()=>{ window.location ='/';},3000);
+        window.location ='/';
     }).catch(error=>{
         this.setState(Object.assign(this.state, {invalid: true}));
         //show invalid creds and tell user to reset password if attempts > 3.
-        if (this.state.noOfAttempts< 3) {
+        if (this.state.noOfAttempts < 3) {
           this.props.showMessage("Invalid Credentials", "error");
         }
         else{

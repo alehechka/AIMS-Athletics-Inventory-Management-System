@@ -19,6 +19,11 @@ import { withSnackbar } from 'notistack';
  * State variables:
  * email - string - email of the user 
  * 
+ * 
+ * Props passed down from app.js
+ * 
+ * showmessage - custom function to enqueue snackbar
+ * 
  * Props passed down from Snackbar provider.
  * 
  * enqueuesnackbar - function - shows a snackbar.
