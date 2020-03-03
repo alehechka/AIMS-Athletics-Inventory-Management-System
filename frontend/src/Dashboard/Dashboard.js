@@ -44,6 +44,7 @@ class Dashboard extends React.Component {
      */
     logOutUser =() => {
         Cookies.remove('authorization');
+        sessionStorage.removeItem('creds');
         window.location.href = '/';
     }
     render() {

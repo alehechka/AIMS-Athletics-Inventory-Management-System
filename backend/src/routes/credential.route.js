@@ -60,10 +60,10 @@ credentialRouter.post("/signup", async (req, res, next) => {
     res.json({
       email: createdCred.email,
       username: createdCred.username,
-      isAdmin: foundCred.isAdmin,
-      isEmployee: foundCred.isEmployee,
-      isAthlete: foundCred.isAthlete,
-      isCoach: foundCred.isCoach,
+      isAdmin: createdCred.isAdmin,
+      isEmployee: createdCred.isEmployee,
+      isAthlete: createdCred.isAthlete,
+      isCoach: createdCred.isCoach,
       token
     });
   } catch (err) {

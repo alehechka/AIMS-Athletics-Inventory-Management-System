@@ -70,9 +70,10 @@ class App extends React.Component {
    * 
    * Get the cookies if they exist to get the jwt.
    * 
-   * Pass the get request along with the credentials to the backend for verifying jwt.
+   * if user logging in for the first time validate jwt and store creds in session otherwise
+   * Pass the get request along with the credentials to the backend for verifying jwt and save creds.
    * 
-   * Stores the jwt response in react state.
+   * Stores the jwt response in react state and session storage.
    */
   componentDidMount() {
     const auth = Cookies.get('authorization');    
@@ -84,14 +85,27 @@ class App extends React.Component {
     };
     //if cookie exists validate jwt stored in cookie. 
     if (auth) {
+      //assume jwt is valid
       this.setState(Object.assign(this.state, {authorized: true}));
-      axios.get(`${apiUrl}/credentials/current`,config
-      ).then(res => {
-        const newState = Object.assign({authorized: true, authorization: auth}, res.data);
+
+      let creds = sessionStorage.getItem('creds');
+
+      //if jwt already validated get creds from session storage.
+      if (creds) {
+        creds = JSON.parse(creds);
+        const newState = Object.assign({authorized: true, authorization: auth}, creds);
         this.setState(Object.assign(this.state, newState));
-      }).catch(err =>{
-        this.setState(Object.assign(this.state, {authorized: false}));
-      });
+      }
+      else {
+        axios.get(`${apiUrl}/credentials/current`,config
+        ).then(res => {
+          sessionStorage.setItem('creds', JSON.stringify(res.data));
+          const newState = Object.assign({authorized: true, authorization: auth}, res.data);
+          this.setState(Object.assign(this.state, newState));
+        }).catch(err =>{
+          this.setState(Object.assign(this.state, {authorized: false}));
+        });
+      }
     }
   }
   render(){

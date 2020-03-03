@@ -100,6 +100,10 @@ class Signup extends React.Component {
     const email = this.state.email;
     const password = this.state.password1;
     const username = this.state.username;
+    
+    const password2Valid = this.state.password1 === this.state.password2;
+    this.setState(Object.assign(this.state, {password2Valid}));
+
     const formValid =  this.state.usernameValid && this.state.emailValid && this.state.password1Valid && this.state.password2Valid;
     if(formValid) {
       //TODO logic
