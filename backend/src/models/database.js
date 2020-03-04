@@ -49,14 +49,14 @@ const Credential = db.define('credentials', {
 }, {
     hooks: {
         beforeValidate: ( async (credential, options) => {
-            credential.username = credential.username ? credential.username: credential.email.split("@")[0];
+            credential.username = credential.username ? credential.username : credential.email.split("@")[0];
             credential.password = await bcrypt.hash(credential.password, 10);
         })
     }
 });
 
 const User = db.define('users', {
-    schoolId: { type: Sequelize.STRING, unique: true, allowNull: false },
+    schoolId: { type: Sequelize.STRING, allowNull: true },
     firstName: { type: Sequelize.STRING, allowNull: false },
     lastName: { type: Sequelize.STRING, allowNull: false },
     address: { type: Sequelize.STRING, allowNull: true },

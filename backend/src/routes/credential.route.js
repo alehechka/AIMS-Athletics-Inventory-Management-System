@@ -26,7 +26,14 @@ credentialRouter.get("/current", auth, async (req, res, next) => {
       where: {
         id: req.user.id
       },
-      attributes: ["email", "username", "isAdmin", "isEmployee", "isAthlete", "isCoach"],
+      attributes: [
+        "email",
+        "username",
+        "isAdmin",
+        "isEmployee",
+        "isAthlete",
+        "isCoach"
+      ]
     });
     res.json(credential);
   } catch (err) {
@@ -35,7 +42,7 @@ credentialRouter.get("/current", auth, async (req, res, next) => {
   }
 });
 
-//POST /api/v#/credentials
+//POST /api/v#/credentials/signup
 //Create new user
 credentialRouter.post("/signup", async (req, res, next) => {
   const credential = req.body;
@@ -56,7 +63,15 @@ credentialRouter.post("/signup", async (req, res, next) => {
       },
       PRIVATE_KEY,
       { expiresIn: "30d" }
-    ); //get the private key from the config file -> environment variable
+    );
+    res.set({
+      "Set-Cookie":
+        "x-access-token=" +
+        token +
+        "; Expires=" +
+        addDays(new Date(), 30) +
+        "; Domain=localhost"
+    });
     res.json({
       email: createdCred.email,
       username: createdCred.username,
@@ -72,7 +87,7 @@ credentialRouter.post("/signup", async (req, res, next) => {
   }
 });
 
-//POST /api/v#/credentials
+//POST /api/v#/credentials/login
 //Create new user
 credentialRouter.post("/login", async (req, res, next) => {
   const credential = req.body;
@@ -80,7 +95,11 @@ credentialRouter.post("/login", async (req, res, next) => {
     let foundCred = await Credential.findOne({
       where: Sequelize.or(
         { email: credential.email },
-        { username: credential.email.split("@")[0] }
+        {
+          username: credential.username
+            ? credential.username
+            : credential.email.split("@")[0]
+        }
       )
     });
     if (foundCred) {
@@ -120,12 +139,54 @@ credentialRouter.post("/login", async (req, res, next) => {
               token
             });
           } else {
-            next(new Error("Credentials not valid"));
+            res.status(401).json({ message: "Credentials not valid" });
           }
         }
       );
     } else {
-      next(new Error("Credentials not valid"));
+      res.status(401).json({ message: "Credentials not found" });
+    }
+  } catch (err) {
+    next(err);
+  }
+});
+
+//PUT /api/v#/credentials/change_password
+//Create new user
+/************** DO NOT USE *****************/
+/****** Passwords gets changed but you are unable to login afterwards, need to research what's happening ******/
+credentialRouter.put("/change_password", auth, async (req, res, next) => {
+  const credential = req.body;
+  try {
+    let foundCred = await Credential.findOne({
+      where: {
+        id: req.user.id
+      }
+    });
+    if (foundCred) {
+      await bcrypt.compare(
+        credential.password,
+        foundCred.password,
+        async (err, result) => {
+          if (result) {
+            if (credential.password !== credential.newPassword) {
+              foundCred.password = credential.newPassword;
+              await foundCred.save();
+              res.json({
+                message: "Password successfully changed."
+              });
+            } else {
+              res
+                .status(401)
+                .json({ message: "Password cannot match previous password." });
+            }
+          } else {
+            res.status(401).json({ message: "Credentials not valid" });
+          }
+        }
+      );
+    } else {
+      res.status(401).json({ message: "Credentials not found" });
     }
   } catch (err) {
     next(err);
