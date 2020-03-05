@@ -1,6 +1,6 @@
 # Athletics Inventory Management System
 
-The goal of the AIMS (Athletics Inventory Management System) project is to develop a more sustainable solution UNO Athletics. The application itself will be a React / Node web app which will allow for coaches and staff members to maintain an active inventory of equipment. 
+The goal of the AIMS (Athletics Inventory Management System) project is to develop a more sustainable solution for UNO Athletics. The application itself will be a React / Node web app which will allow for coaches and staff members to maintain an active inventory of equipment. 
 
 Below are the main features this application will support:
 
@@ -20,6 +20,14 @@ Below are the main features this application will support:
 ## Install
 
 Requires Node: https://nodejs.org/en/download/
+
+**One and Done**
+
+For simplification a script has been created which will run both the frontend and backend:
+
+In head directory, run *startApp.bat*
+
+If you wish to run them seperately follow the instructions below: 
 
 **Frontend**
 
@@ -41,6 +49,3 @@ Visit http://localhost:3000 in browser.
 
 Visit http://localhost:5000 to get started.
 
-**One and Done**
-
-In head directory, run *startApp.bat*
