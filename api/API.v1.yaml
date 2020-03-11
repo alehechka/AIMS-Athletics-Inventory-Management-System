@@ -11,8 +11,9 @@ servers:
 paths:
   /users:
     get:
-      summary: Your GET endpoint
-      tags: []
+      summary: Retrieve Users
+      tags:
+        - users
       responses:
         '200':
           description: OK
@@ -26,16 +27,68 @@ paths:
                   properties:
                     id:
                       type: integer
+                  required:
+                    - id
       operationId: get-users
       description: By default will get all users that current user has access to. Can also be filtered and limited.
       parameters:
         - schema:
             type: string
           in: header
+          name: x-access-token
+          description: JWT provided by server
+          required: true
+    post:
+      summary: Create User
+      operationId: post-users
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  firstName:
+                    type: string
+                required:
+                  - firstName
+      description: Creates a new user profile
+      parameters:
         - schema:
             type: string
           in: header
           name: x-access-token
           description: JWT provided by server
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+              required:
+                - firstName
+      tags:
+        - users
 components:
-  schemas: {}
+  schemas:
+    User:
+      title: User
+      type: object
+      properties:
+        id:
+          type: integer
+        firstName:
+          type: string
+        lastName:
+          type: string
+      required:
+        - id
+        - firstName
+        - lastName
+      description: Contains the basic contents of a user profile.
+      x-tags:
+        - users
