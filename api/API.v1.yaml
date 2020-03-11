@@ -1,0 +1,41 @@
+openapi: 3.0.0
+info:
+  title: API
+  version: '1.0'
+  description: 'This API represents all of the endpoints that are available for use within the AIMS system. '
+  contact:
+    name: Adam
+servers:
+  - url: 'http://localhost:3000'
+    description: localhost
+paths:
+  /users:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          headers: {}
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+      operationId: get-users
+      description: By default will get all users that current user has access to. Can also be filtered and limited.
+      parameters:
+        - schema:
+            type: string
+          in: header
+        - schema:
+            type: string
+          in: header
+          name: x-access-token
+          description: JWT provided by server
+components:
+  schemas: {}
