@@ -12,11 +12,8 @@ import {
   Redirect,
 } from "react-router-dom";
 
-import axios from 'axios';
 import Cookies from 'js-cookie';
-
-//API URL.
-const apiUrl = "http://localhost:5000/api/v1";
+import { getCredentials } from './api';
 
 /**
  * This main component mainly does the authentication and routing.
@@ -75,7 +72,7 @@ class App extends React.Component {
     if (creds.isAdmin){
       role = "admin";
     }
-    if (creds.isEmployee){
+    else if (creds.isEmployee){
       role = "employee";
     }
     else if(creds.isCoach){
@@ -98,12 +95,7 @@ class App extends React.Component {
    */
   componentDidMount() {
     const auth = Cookies.get('authorization');    
-    //custom config for axios request.
-    const config ={
-      headers:{
-        authorization: auth,
-      }
-    };
+
     //if cookie exists validate jwt stored in cookie. 
     if (auth) {
       //assume jwt is valid
@@ -119,12 +111,12 @@ class App extends React.Component {
         this.setRole(creds);
       }
       else {
-        axios.get(`${apiUrl}/credentials/current`,config
-        ).then(res => {
+        getCredentials()
+        .then(res => {
           sessionStorage.setItem('creds', JSON.stringify(res.data));
-          const newState = Object.assign({authorized: true, authorization: auth}, res.data);
+          const newState = Object.assign({authorized: true, authorization: auth}, res);
           this.setState(Object.assign(this.state, newState));
-          this.setRole(res.data);
+          this.setRole(res);
         }).catch(err =>{
           this.setState(Object.assign(this.state, {authorized: false}));
         });

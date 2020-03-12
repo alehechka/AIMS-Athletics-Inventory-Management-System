@@ -12,11 +12,7 @@ const credentialRouter = express.Router();
 require("mandatoryenv").load(["PRIVATE_KEY"]);
 const { PRIVATE_KEY } = process.env;
 
-function addDays(date, days) {
-  const copy = new Date(Number(date));
-  copy.setDate(date.getDate() + days);
-  return copy;
-}
+const thirtyDays = 1000 * 60 * 60 * 24 * 30;
 
 //POST /api/v#/credentials/current
 //Get current user from token, use to validate JWT
@@ -64,13 +60,9 @@ credentialRouter.post("/signup", async (req, res, next) => {
       PRIVATE_KEY,
       { expiresIn: "30d" }
     );
-    res.set({
-      "Set-Cookie":
-        "x-access-token=" +
-        token +
-        "; Expires=" +
-        addDays(new Date(), 30) +
-        "; Domain=localhost"
+    res.cookie("authorization", token, {
+      expires: new Date(Date.now() + thirtyDays),
+      httpOnly: false
     });
     res.json({
       email: createdCred.email,
@@ -121,13 +113,9 @@ credentialRouter.post("/login", async (req, res, next) => {
                 expiresIn: "30d"
               }
             );
-            res.set({
-              "Set-Cookie":
-                "x-access-token=" +
-                token +
-                "; Expires=" +
-                addDays(new Date(), 30) +
-                "; Domain=localhost"
+            res.cookie("authorization", token, {
+              expires: credential.remember ? new Date(Date.now() + thirtyDays) : 0,
+              httpOnly: false
             });
             res.json({
               email: foundCred.email,

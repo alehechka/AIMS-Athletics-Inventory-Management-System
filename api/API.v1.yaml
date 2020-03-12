@@ -6,8 +6,8 @@ info:
   contact:
     name: Adam
 servers:
-  - url: 'http://localhost:3000'
-    description: localhost
+  - description: localhost
+    url: 'http://localhost:5000/api/v1'
 paths:
   /users:
     get:

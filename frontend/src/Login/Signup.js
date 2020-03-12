@@ -8,11 +8,8 @@ import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import { withSnackbar } from 'notistack';
+import { signup } from '../api';
 
-import axios from 'axios';
-import Cookies from 'js-cookie';
-
-const apiUrl = "http://localhost:5000/api/v1";
 /**
  * This Component contains the sign up page along with sign up logic.
  * 
@@ -111,14 +108,10 @@ class Signup extends React.Component {
     const formValid =  this.state.usernameValid && this.state.emailValid && this.state.password1Valid && this.state.password2Valid;
     if(formValid) {
       //TODO logic
-      await axios.post(`${apiUrl}/credentials/signup`,
-            { email,username, password},
-        ).then(res => {
-            this.setState(Object.assign(this.state, {credentials: res.data}));
-            const jwtoken = res.data.token;
-            
+      await signup(email, username, password)
+      .then(res => {
+            this.setState(Object.assign(this.state, {credentials: res}));
             this.props.showMessage(`You have successfully signed up ${email}, Redirecting...!`);
-            Cookies.set("authorization", jwtoken, { expires: 30 });
             setTimeout(()=>(window.location.href ='/?email=' + email), 3000);
         }).catch(error=>{
           this.props.showMessage(`An account holder already exists for this information. Redirecting to login...!`, "error");

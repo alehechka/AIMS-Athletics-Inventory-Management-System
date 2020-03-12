@@ -49,3 +49,7 @@ Visit http://localhost:3000 in browser.
 
 Visit http://localhost:5000 to get started.
 
+## API Documentation
+
+To view documention of all available backend API endpoints visit: https://stoplight.io/p/docs/gh/alehechka/aims-athletics-inventory-management-system 
+

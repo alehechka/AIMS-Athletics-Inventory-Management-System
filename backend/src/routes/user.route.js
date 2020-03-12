@@ -1,14 +1,13 @@
 "use strict";
 
 const express = require("express");
-const auth = require("../middleware/auth");
 const { User, PlayerSport, Sport, PlayerSize } = require("../models/database");
 //const users = require('../models/database');
 const userRouter = express.Router();
 
 //POST /api/v#/users
 //Create new user
-userRouter.post("/", auth, async (req, res, next) => {
+userRouter.post("/", async (req, res, next) => {
   const user = req.body;
   try {
     let createdUser = await User.create({
@@ -97,7 +96,7 @@ userRouter.get("/byUserId/:id", async (req, res) => {
 
 //GET /api/v#/users/current
 //Retrieves the currently logged in user
-userRouter.get("/current", auth, async (req, res, next) => {
+userRouter.get("/current", async (req, res, next) => {
   try {
     let user = await User.findOne({
       where: {
@@ -116,7 +115,7 @@ userRouter.get("/current", auth, async (req, res, next) => {
 
 //PUT /api/v#/users/current
 //Updates the currently logged in user
-userRouter.put("/current", auth, async (req, res, next) => {
+userRouter.put("/current", async (req, res, next) => {
   let putUser = req.body;
   try {
     let user = await User.findOne({
@@ -151,7 +150,7 @@ userRouter.put("/current", auth, async (req, res, next) => {
 
 //PUT /api/v#/users/byScholId/:id
 //Updates the selected user (only by admin or employee)
-userRouter.put("/byUserId/:id", auth, async (req, res, next) => {
+userRouter.put("/byUserId/:id", async (req, res, next) => {
   if (!req.user.isAdmin && !req.user.isEmployee) {
     res.status(401).json("Unauthorized to perform this action.");
   }

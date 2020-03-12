@@ -7,6 +7,7 @@ const helmet = require("helmet");
 const userRouter = require("./routes/user.route");
 const sportRouter = require("./routes/sport.route");
 const credentialRouter = require("./routes/credential.route");
+const auth = require("./middleware/auth");
 
 // Load .env Enviroment Variables to process.env
 
@@ -20,7 +21,7 @@ const { PORT, API_VER } = process.env;
 const app = express();
 
 // Configure Express App Instance
-var whitelist = ['http://localhost:3000']
+var whitelist = ['http://localhost:3000', 'https://stoplight.io']
 var corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1 || !origin) {
@@ -51,9 +52,11 @@ app.get('/', (req, res) => {
 
 // Assign Routes
 const baseRoute = `/api/v${API_VER}/`;
+app.use(baseRoute + 'credentials', credentialRouter);
+app.use(auth);
 app.use(baseRoute + 'users', userRouter);
 app.use(baseRoute + 'sports', sportRouter);
-app.use(baseRoute + 'credentials', credentialRouter);
+
 
 // This middleware adds the json header to every response
 app.use('*', (req, res, next) => {

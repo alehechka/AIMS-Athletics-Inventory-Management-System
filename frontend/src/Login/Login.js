@@ -10,11 +10,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import { withSnackbar } from 'notistack';
-
-import axios from 'axios';
-import Cookies from 'js-cookie';
-
-const apiUrl = "http://localhost:5000/api/v1";
+import { login } from "../api";
 /**
  * This Component contains the login page along with user authorization logic.
  * 
@@ -87,19 +83,12 @@ class Login extends React.Component {
     const password = this.state.password;
     const remember = this.state.remember;
 
-    await axios.post(`${apiUrl}/credentials/login`,
-        { email, password},
-    ).then(res => {
-        this.setState(Object.assign(this.state, {credentials: res.data}));
-        const jwtoken = res.data.token;
-        
-        //Cookie stored for 30 days if checkbox checked else cookie only stored for session
-        if (remember) {
-            Cookies.set("authorization", jwtoken, { expires: 30 });
-        }
-        else {
-            Cookies.set("authorization", jwtoken);
-        }
+    // await axios.post(`${apiUrl}/credentials/login`,
+    //     { email, password},
+    await login(email, password, remember)
+    .then(res => {
+      console.log(res)
+        this.setState(Object.assign(this.state, {credentials: res}));
         this.props.showMessage("Logging in...");
 
         //redirect to homepage
@@ -136,7 +125,7 @@ class Login extends React.Component {
               required
               fullWidth
               id="email"
-              label="Email Address"
+              label="Email/Username"
               name="email"
               autoComplete="email"
               value = {this.state.email}
