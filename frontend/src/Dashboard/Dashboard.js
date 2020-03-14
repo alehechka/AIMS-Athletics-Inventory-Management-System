@@ -1,7 +1,6 @@
 import React from 'react';
 import { withSnackbar } from 'notistack';
 import Navbar from './Navbar';
-import Cookies from 'js-cookie';
 import Athletes from './Views/Athletes';
 import Home from './Views/Home';
 import Inventory from './Views/Inventory';
@@ -14,6 +13,7 @@ import {
     Route,
     withRouter,
   } from "react-router-dom";
+import { logout } from '../api';
 /**
  * This component contains the UI logic for Dashboard. Redirects based on view selected.
  * 
@@ -21,7 +21,6 @@ import {
  * None
  * 
  * Prop variables passed down from App.js:
- * authorization - string- contains the JWT value.
  * email - string- email address of the authorized user.
  * username - string - username of the authorized user.
  * role - string - role of the authorized user. 
@@ -42,18 +41,12 @@ class Dashboard extends React.Component {
     /**
      * Deletes auth cookie and refreshes page
      */
-    logOutUser =() => {
-        Cookies.remove('authorization');
-        sessionStorage.removeItem('creds');
-        window.location.href = '/';
-    }
     render() {
         const { path, url } = this.props.match;
         console.log(url);
 
         const email = this.props.email;
         const username = this.props.username;
-        const authorization = this.props.authorization;
         const role = this.props.role;
         const permissions = {
             "admin": ["Home", "Athletes", "Inventory", "Staff", "Profile"],
@@ -75,7 +68,7 @@ class Dashboard extends React.Component {
                     allowedViews = {allowedViews}
                     noOfItemsCheckedOut = {2}
                     openProfile = {this.openProfile}
-                    logOutUser = {this.logOutUser}
+                    logOutUser = {logout}
                 />
                 <div style ={{marginLeft: "70px"}}>
                     <div style ={{marginTop: "80px"}}/>
@@ -84,7 +77,6 @@ class Dashboard extends React.Component {
                             <Route path={`/profile`}>
                                 <Profile
                                     showMessage ={this.props.showMessage} 
-                                    authorization = {authorization}
                                     email = {email}
                                     username = {username}
                                     role = {role}
@@ -94,7 +86,6 @@ class Dashboard extends React.Component {
                                 {allowedViews.includes('Athletes')?
                                     <Athletes
                                         showMessage ={this.props.showMessage} 
-                                        authorization = {authorization}
                                         email = {email}
                                         username = {username}
                                         role = {role}
@@ -104,7 +95,6 @@ class Dashboard extends React.Component {
                                 {allowedViews.includes('Inventory')?
                                     <Inventory
                                         showMessage ={this.props.showMessage} 
-                                        authorization = {authorization}
                                         email = {email}
                                         username = {username}
                                         role = {role}
@@ -114,7 +104,6 @@ class Dashboard extends React.Component {
                                 {allowedViews.includes('Staff')?
                                     <Staff
                                         showMessage ={this.props.showMessage} 
-                                        authorization = {authorization}
                                         email = {email}
                                         username = {username}
                                         role = {role}
@@ -123,7 +112,6 @@ class Dashboard extends React.Component {
                             <Route path={`/home`}>
                                 <Home
                                     showMessage ={this.props.showMessage} 
-                                    authorization = {authorization}
                                     email = {email}
                                     username = {username}
                                     role = {role}
@@ -132,7 +120,6 @@ class Dashboard extends React.Component {
                             <Route exact path={path}>
                                 <Home
                                     showMessage ={this.props.showMessage} 
-                                    authorization = {authorization}
                                     email = {email}
                                     username = {username}
                                     role = {role}

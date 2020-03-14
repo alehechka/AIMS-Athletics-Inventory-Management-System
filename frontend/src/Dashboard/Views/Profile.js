@@ -18,7 +18,6 @@ import TableRow from '@material-ui/core/TableRow';
  * None
  * 
  * Prop variables passed down from App.js(through dashboard):
- * authorization - string- contains the JWT value.
  * email - string- email address of the authorized user.
  * username - string - username of the authorized user.
  * role - string - role of the authorized user. 

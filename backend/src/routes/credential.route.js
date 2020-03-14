@@ -14,7 +14,7 @@ const { PRIVATE_KEY } = process.env;
 
 const thirtyDays = 1000 * 60 * 60 * 24 * 30;
 
-//POST /api/v#/credentials/current
+//GET /api/v#/credentials/current
 //Get current user from token, use to validate JWT
 credentialRouter.get("/current", auth, async (req, res, next) => {
   try {
@@ -31,7 +31,15 @@ credentialRouter.get("/current", auth, async (req, res, next) => {
         "isCoach"
       ]
     });
-    res.json(credential);
+    res.cookie("credentials", JSON.stringify({
+      email: credential.email,
+      username: credential.username,
+      isAdmin: credential.isAdmin,
+      isEmployee: credential.isEmployee,
+      isAthlete: credential.isAthlete,
+      isCoach: credential.isCoach
+  }));
+    res.json();
   } catch (err) {
     //Add error handling for duplicate students and other SQL issues
     next(err);
@@ -62,8 +70,16 @@ credentialRouter.post("/signup", async (req, res, next) => {
     );
     res.cookie("authorization", token, {
       expires: new Date(Date.now() + thirtyDays),
-      httpOnly: false
+      httpOnly: true
     });
+    res.cookie("credentials", JSON.stringify({
+      email: createdCred.email,
+      username: createdCred.username,
+      isAdmin: createdCred.isAdmin,
+      isEmployee: createdCred.isEmployee,
+      isAthlete: createdCred.isAthlete,
+      isCoach: createdCred.isCoach
+    }));
     res.json({
       email: createdCred.email,
       username: createdCred.username,
@@ -114,18 +130,20 @@ credentialRouter.post("/login", async (req, res, next) => {
               }
             );
             res.cookie("authorization", token, {
-              expires: credential.remember ? new Date(Date.now() + thirtyDays) : 0,
-              httpOnly: false
+              expires: credential.remember
+                ? new Date(Date.now() + thirtyDays)
+                : 0,
+              httpOnly: true
             });
-            res.json({
+            res.cookie("credentials", JSON.stringify({
               email: foundCred.email,
               username: foundCred.username,
               isAdmin: foundCred.isAdmin,
               isEmployee: foundCred.isEmployee,
               isAthlete: foundCred.isAthlete,
-              isCoach: foundCred.isCoach,
-              token
-            });
+              isCoach: foundCred.isCoach
+            }));
+            res.json();
           } else {
             res.status(401).json({ message: "Credentials not valid" });
           }
@@ -137,6 +155,14 @@ credentialRouter.post("/login", async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+});
+
+//GET /api/v#/credentials/logout
+//Returns a null authorization cookie
+credentialRouter.get("/logout", auth, async (req, res, next) => {
+    res.cookie("authorization", null, { expires: new Date() });
+    res.cookie("credentials", null, { expires: new Date() });
+    res.json();
 });
 
 //PUT /api/v#/credentials/change_password

@@ -35,4 +35,12 @@ async function getCredentials() {
     });
 }
 
-export { login, signup, getCredentials };
+async function logout() {
+  await axios
+    .get(`${apiUrl}/credentials/logout`, { withCredentials: true })
+    .then(res => {
+      window.location.href = "/";
+    });
+}
+
+export { login, logout, signup, getCredentials };
