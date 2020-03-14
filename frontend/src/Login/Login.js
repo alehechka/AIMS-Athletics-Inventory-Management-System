@@ -10,7 +10,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import { withSnackbar } from 'notistack';
-import { login } from "../api";
+import { login } from "../api/credentials";
 /**
  * This Component contains the login page along with user authorization logic.
  * 

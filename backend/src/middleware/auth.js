@@ -1,8 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-require('mandatoryenv').load([
-  'PRIVATE_KEY'
-]);
+require("mandatoryenv").load(["PRIVATE_KEY"]);
 const { PRIVATE_KEY } = process.env;
 
 module.exports = function(req, res, next) {
@@ -18,6 +16,9 @@ module.exports = function(req, res, next) {
     next();
   } catch (ex) {
     //if invalid token
-    res.status(400).send("Invalid token.");
+    res
+      .status(400)
+      .cookie("authorization", null, { expires: new Date() })
+      .send("Invalid token.");
   }
 };

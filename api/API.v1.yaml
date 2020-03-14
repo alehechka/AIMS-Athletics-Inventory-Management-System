@@ -73,6 +73,74 @@ paths:
                 - firstName
       tags:
         - users
+  /credentials/current:
+    get:
+      summary: Retrieve current user credentials
+      tags:
+        - credentials
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    type: string
+                  username:
+                    type: string
+                  isAdmin:
+                    type: boolean
+                  isEmployee:
+                    type: boolean
+                  isCoach:
+                    type: boolean
+                  isAthlete:
+                    type: boolean
+                required:
+                  - email
+                  - username
+                  - isAdmin
+                  - isEmployee
+                  - isCoach
+                  - isAthlete
+              examples:
+                success:
+                  value:
+                    email: test@test.com
+                    username: test
+                    isAdmin: true
+                    isEmployee: true
+                    isCoach: true
+                    isAthlete: true
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: string
+              examples:
+                bad token:
+                  value: Invalid token.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+              examples:
+                no token:
+                  value: Access denied. No token provided.
+      operationId: get-credentials
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: authorization
+          description: Saved as HttpOnly cookie from server
+          required: true
+    parameters: []
 components:
   schemas:
     User:

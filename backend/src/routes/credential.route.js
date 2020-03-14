@@ -1,7 +1,7 @@
 "use strict";
 
 const express = require("express");
-const { Credential } = require("../models/database");
+const { Credential, Organization, User } = require("../models/database");
 const auth = require("../middleware/auth");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
@@ -29,17 +29,10 @@ credentialRouter.get("/current", auth, async (req, res, next) => {
         "isEmployee",
         "isAthlete",
         "isCoach"
-      ]
+      ],
+      include: { model: Organization }
     });
-    res.cookie("credentials", JSON.stringify({
-      email: credential.email,
-      username: credential.username,
-      isAdmin: credential.isAdmin,
-      isEmployee: credential.isEmployee,
-      isAthlete: credential.isAthlete,
-      isCoach: credential.isCoach
-  }));
-    res.json();
+    res.json(credential);
   } catch (err) {
     //Add error handling for duplicate students and other SQL issues
     next(err);
@@ -47,19 +40,26 @@ credentialRouter.get("/current", auth, async (req, res, next) => {
 });
 
 //POST /api/v#/credentials/signup
-//Create new user
+//Create new user with empty user profile
 credentialRouter.post("/signup", async (req, res, next) => {
   const credential = req.body;
   try {
     let createdCred = await Credential.create({
       email: credential.email,
       username: credential.username,
-      password: credential.password
+      password: credential.password,
+      organizationId: 1
     });
+
+    await User.create({
+      credentialId: createdCred.id,
+      organizationId: createdCred.organizationId
+    })
 
     const token = await jwt.sign(
       {
         id: createdCred.id,
+        organizationId: createdCred.organizationId,
         isAdmin: createdCred.isAdmin,
         isEmployee: createdCred.isEmployee,
         isAthlete: createdCred.isAthlete,
@@ -68,29 +68,14 @@ credentialRouter.post("/signup", async (req, res, next) => {
       PRIVATE_KEY,
       { expiresIn: "30d" }
     );
-    res.cookie("authorization", token, {
-      expires: new Date(Date.now() + thirtyDays),
-      httpOnly: true
-    });
-    res.cookie("credentials", JSON.stringify({
-      email: createdCred.email,
-      username: createdCred.username,
-      isAdmin: createdCred.isAdmin,
-      isEmployee: createdCred.isEmployee,
-      isAthlete: createdCred.isAthlete,
-      isCoach: createdCred.isCoach
-    }));
-    res.json({
-      email: createdCred.email,
-      username: createdCred.username,
-      isAdmin: createdCred.isAdmin,
-      isEmployee: createdCred.isEmployee,
-      isAthlete: createdCred.isAthlete,
-      isCoach: createdCred.isCoach,
-      token
-    });
+    res
+      .status(201)
+      .cookie("authorization", token, {
+        expires: credential.remember ? new Date(Date.now() + thirtyDays) : 0,
+        httpOnly: true
+      })
+      .send("Signup successful.");
   } catch (err) {
-    //Add error handling for duplicate students and other SQL issues
     next(err);
   }
 });
@@ -119,6 +104,7 @@ credentialRouter.post("/login", async (req, res, next) => {
             let token = jwt.sign(
               {
                 id: foundCred.id,
+                organizationId: foundCred.organizationId,
                 isAdmin: foundCred.isAdmin,
                 isEmployee: foundCred.isEmployee,
                 isAthlete: foundCred.isAthlete,
@@ -129,28 +115,21 @@ credentialRouter.post("/login", async (req, res, next) => {
                 expiresIn: "30d"
               }
             );
-            res.cookie("authorization", token, {
-              expires: credential.remember
-                ? new Date(Date.now() + thirtyDays)
-                : 0,
-              httpOnly: true
-            });
-            res.cookie("credentials", JSON.stringify({
-              email: foundCred.email,
-              username: foundCred.username,
-              isAdmin: foundCred.isAdmin,
-              isEmployee: foundCred.isEmployee,
-              isAthlete: foundCred.isAthlete,
-              isCoach: foundCred.isCoach
-            }));
-            res.json();
+            res
+              .cookie("authorization", token, {
+                expires: credential.remember
+                  ? new Date(Date.now() + thirtyDays)
+                  : 0,
+                httpOnly: true
+              })
+              .send("Login successul.");
           } else {
-            res.status(401).json({ message: "Credentials not valid" });
+            res.status(401).send("Credentials not valid");
           }
         }
       );
     } else {
-      res.status(401).json({ message: "Credentials not found" });
+      res.status(401).send("Credentials not found");
     }
   } catch (err) {
     next(err);
@@ -160,9 +139,9 @@ credentialRouter.post("/login", async (req, res, next) => {
 //GET /api/v#/credentials/logout
 //Returns a null authorization cookie
 credentialRouter.get("/logout", auth, async (req, res, next) => {
-    res.cookie("authorization", null, { expires: new Date() });
-    res.cookie("credentials", null, { expires: new Date() });
-    res.json();
+  res
+    .cookie("authorization", null, { expires: new Date() })
+    .send("User has been logged out.");
 });
 
 //PUT /api/v#/credentials/change_password
@@ -186,21 +165,17 @@ credentialRouter.put("/change_password", auth, async (req, res, next) => {
             if (credential.password !== credential.newPassword) {
               foundCred.password = credential.newPassword;
               await foundCred.save();
-              res.json({
-                message: "Password successfully changed."
-              });
+              res.status(202).send("Password successfully changed.");
             } else {
-              res
-                .status(401)
-                .json({ message: "Password cannot match previous password." });
+              res.status(400).send("Password cannot match previous password.");
             }
           } else {
-            res.status(401).json({ message: "Credentials not valid" });
+            res.status(401).send("Credentials not valid");
           }
         }
       );
     } else {
-      res.status(401).json({ message: "Credentials not found" });
+      res.status(401).send("Credentials not found");
     }
   } catch (err) {
     next(err);

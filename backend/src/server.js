@@ -7,6 +7,7 @@ const helmet = require("helmet");
 const userRouter = require("./routes/user.route");
 const sportRouter = require("./routes/sport.route");
 const credentialRouter = require("./routes/credential.route");
+const url = require('url');
 const auth = require("./middleware/auth");
 
 // Load .env Enviroment Variables to process.env
@@ -41,7 +42,10 @@ app.use(express.urlencoded( { extended: true, limit: '10mb' } ));
 app.use(morgan('dev'));
 app.use(cookieParser());
 app.use(helmet());
-
+app.use((req, res, next) => {
+  req.query = url.parse(req.url, true).query;
+  next();
+})
 
 // Setup a friendly greeting for the root route.
 app.get('/', (req, res) => {

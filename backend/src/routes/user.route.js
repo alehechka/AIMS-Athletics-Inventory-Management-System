@@ -1,15 +1,31 @@
 "use strict";
 
 const express = require("express");
-const { User, PlayerSport, Sport, PlayerSize } = require("../models/database");
+const Sequelize = require("sequelize");
+const {
+  User,
+  PlayerSport,
+  Sport,
+  PlayerSize,
+  Credential
+} = require("../models/database");
 //const users = require('../models/database');
 const userRouter = express.Router();
 
 //POST /api/v#/users
-//Create new user
+//Allows an admin to create a new user profile with temporary login credentials
 userRouter.post("/", async (req, res, next) => {
+  if (!req.user.isAdmin) {
+    res.status(401).json("Unauthorized to perform this action.");
+  }
   const user = req.body;
   try {
+    let createdCred = await Credential.create({
+      email: user.email,
+      username: user.username,
+      password: user.password ? user.password : "password123",
+      organizationId: req.user.organizationId
+    });
     let createdUser = await User.create({
       schoolId: user.schoolId,
       firstName: user.firstname,
@@ -22,21 +38,10 @@ userRouter.post("/", async (req, res, next) => {
       gender: user.gender,
       height: user.height,
       weight: user.weight,
-      credentialId: req.user.id
+      credentialId: createdCred.id,
+      organizationId: req.user.organizationId
     });
-    const newUser = await User.findOne({
-      where: {
-        id: createdUser.id
-      },
-      include: [
-        {
-          model: PlayerSport,
-          attributes: ["id"],
-          include: [{ model: Sport, attributes: ["name"] }]
-        }
-      ]
-    });
-    res.json(newUser);
+    res.json(createdUser);
   } catch (err) {
     next(err);
   }
@@ -44,53 +49,49 @@ userRouter.post("/", async (req, res, next) => {
 
 //GET /api/v#/users
 //Retrieve all users
-userRouter.get("/", async (req, res) => {
-  if (!req.user.isAdmin && !req.user.isEmployee && !req.user.isCoach) {
-    res.status(401).json("Unauthorized to perform this action.");
-  }
-  try {
-    if(req.user.isCoach && !req.user.isAdmin && !req.user.isAdmin) {
-        let coachSports = await PlayerSport.findAll({
-            where: {
-                userId: req.user.id
-            },
-            attributes: ["sportId"]
-        })
-    }
-    let allUsers = await User.findAll({
-      include: [
-        {
-          model: PlayerSport,
-          attributes: ["id"],
-          include: [{ model: Sport, attributes: ["name", "gender"] }]
-        }
-      ]
-    });
-    res.json(allUsers);
-  } catch (err) {
-    next(err);
-  }
-});
+//URL Query Params: page, limit, id
+userRouter.get("/", async (req, res, next) => {
+  if (!(req.user.isAdmin || req.user.isEmployee || req.user.isCoach)) {
+    res.status(401).send("Unauthorized to perform this action.");
+  } else {
+    try {
+      let coachSports = [];
+      const offset = req.query["page"] * req.query["limit"] || 0;
+      const limit = req.query["limit"] || 200;
+      let isCoach =
+        req.user.isCoach && !req.user.isAdmin && !req.user.isEmployee;
+      if (isCoach) {
+        coachSports = await PlayerSport.findAll({
+          offset,
+          limit,
+          where: {
+            userId: req.user.id
+          },
+          attributes: ["sportId"]
+        }).map(sport => {
+          return sport.sportId;
+        });
+      }
 
-//GET /api/v#/users/:id
-//Retrieves single user
-userRouter.get("/byUserId/:id", async (req, res) => {
-  if (!req.user.isAdmin && !req.user.isEmployee && !req.user.isCoach) {
-    res.status(401).json("Unauthorized to perform this action.");
-  }
-  try {
-    let user = await User.findOne({
-      where: {
-        id: req.params.id
-      },
-      include: [
-        { model: PlayerSport, attributes: ["id"], include: [Sport] },
-        { model: PlayerSize }
-      ]
-    });
-    res.json(user);
-  } catch (err) {
-    next(err);
+      let allUsers = await User.findAll({
+        where: req.query.id ? { id: req.query.id } : null,
+        include: [
+          {
+            model: Sport,
+            attributes: ["id", "name", "gender"],
+            through: { attributes: [] },
+            where: isCoach ? Sequelize.or({ id: coachSports }) : null
+          },
+          {
+            model: PlayerSize,
+            attributes: ["id", "name", "size"]
+          }
+        ]
+      });
+      res.json(req.query.id ? allUsers[0] : allUsers);
+    } catch (err) {
+      next(err);
+    }
   }
 });
 
@@ -103,7 +104,11 @@ userRouter.get("/current", async (req, res, next) => {
         credentialId: req.user.id
       },
       include: [
-        { model: PlayerSport, attributes: ["id"], include: [Sport] },
+        {
+          model: Sport,
+          attributes: ["id", "name", "gender"],
+          through: { attributes: [] }
+        },
         { model: PlayerSize }
       ]
     });
@@ -148,38 +153,42 @@ userRouter.put("/current", async (req, res, next) => {
   }
 });
 
-//PUT /api/v#/users/byScholId/:id
+//PUT /api/v#/users
 //Updates the selected user (only by admin or employee)
-userRouter.put("/byUserId/:id", async (req, res, next) => {
-  if (!req.user.isAdmin && !req.user.isEmployee) {
-    res.status(401).json("Unauthorized to perform this action.");
-  }
-  let putUser = req.body;
-  try {
-    let user = await User.findOne({
-      where: {
-        id: req.params.id
+//Required URL Query Param: userId
+userRouter.put("/", async (req, res, next) => {
+  if (!(req.user.isAdmin || req.user.isEmployee)) {
+    res.status(401).send("Unauthorized to perform this action.");
+  } else if (!req.query.id) {
+    res.status(400).send("No user ID provided.");
+  } else {
+    let putUser = req.body;
+    try {
+      let foundUser = await User.findOne({
+        where: {
+          id: req.query.id
+        }
+      });
+      if (req.user.isAdmin) {
+        user.schoolId = putUser.schoolId;
       }
-    });
-    if (req.user.isAdmin) {
-      user.schoolId = putUser.schoolId;
+      foundUser.lockerNumber = putUser.lockerNumber;
+      foundUser.lockerCode = putUser.lockerCode;
+      foundUser.firstName = putUser.firstname;
+      foundUser.lastName = putUser.lastName;
+      foundUser.address = putUser.address;
+      foundUser.city = putUser.city;
+      foundUser.state = putUser.state;
+      foundUser.zip = putUser.zip;
+      foundUser.phone = putUser.phone;
+      foundUser.gender = putUser.gender;
+      foundUser.height = putUser.height;
+      foundUser.weight = putUser.weight;
+      await foundUser.save();
+      res.json(foundUser);
+    } catch (err) {
+      next(err);
     }
-    user.lockerNumber = putUser.lockerNumber;
-    user.lockerCode = putUser.lockerCode;
-    user.firstName = putUser.firstname;
-    user.lastName = putUser.lastName;
-    user.address = putUser.address;
-    user.city = putUser.city;
-    user.state = putUser.state;
-    user.zip = putUser.zip;
-    user.phone = putUser.phone;
-    user.gender = putUser.gender;
-    user.height = putUser.height;
-    user.weight = putUser.weight;
-    await user.save();
-    res.json(user);
-  } catch (err) {
-    next(err);
   }
 });
 

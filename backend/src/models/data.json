@@ -5,16 +5,34 @@
       "academicYear": 1
     }
   ],
-  "credentials": [{ "email": "test@test.com", "password": "test" }],
+  "organizations": [
+    { "name": "University of Nebraska Omaha", "shortName": "UNO"}
+  ],
+  "credentials": [
+    { "email": "admin@admin.com", "password": "admin", "isAdmin": true },
+    { "email": "employee@employee.com", "password": "employee", "isEmployee": true },
+    { "email": "coach@coach.com", "password": "coach", "isCoach": true },
+    { "email": "athlete@athlete.com", "password": "athlete", "isAthlete": true }
+  ],
   "users": [
     {
-      "schoolId": 12345,
-      "firstName": "Test",
-      "lastName": "Tester",
+      "firstName": "Admin",
+      "lastName": "Administrator",
       "_comments": [
-        "Number of users has to match Number of credentials",
-        "School ID must be unique to each user"
+        "Number of users has to match Number of credentials"
       ]
+    },
+    {
+      "firstName": "Emp",
+      "lastName": "Employee"
+    },
+    {
+      "firstName": "Coach",
+      "lastName": "Smith"
+    },
+    {
+      "firstName": "Ath",
+      "lastName": "Athlete"
     }
   ],
   "sports": [
@@ -22,10 +40,18 @@
       "name": "Baseball",
       "gender": "M",
       "sizes": [{ "name": "T-Shirt", "values": ["XL", "L", "M", "S"] }],
-      "_comments": ["For generating, add at least one size with at least one value to all sports"]
+      "_comments": [
+        "For generating, add at least one size with at least one value to all sports"
+      ]
+    },
+    {
+      "name": "Volleyball",
+      "gender": "F",
+      "sizes": [{ "name": "Court Shoes", "values": ["8", "9", "10", "11"] }]
     }
   ],
-  "inventories": [{
+  "inventories": [
+    {
       "name": "T-Shirt",
       "description": "Black UNO T-Shirt",
       "size": "XL",
@@ -33,5 +59,6 @@
       "price": 20.99,
       "total": 20,
       "surplus": false
-  }]
+    }
+  ]
 }

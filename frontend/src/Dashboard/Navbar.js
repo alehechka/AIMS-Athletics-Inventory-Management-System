@@ -138,7 +138,7 @@ function Navbar(props) {
                     <MenuIcon />
                 </IconButton>
                 <Typography variant="h6" className={classes.title}>
-                    UNO Athletics Inventory Management System
+                    {props.organization.shortName ? props.organization.shortName : props.organization.name} AIMS
                 </Typography>
                 <div>
                 Welcome, {username}

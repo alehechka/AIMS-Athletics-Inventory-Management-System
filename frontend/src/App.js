@@ -12,15 +12,13 @@ import {
   Redirect
 } from "react-router-dom";
 
-import Cookies from "js-cookie";
-import { getCredentials } from "./api";
+import { getCredentials } from "./api/credentials";
 
 /**
  * This main component mainly does the authentication and routing.
  *
  * State variables:
  * authorized - bool - user authorization.
- * authorization - string- contains the JWT value.
  * email - string- email address of the authorized user.
  * username - string - username of the authorized user.
  * role - JSON - role of the authorized user.
@@ -89,39 +87,26 @@ class App extends React.Component {
   /**
    * Lifecycle method that is executed only once.
    *
-   * If credentials cookies still exists then will keep user logged in.
-   * 
-   * Else, an a 'current user' attempt will be made to check if authorization cookie is still valid, 
-   *      If so will add credentials cookie and login user
-   *      Else authorization fails will be redirected to login page.
-   * 
+   * Will hit backend to check if a current user is logged in (via authorization httpOnly cookie)
+   *
+   * If so, will set state to the returned credentials,
+   * else will be routed to login page.
+   *
    */
   componentDidMount() {
-    const creds = Cookies.getJSON("credentials");
-
-    //if cookie exists validate jwt stored in cookie.
-    if (creds) {
-      //assume jwt is valid
-      this.setState({
-        authorized: true,
-        email: creds.email,
-        username: creds.username
-      });
-      this.setRole(creds);
-    } else {
-      getCredentials()
-        .then(res => {
-          this.setState({
-            authorized: true,
-            email: res.email,
-            username: res.username
-          });
-          this.setRole(res);
-        })
-        .catch(err => {
-          this.setState({ authorized: false });
+    getCredentials()
+      .then(res => {
+        this.setState({
+          authorized: true,
+          email: res.email,
+          username: res.username,
+          organization: res.organization
         });
-    }
+        this.setRole(res);
+      })
+      .catch(err => {
+        this.setState({ authorized: false });
+      });
   }
   render() {
     const dashboardApp = (
@@ -130,6 +115,7 @@ class App extends React.Component {
         email={this.state.email}
         username={this.state.username}
         role={this.state.role}
+        organization={this.state.organization}
       />
     );
     const redir = (origin, end) => (
