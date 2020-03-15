@@ -54,7 +54,7 @@ credentialRouter.post("/signup", async (req, res, next) => {
     await User.create({
       credentialId: createdCred.id,
       organizationId: createdCred.organizationId
-    })
+    });
 
     const token = await jwt.sign(
       {
@@ -144,6 +144,108 @@ credentialRouter.get("/logout", auth, async (req, res, next) => {
     .send("User has been logged out.");
 });
 
+//PUT /api/v#/credentials/current
+//Updates the current user's email, username, and (roles if an admin)
+//Will update authorization cookie if need be.
+credentialRouter.put("/current", auth, async (req, res, next) => {
+  let putCred = req.body;
+  try {
+    let foundCred = await Credential.findOne({
+      where: {
+        id: req.user.id
+      }
+    });
+
+    foundCred.email = putCred["email"] || foundCred.email;
+    foundCred.username = putCred["username"] || foundCred.username;
+    if (req.user.isAdmin) {
+      //Cannot remove admin access from themselves
+      foundCred.isEmployee =
+        putCred.isEmployee === true || putCred.isEmployee === false
+          ? putCred.isEmployee
+          : foundCred.isEmployee;
+      foundCred.isCoach =
+        putCred.isCoach === true || putCred.isCoach === false
+          ? putCred.isCoach
+          : foundCred.isCoach;
+      foundCred.isAthlete =
+        putCred.isAthlete === true || putCred.isAthlete === false
+          ? putCred.isAthlete
+          : foundCred.isAthlete;
+
+      await foundCred.save();
+      let token = jwt.sign(
+        {
+          id: foundCred.id,
+          organizationId: foundCred.organizationId,
+          isAdmin: foundCred.isAdmin,
+          isEmployee: foundCred.isEmployee,
+          isAthlete: foundCred.isAthlete,
+          isCoach: foundCred.isCoach
+        },
+        PRIVATE_KEY,
+        {
+          expiresIn: "30d"
+        }
+      );
+      res.cookie("authorization", token, {
+        expires: 0,
+        httpOnly: true
+      });
+    }
+    res.send("Credential update successful");
+  } catch (err) {
+    next(err);
+  }
+});
+
+//PUT /api/v#/credentials
+//Allows admin to update the desired user's email, username, and roles
+credentialRouter.put("/", auth, async (req, res, next) => {
+  if (!req.user.isAdmin) {
+    res.status(401).send("Unauthorized to perform this action.");
+  } else if (!req.query.id) {
+    res.status(400).send("No user ID provided.");
+  } else {
+    let putCred = req.body;
+    try {
+      let foundCred = await Credential.findOne({
+        where: {
+          id: req.query.id
+        }
+      });
+
+      foundCred.email = putCred["email"] || foundCred.email;
+      foundCred.username = putCred["username"] || foundCred.username;
+      if (req.user.id !== foundCred.id) {
+        //Cannot remove admin access from themselves
+        foundCred.isAdmin =
+          putCred.isAdmin === true || putCred.isAdmin === false
+            ? putCred.isAdmin
+            : foundCred.isAdmin;
+      }
+      foundCred.isEmployee =
+        putCred.isEmployee === true || putCred.isEmployee === false
+          ? putCred.isEmployee
+          : foundCred.isEmployee;
+      foundCred.isCoach =
+        putCred.isCoach === true || putCred.isCoach === false
+          ? putCred.isCoach
+          : foundCred.isCoach;
+      foundCred.isAthlete =
+        putCred.isAthlete === true || putCred.isAthlete === false
+          ? putCred.isAthlete
+          : foundCred.isAthlete;
+
+      await foundCred.save();
+
+      res.send("Credential update successful");
+    } catch (err) {
+      next(err);
+    }
+  }
+});
+
 //PUT /api/v#/credentials/change_password
 //Create new user
 /************** DO NOT USE *****************/
@@ -165,7 +267,7 @@ credentialRouter.put("/change_password", auth, async (req, res, next) => {
             if (credential.password !== credential.newPassword) {
               foundCred.password = credential.newPassword;
               await foundCred.save();
-              res.status(202).send("Password successfully changed.");
+              res.send("Password successfully changed.");
             } else {
               res.status(400).send("Password cannot match previous password.");
             }

@@ -35,7 +35,7 @@ paths:
         - schema:
             type: string
           in: header
-          name: x-access-token
+          name: authorization
           description: JWT provided by server
           required: true
     post:
@@ -53,12 +53,12 @@ paths:
                     type: string
                 required:
                   - firstName
-      description: Creates a new user profile
+      description: Allows an admin to create user profile with temporary login credentials.
       parameters:
         - schema:
             type: string
           in: header
-          name: x-access-token
+          name: authorization
           description: JWT provided by server
           required: true
       requestBody:
@@ -98,6 +98,34 @@ paths:
                     type: boolean
                   isAthlete:
                     type: boolean
+                  organization:
+                    type: object
+                    properties:
+                      id:
+                        type: number
+                      name:
+                        type: string
+                      shortName:
+                        type: string
+                      address:
+                        type: string
+                      city:
+                        type: string
+                      state:
+                        type: string
+                      zip:
+                        type: integer
+                      phone:
+                        type: string
+                      primaryColor:
+                        type: string
+                      secondaryColor:
+                        type: string
+                      logo:
+                        type: string
+                    required:
+                      - id
+                      - name
                 required:
                   - email
                   - username
@@ -114,6 +142,18 @@ paths:
                     isEmployee: true
                     isCoach: true
                     isAthlete: true
+                    organization:
+                      id: 1
+                      name: University of State City
+                      shortName: USC
+                      address: 1234 Street Road
+                      city: Town City
+                      state: ST
+                      zip: 12345
+                      phone: (123) 456-7890
+                      primaryColor: FF0000
+                      secondaryColor: '000000'
+                      logo: blob-data
         '400':
           description: Bad Request
           content:
@@ -160,3 +200,4 @@ components:
       description: Contains the basic contents of a user profile.
       x-tags:
         - users
+  securitySchemes: {}

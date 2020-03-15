@@ -18,7 +18,7 @@ module.exports = function(req, res, next) {
     //if invalid token
     res
       .status(400)
-      .cookie("authorization", null, { expires: new Date() })
+      .clearCookie("authorization")
       .send("Invalid token.");
   }
 };

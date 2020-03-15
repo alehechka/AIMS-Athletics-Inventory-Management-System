@@ -153,7 +153,7 @@ class Login extends React.Component {
                 id = "remember" color="primary" />}
               label="Remember me"
             />
-            <Link href="reset" variant="body" style ={{float: "right", marginTop: "8px"}}>
+            <Link href="reset" variant="body1" style ={{float: "right", marginTop: "8px"}}>
               Forgot password?
             </Link>
             <Button
@@ -164,7 +164,7 @@ class Login extends React.Component {
             >
               Log In
             </Button>
-            <Link href="signup" variant="body" style ={{display: "block", textAlign: "center", marginTop: "16px"}}>
+            <Link href="signup" variant="body1" style ={{display: "block", textAlign: "center", marginTop: "16px"}}>
               Don't have an account? Click here to Sign Up.
             </Link>
           </form>

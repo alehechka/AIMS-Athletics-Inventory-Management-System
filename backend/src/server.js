@@ -77,7 +77,9 @@ app.use((req, res) => {
 
 // Setup a global error handler.
 app.use((err, req, res, next) => {
-    //console.error(`Global error handler: ${JSON.stringify(err.stack)}`);
+  if (process.env.NODE_ENV === 'development') {
+    console.error(`Global error handler: ${JSON.stringify(err.stack)}`);
+  }
     res.status(500).json({
       message: err.message,
       error: process.env.NODE_ENV === 'production' ? {} : err,

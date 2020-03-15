@@ -76,9 +76,7 @@ const Credential = db.define(
   {
     hooks: {
       beforeValidate: async (credential, options) => {
-        credential.username = credential.username
-          ? credential.username
-          : credential.email.split("@")[0];
+        credential.username = credential['username'] || credential.email.split("@")[0];
         credential.password = await bcrypt.hash(credential.password, 10);
       }
     }

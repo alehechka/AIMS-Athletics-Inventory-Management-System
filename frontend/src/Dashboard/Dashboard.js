@@ -38,12 +38,8 @@ class Dashboard extends React.Component {
     openProfile = () => {
         window.location.href='/profile';
     };
-    /**
-     * Deletes auth cookie and refreshes page
-     */
     render() {
-        const { path, url } = this.props.match;
-        console.log(url);
+        const { path } = this.props.match;
 
         const email = this.props.email;
         const username = this.props.username;

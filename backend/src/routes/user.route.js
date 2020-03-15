@@ -23,7 +23,7 @@ userRouter.post("/", async (req, res, next) => {
     let createdCred = await Credential.create({
       email: user.email,
       username: user.username,
-      password: user.password ? user.password : "password123",
+      password: user['password'] || "password123",
       organizationId: req.user.organizationId
     });
     let createdUser = await User.create({
@@ -38,6 +38,8 @@ userRouter.post("/", async (req, res, next) => {
       gender: user.gender,
       height: user.height,
       weight: user.weight,
+      lockerNumber: user.lockerNumber,
+      lockerCode: user.lockerCode,
       credentialId: createdCred.id,
       organizationId: req.user.organizationId
     });
@@ -85,10 +87,14 @@ userRouter.get("/", async (req, res, next) => {
           {
             model: PlayerSize,
             attributes: ["id", "name", "size"]
+          },
+          {
+            model: Credential,
+            attributes: req.user.isAdmin ? {exclude: ["organizationId", "password"]} : ["email", "username"]
           }
         ]
       });
-      res.json(req.query.id ? allUsers[0] : allUsers);
+      res.json(req.query.id && allUsers.length === 1 ? allUsers[0] : allUsers);
     } catch (err) {
       next(err);
     }
@@ -109,7 +115,11 @@ userRouter.get("/current", async (req, res, next) => {
           attributes: ["id", "name", "gender"],
           through: { attributes: [] }
         },
-        { model: PlayerSize }
+        { model: PlayerSize },
+        {
+          model: Credential,
+          attributes: req.user.isAdmin ? {exclude: ["organizationId", "password"]} : ["email", "username"]
+        }
       ]
     });
     res.json(user);
@@ -170,7 +180,7 @@ userRouter.put("/", async (req, res, next) => {
         }
       });
       if (req.user.isAdmin) {
-        user.schoolId = putUser.schoolId;
+        foundUser.schoolId = putUser.schoolId;
       }
       foundUser.lockerNumber = putUser.lockerNumber;
       foundUser.lockerCode = putUser.lockerCode;
