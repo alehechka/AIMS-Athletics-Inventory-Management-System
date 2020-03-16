@@ -38,17 +38,16 @@
   "sports": [
     {
       "name": "Baseball",
-      "gender": "M",
-      "sizes": [{ "name": "T-Shirt", "values": ["XL", "L", "M", "S"] }],
-      "_comments": [
-        "For generating, add at least one size with at least one value to all sports"
-      ]
+      "gender": "M"
     },
     {
       "name": "Volleyball",
       "gender": "F",
       "sizes": [{ "name": "Court Shoes", "values": ["8", "9", "10", "11"] }]
     }
+  ],
+  "sport_sizes": [
+    { "name": "T-Shirt", "sizes": ["XL", "L", "M", "S"] }
   ],
   "inventories": [
     {

@@ -7,7 +7,8 @@ const {
   PlayerSport,
   Sport,
   PlayerSize,
-  Credential
+  Credential, 
+  SportSize
 } = require("../models/database");
 //const users = require('../models/database');
 const userRouter = express.Router();
@@ -23,7 +24,7 @@ userRouter.post("/", async (req, res, next) => {
     let createdCred = await Credential.create({
       email: user.email,
       username: user.username,
-      password: user['password'] || "password123",
+      password: user["password"] || "password123",
       organizationId: req.user.organizationId
     });
     let createdUser = await User.create({
@@ -76,7 +77,10 @@ userRouter.get("/", async (req, res, next) => {
       }
 
       let allUsers = await User.findAll({
-        where: req.query.id ? { id: req.query.id } : null,
+        where: Sequelize.and(
+          { organizationId: req.user.organizationId },
+          req.query.id ? { id: req.query.id } : null
+        ),
         include: [
           {
             model: Sport,
@@ -86,11 +90,19 @@ userRouter.get("/", async (req, res, next) => {
           },
           {
             model: PlayerSize,
-            attributes: ["id", "name", "size"]
+            attributes: ["id", "sportSizeId", "size"],
+            include: [
+              {
+                model: SportSize,
+                attributes: ["sportId", "name", "sizes"]
+              }
+            ]
           },
           {
             model: Credential,
-            attributes: req.user.isAdmin ? {exclude: ["organizationId", "password"]} : ["email", "username"]
+            attributes: req.user.isAdmin
+              ? { exclude: ["organizationId", "password"] }
+              : ["email", "username"]
           }
         ]
       });
@@ -118,7 +130,9 @@ userRouter.get("/current", async (req, res, next) => {
         { model: PlayerSize },
         {
           model: Credential,
-          attributes: req.user.isAdmin ? {exclude: ["organizationId", "password"]} : ["email", "username"]
+          attributes: req.user.isAdmin
+            ? { exclude: ["organizationId", "password"] }
+            : ["email", "username"]
         }
       ]
     });

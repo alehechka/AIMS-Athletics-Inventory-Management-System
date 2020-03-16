@@ -12,7 +12,7 @@ import {
   Redirect
 } from "react-router-dom";
 
-import { getCredentials } from "./api/credentials";
+import * as CredentialAPI from "./api/credentials";
 
 /**
  * This main component mainly does the authentication and routing.
@@ -38,10 +38,10 @@ class App extends React.Component {
     super(props);
     this.state = {
       authorized: false,
-      authorization: "",
       email: "",
       username: "",
-      role: ""
+      role: "",
+      organization: null
     };
   }
   /**
@@ -94,19 +94,25 @@ class App extends React.Component {
    *
    */
   componentDidMount() {
-    getCredentials()
-      .then(res => {
-        this.setState({
-          authorized: true,
-          email: res.email,
-          username: res.username,
-          organization: res.organization
+    let sessionCreds = JSON.parse(sessionStorage.getItem('creds'));
+    let sessionOrg = JSON.parse(sessionStorage.getItem('org'));
+    if (sessionCreds && sessionOrg) {
+      this.setState({...sessionCreds, organization: sessionOrg});
+    } else {
+      CredentialAPI.getCredentials()
+        .then(res => {
+          this.setState({
+            authorized: true,
+            email: res.email,
+            username: res.username,
+            organization: res.organization
+          });
+          this.setRole(res);
+        })
+        .catch(err => {
+          //console.log("Authorization failed")
         });
-        this.setRole(res);
-      })
-      .catch(err => {
-        this.setState({ authorized: false });
-      });
+    }
   }
   render() {
     const dashboardApp = (

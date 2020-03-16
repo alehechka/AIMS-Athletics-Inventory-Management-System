@@ -76,7 +76,8 @@ const Credential = db.define(
   {
     hooks: {
       beforeValidate: async (credential, options) => {
-        credential.username = credential['username'] || credential.email.split("@")[0];
+        credential.username =
+          credential["username"] || credential.email.split("@")[0];
         credential.password = await bcrypt.hash(credential.password, 10);
       }
     }
@@ -130,29 +131,30 @@ const Status = db.define("statuses", {
 Status.hasMany(User);
 User.belongsTo(Status);
 
-/////// SPORTS ///////////////////////////////////////////////////////////////////////////
-/*
-    sizes: [
-        {
-            name: "T-shirt",
-            values: ["XL", "L", "M", "S"]
-        }
-    ]
-*/
+/////// SPORTS //////////////////////////////////////////////////////////////////////////
 //All players will be contained inside a "base sport" that will contain the standard equipment that all athletes need
 const Sport = db.define("sports", {
   name: { type: Sequelize.STRING, allowNull: false },
-  gender: { type: Sequelize.STRING(1), allowNull: false },
-  sizes: {
-    type: Sequelize.JSON,
-    allowNull: true,
-    defaultValue: [],
-    comment: "only used when sport has additional custom equipment"
-  }
+  gender: { type: Sequelize.STRING(1), allowNull: false }
 });
 
 Organization.hasMany(Sport, { foreignKey: { allowNull: false } });
 Sport.belongsTo(Organization, { foreignKey: { allowNull: false } });
+
+/////// PLAYER_SIZES ////////////////////////////////////////////////////////////////////////////
+
+const SportSize = db.define("sport_sizes", {
+    name: { type: Sequelize.STRING, allowNull: false },
+    sizes: { type: Sequelize.JSON, allowNull: false, defaultValue: [] }
+    //sizes: ["XL", "L", "M"]
+  },
+  {
+    timestamps: true
+  }
+);
+
+Sport.hasMany(SportSize, { foreignKey: { allowNull: false } });
+SportSize.belongsTo(Sport, { foreignKey: { allowNull: false } });
 
 /////// PLAYER_SPORTS ///////////////////////////////////////////////////////////////////////////
 
@@ -256,7 +258,6 @@ Transaction.belongsTo(Organization, { foreignKey: { allowNull: false } });
 const PlayerSize = db.define(
   "player_sizes",
   {
-    name: { type: Sequelize.STRING, allowNull: false },
     size: { type: Sequelize.STRING, allowNull: false }
   },
   {
@@ -266,6 +267,9 @@ const PlayerSize = db.define(
 
 User.hasMany(PlayerSize, { foreignKey: { allowNull: false } });
 PlayerSize.belongsTo(User, { foreignKey: { allowNull: false } });
+
+SportSize.hasMany(PlayerSize, { foreignKey: { allowNull: false } });
+PlayerSize.belongsTo(SportSize, { foreignKey: { allowNull: false } });
 
 //Uncomment when making changes to the table or need to create table in new environment
 //db.sync({ force: true, alter: true });
@@ -278,6 +282,7 @@ module.exports = {
   PlayerSize,
   PlayerSport,
   Sport,
+  SportSize,
   Status,
   Credential,
   Organization,

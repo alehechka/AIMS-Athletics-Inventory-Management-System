@@ -56,6 +56,12 @@ credentialRouter.post("/signup", async (req, res, next) => {
       organizationId: createdCred.organizationId
     });
 
+    let organization = await Organization.findOne({
+      where: {
+        id: 1
+      }
+    })
+
     const token = await jwt.sign(
       {
         id: createdCred.id,
@@ -74,7 +80,15 @@ credentialRouter.post("/signup", async (req, res, next) => {
         expires: credential.remember ? new Date(Date.now() + thirtyDays) : 0,
         httpOnly: true
       })
-      .send("Signup successful.");
+      .json({
+        email: createdCred.email,
+        username: createdCred.username,
+        isAdmin: createdCred.isAdmin,
+        isEmployee: createdCred.isEmployee,
+        isCoach: createdCred.isCoach,
+        isAthlete: createdCred.isAthlete,
+        organization: organization
+      });
   } catch (err) {
     next(err);
   }
@@ -93,7 +107,8 @@ credentialRouter.post("/login", async (req, res, next) => {
             ? credential.username
             : credential.email.split("@")[0]
         }
-      )
+      ),
+      include: { model: Organization }
     });
     if (foundCred) {
       await bcrypt.compare(
@@ -122,7 +137,15 @@ credentialRouter.post("/login", async (req, res, next) => {
                   : 0,
                 httpOnly: true
               })
-              .send("Login successul.");
+              .json({
+                email: foundCred.email,
+                username: foundCred.username,
+                isAdmin: foundCred.isAdmin,
+                isEmployee: foundCred.isEmployee,
+                isCoach: foundCred.isCoach,
+                isAthlete: foundCred.isAthlete,
+                organization: foundCred.organization
+              });
           } else {
             res.status(401).send("Credentials not valid");
           }
@@ -265,8 +288,11 @@ credentialRouter.put("/change_password", auth, async (req, res, next) => {
         async (err, result) => {
           if (result) {
             if (credential.password !== credential.newPassword) {
+              console.log("Old: ", foundCred.password);
               foundCred.password = credential.newPassword;
+              console.log("Before: ", foundCred.password);
               await foundCred.save();
+              console.log("After: ", foundCred.password);
               res.send("Password successfully changed.");
             } else {
               res.status(400).send("Password cannot match previous password.");

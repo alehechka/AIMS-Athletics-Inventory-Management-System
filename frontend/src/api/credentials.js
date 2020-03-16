@@ -15,7 +15,15 @@ async function getCredentials() {
   return await axios
     .get(`${apiUrl}/credentials/current`, { withCredentials: true })
     .then(res => {
-      // {email, username, isAdmin, isEmployee, isCoach, isAthlete}
+      sessionStorage.setItem(
+        "creds",
+        JSON.stringify({
+          authorized: true,
+          email: res.data.email,
+          username: res.data.username
+        })
+      );
+      sessionStorage.setItem("org", JSON.stringify(res.data.organization));
       return res.data;
     });
 }
@@ -32,6 +40,15 @@ async function signup(email, username, password, remember) {
       { withCredentials: true }
     )
     .then(res => {
+      sessionStorage.setItem(
+        "creds",
+        JSON.stringify({
+          authorized: true,
+          email: res.data.email,
+          username: res.data.username
+        })
+      );
+      sessionStorage.setItem("org", JSON.stringify(res.data.organization));
       return res.data;
     });
 }
@@ -48,17 +65,25 @@ async function login(email, password, remember) {
       { withCredentials: true }
     )
     .then(res => {
+      sessionStorage.setItem(
+        "creds",
+        JSON.stringify({
+          authorized: true,
+          email: res.data.email,
+          username: res.data.username
+        })
+      );
+      sessionStorage.setItem("org", JSON.stringify(res.data.organization));
       return res.data;
     });
 }
 
 //Pings the backend to delete the authorization cookie and sets URL to root
 async function logout() {
-  await axios
-    .get(`${apiUrl}/credentials/logout`, { withCredentials: true })
-    .then(res => {
-      window.location.href = "/";
-    });
+  sessionStorage.removeItem("creds");
+  sessionStorage.removeItem("org");
+  window.location.href = "/";
+  await axios.get(`${apiUrl}/credentials/logout`, { withCredentials: true });
 }
 
 //Updates current user credentials
@@ -94,7 +119,7 @@ async function updateCurrentCredentials({
 //If user is an admin they can update roles
 //Params in {} so you can send credentials object instead of individual params
 async function updateCredentials({
-  id,
+  id, //Required to make successful request
   email,
   username,
   isAdmin,

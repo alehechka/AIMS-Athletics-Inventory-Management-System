@@ -8,7 +8,8 @@ const {
   sports,
   inventories,
   statuses,
-  organizations
+  organizations,
+  sport_sizes
 } = require("./data.json");
 
 const createOrganizations = async () => {
@@ -38,10 +39,21 @@ const createSports = async () => {
     await db.Sport.create({
       name: sport.name,
       gender: sport.gender,
-      sizes: sport.sizes,
       organizationId: organizations[0].id
     }).then(res => {
       sport.id = res.id;
+    });
+  }
+};
+
+const createSportSizes = async () => {
+  for (let index in sport_sizes) {
+    await db.SportSize.create({
+      name: sport_sizes[index].name,
+      sizes: sport_sizes[index].sizes,
+      sportId: sports[index % sports.length].id
+    }).then(res => {
+      sport_sizes[index].id = res.id;
     });
   }
 };
@@ -62,6 +74,7 @@ const create = async () => {
   await createOrganizations();
   await createStatuses();
   await createSports();
+  await createSportSizes()
   await createInventories();
 
   credentials.forEach((cred, index) => {
@@ -84,8 +97,8 @@ const create = async () => {
             });
             await db.PlayerSize.create({
               userId: res.id,
-              name: sports[index % sports.length].sizes[0].name,
-              size: sports[index % sports.length].sizes[0].values[0]
+              sportSizeId: sport_sizes[index % sport_sizes.length].id,
+              size: sport_sizes[index % sport_sizes.length].sizes[0]
             });
             let eq = await db.Equipment.create({
               size: inventories[index % inventories.length].size,
@@ -104,7 +117,7 @@ const create = async () => {
             });
           })
           .catch(err => {
-            console.error("User already exists: " + users[index].schoolId);
+            console.error("User already exists: " + users[index].id);
           });
       })
       .catch(err => {
