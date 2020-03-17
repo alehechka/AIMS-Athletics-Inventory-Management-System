@@ -2,12 +2,13 @@
 
 const express = require("express");
 const Sequelize = require("sequelize");
+const auth = require("../middleware/auth");
 const {
   User,
   PlayerSport,
   Sport,
   PlayerSize,
-  Credential, 
+  Credential,
   SportSize
 } = require("../models/database");
 //const users = require('../models/database');
@@ -15,10 +16,7 @@ const userRouter = express.Router();
 
 //POST /api/v#/users
 //Allows an admin to create a new user profile with temporary login credentials
-userRouter.post("/", async (req, res, next) => {
-  if (!req.user.isAdmin) {
-    res.status(401).json("Unauthorized to perform this action.");
-  }
+userRouter.post("/", auth(["isAdmin"]), async (req, res, next) => {
   const user = req.body;
   try {
     let createdCred = await Credential.create({
@@ -53,10 +51,10 @@ userRouter.post("/", async (req, res, next) => {
 //GET /api/v#/users
 //Retrieve all users
 //URL Query Params: page, limit, id
-userRouter.get("/", async (req, res, next) => {
-  if (!(req.user.isAdmin || req.user.isEmployee || req.user.isCoach)) {
-    res.status(401).send("Unauthorized to perform this action.");
-  } else {
+userRouter.get(
+  "/",
+  auth(["isAdmin", "isEmployee", "isCoach"]),
+  async (req, res, next) => {
     try {
       let coachSports = [];
       const offset = req.query["page"] * req.query["limit"] || 0;
@@ -111,11 +109,11 @@ userRouter.get("/", async (req, res, next) => {
       next(err);
     }
   }
-});
+);
 
 //GET /api/v#/users/current
 //Retrieves the currently logged in user
-userRouter.get("/current", async (req, res, next) => {
+userRouter.get("/current", auth(), async (req, res, next) => {
   try {
     let user = await User.findOne({
       where: {
@@ -144,7 +142,7 @@ userRouter.get("/current", async (req, res, next) => {
 
 //PUT /api/v#/users/current
 //Updates the currently logged in user
-userRouter.put("/current", async (req, res, next) => {
+userRouter.put("/current", auth(), async (req, res, next) => {
   let putUser = req.body;
   try {
     let user = await User.findOne({
@@ -180,10 +178,8 @@ userRouter.put("/current", async (req, res, next) => {
 //PUT /api/v#/users
 //Updates the selected user (only by admin or employee)
 //Required URL Query Param: userId
-userRouter.put("/", async (req, res, next) => {
-  if (!(req.user.isAdmin || req.user.isEmployee)) {
-    res.status(401).send("Unauthorized to perform this action.");
-  } else if (!req.query.id) {
+userRouter.put("/", auth(["isAdmin", "isEmployee"]), async (req, res, next) => {
+  if (!req.query.id) {
     res.status(400).send("No user ID provided.");
   } else {
     let putUser = req.body;

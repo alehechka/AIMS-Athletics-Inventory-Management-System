@@ -8,7 +8,6 @@ const userRouter = require("./routes/user.route");
 const sportRouter = require("./routes/sport.route");
 const credentialRouter = require("./routes/credential.route");
 const url = require('url');
-const auth = require("./middleware/auth");
 
 // Load .env Enviroment Variables to process.env
 
@@ -57,7 +56,6 @@ app.get('/', (req, res) => {
 // Assign Routes
 const baseRoute = `/api/v${API_VER}/`;
 app.use(baseRoute + 'credentials', credentialRouter);
-app.use(auth);
 app.use(baseRoute + 'users', userRouter);
 app.use(baseRoute + 'sports', sportRouter);
 

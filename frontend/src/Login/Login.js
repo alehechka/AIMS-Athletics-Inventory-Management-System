@@ -10,7 +10,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import { withSnackbar } from 'notistack';
-import { login } from "../api/credentials";
+import * as CredentialAPI from "../api/credentials";
 /**
  * This Component contains the login page along with user authorization logic.
  * 
@@ -85,7 +85,7 @@ class Login extends React.Component {
 
     // await axios.post(`${apiUrl}/credentials/login`,
     //     { email, password},
-    await login(email, password, remember)
+    await CredentialAPI.login(email, password, remember)
     .then(res => {
       console.log(res)
         this.setState(Object.assign(this.state, {credentials: res}));

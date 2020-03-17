@@ -8,7 +8,7 @@ import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import { withSnackbar } from 'notistack';
-import { signup } from '../api/credentials';
+import * as CredentialAPI from "../api/credentials";
 
 /**
  * This Component contains the sign up page along with sign up logic.
@@ -108,7 +108,7 @@ class Signup extends React.Component {
     const formValid =  this.state.usernameValid && this.state.emailValid && this.state.password1Valid && this.state.password2Valid;
     if(formValid) {
       //TODO logic
-      await signup(email, username, password)
+      await CredentialAPI.signup(email, username, password)
       .then(res => {
             this.setState(Object.assign(this.state, {credentials: res}));
             this.props.showMessage(`You have successfully signed up ${email}, Redirecting...!`);

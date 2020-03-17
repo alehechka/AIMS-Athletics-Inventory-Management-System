@@ -16,7 +16,7 @@ const thirtyDays = 1000 * 60 * 60 * 24 * 30;
 
 //GET /api/v#/credentials/current
 //Get current user from token, use to validate JWT
-credentialRouter.get("/current", auth, async (req, res, next) => {
+credentialRouter.get("/current", auth(), async (req, res, next) => {
   try {
     let credential = await Credential.findOne({
       where: {
@@ -60,7 +60,7 @@ credentialRouter.post("/signup", async (req, res, next) => {
       where: {
         id: 1
       }
-    })
+    });
 
     const token = await jwt.sign(
       {
@@ -224,10 +224,8 @@ credentialRouter.put("/current", auth, async (req, res, next) => {
 
 //PUT /api/v#/credentials
 //Allows admin to update the desired user's email, username, and roles
-credentialRouter.put("/", auth, async (req, res, next) => {
-  if (!req.user.isAdmin) {
-    res.status(401).send("Unauthorized to perform this action.");
-  } else if (!req.query.id) {
+credentialRouter.put("/", auth(["isAdmin"]), async (req, res, next) => {
+  if (!req.query.id) {
     res.status(400).send("No user ID provided.");
   } else {
     let putCred = req.body;
