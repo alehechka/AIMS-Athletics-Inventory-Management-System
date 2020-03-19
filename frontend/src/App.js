@@ -72,7 +72,7 @@ class App extends React.Component {
    * @param {*} creds JSON response
    */
   setRole = creds => {
-    let role = "athlete";
+    let role = "new user";
     if (creds.isAdmin) {
       role = "admin";
     } else if (creds.isEmployee) {
@@ -82,7 +82,7 @@ class App extends React.Component {
     } else if (creds.isAthlete) {
       role = "athlete";
     }
-    this.setState({ role });
+    this.setState(Object.assign(this.state, { role }));
   };
   /**
    * Lifecycle method that is executed only once.
@@ -97,16 +97,17 @@ class App extends React.Component {
     let sessionCreds = JSON.parse(sessionStorage.getItem('creds'));
     let sessionOrg = JSON.parse(sessionStorage.getItem('org'));
     if (sessionCreds && sessionOrg) {
-      this.setState({...sessionCreds, organization: sessionOrg});
+      this.setState(Object.assign(this.state, {...sessionCreds, organization: sessionOrg}));
+      this.setRole(sessionCreds);
     } else {
       CredentialAPI.getCredentials()
         .then(res => {
-          this.setState({
+          this.setState(Object.assign(this.state, {
             authorized: true,
             email: res.email,
             username: res.username,
             organization: res.organization
-          });
+          }));
           this.setRole(res);
         })
         .catch(err => {
