@@ -77,7 +77,7 @@ userRouter.get(
       let allUsers = await User.findAll({
         where: Sequelize.and(
           { organizationId: req.user.organizationId },
-          req.query.id ? { id: req.query.id } : null
+          req.query.id ? { id: req.query.id } : null,
         ),
         include: [
           {

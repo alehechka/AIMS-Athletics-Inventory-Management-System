@@ -22,14 +22,7 @@ credentialRouter.get("/current", auth(), async (req, res, next) => {
       where: {
         id: req.user.id
       },
-      attributes: [
-        "email",
-        "username",
-        "isAdmin",
-        "isEmployee",
-        "isAthlete",
-        "isCoach"
-      ],
+      attributes: ["email", "username", "isAdmin", "isEmployee", "isAthlete", "isCoach"],
       include: { model: Organization }
     });
     res.json(credential);
@@ -103,54 +96,46 @@ credentialRouter.post("/login", async (req, res, next) => {
       where: Sequelize.or(
         { email: credential.email },
         {
-          username: credential.username
-            ? credential.username
-            : credential.email.split("@")[0]
+          username: credential.username ? credential.username : credential.email.split("@")[0]
         }
       ),
       include: { model: Organization }
     });
     if (foundCred) {
-      await bcrypt.compare(
-        credential.password,
-        foundCred.password,
-        (err, result) => {
-          if (result) {
-            let token = jwt.sign(
-              {
-                id: foundCred.id,
-                organizationId: foundCred.organizationId,
-                isAdmin: foundCred.isAdmin,
-                isEmployee: foundCred.isEmployee,
-                isAthlete: foundCred.isAthlete,
-                isCoach: foundCred.isCoach
-              },
-              PRIVATE_KEY,
-              {
-                expiresIn: "30d"
-              }
-            );
-            res
-              .cookie("authorization", token, {
-                expires: credential.remember
-                  ? new Date(Date.now() + thirtyDays)
-                  : 0,
-                httpOnly: true
-              })
-              .json({
-                email: foundCred.email,
-                username: foundCred.username,
-                isAdmin: foundCred.isAdmin,
-                isEmployee: foundCred.isEmployee,
-                isCoach: foundCred.isCoach,
-                isAthlete: foundCred.isAthlete,
-                organization: foundCred.organization
-              });
-          } else {
-            res.status(401).send("Credentials not valid");
-          }
+      await bcrypt.compare(credential.password, foundCred.password, (err, result) => {
+        if (result) {
+          let token = jwt.sign(
+            {
+              id: foundCred.id,
+              organizationId: foundCred.organizationId,
+              isAdmin: foundCred.isAdmin,
+              isEmployee: foundCred.isEmployee,
+              isAthlete: foundCred.isAthlete,
+              isCoach: foundCred.isCoach
+            },
+            PRIVATE_KEY,
+            {
+              expiresIn: "30d"
+            }
+          );
+          res
+            .cookie("authorization", token, {
+              expires: credential.remember ? new Date(Date.now() + thirtyDays) : 0,
+              httpOnly: true
+            })
+            .json({
+              email: foundCred.email,
+              username: foundCred.username,
+              isAdmin: foundCred.isAdmin,
+              isEmployee: foundCred.isEmployee,
+              isCoach: foundCred.isCoach,
+              isAthlete: foundCred.isAthlete,
+              organization: foundCred.organization
+            });
+        } else {
+          res.status(401).send("Credentials not valid");
         }
-      );
+      });
     } else {
       res.status(401).send("Credentials not found");
     }
@@ -160,10 +145,11 @@ credentialRouter.post("/login", async (req, res, next) => {
 });
 
 //GET /api/v#/credentials/logout
-//Returns a null authorization cookie
-credentialRouter.get("/logout", auth, async (req, res, next) => {
+//Removes authorization cookie.
+credentialRouter.get("/logout", auth(), async (req, res, next) => {
   res
-    .cookie("authorization", null, { expires: new Date() })
+    .status(200)
+    .clearCookie("authorization")
     .send("User has been logged out.");
 });
 
@@ -184,17 +170,10 @@ credentialRouter.put("/current", auth, async (req, res, next) => {
     if (req.user.isAdmin) {
       //Cannot remove admin access from themselves
       foundCred.isEmployee =
-        putCred.isEmployee === true || putCred.isEmployee === false
-          ? putCred.isEmployee
-          : foundCred.isEmployee;
-      foundCred.isCoach =
-        putCred.isCoach === true || putCred.isCoach === false
-          ? putCred.isCoach
-          : foundCred.isCoach;
+        putCred.isEmployee === true || putCred.isEmployee === false ? putCred.isEmployee : foundCred.isEmployee;
+      foundCred.isCoach = putCred.isCoach === true || putCred.isCoach === false ? putCred.isCoach : foundCred.isCoach;
       foundCred.isAthlete =
-        putCred.isAthlete === true || putCred.isAthlete === false
-          ? putCred.isAthlete
-          : foundCred.isAthlete;
+        putCred.isAthlete === true || putCred.isAthlete === false ? putCred.isAthlete : foundCred.isAthlete;
 
       await foundCred.save();
       let token = jwt.sign(
@@ -240,23 +219,13 @@ credentialRouter.put("/", auth(["isAdmin"]), async (req, res, next) => {
       foundCred.username = putCred["username"] || foundCred.username;
       if (req.user.id !== foundCred.id) {
         //Cannot remove admin access from themselves
-        foundCred.isAdmin =
-          putCred.isAdmin === true || putCred.isAdmin === false
-            ? putCred.isAdmin
-            : foundCred.isAdmin;
+        foundCred.isAdmin = putCred.isAdmin === true || putCred.isAdmin === false ? putCred.isAdmin : foundCred.isAdmin;
       }
       foundCred.isEmployee =
-        putCred.isEmployee === true || putCred.isEmployee === false
-          ? putCred.isEmployee
-          : foundCred.isEmployee;
-      foundCred.isCoach =
-        putCred.isCoach === true || putCred.isCoach === false
-          ? putCred.isCoach
-          : foundCred.isCoach;
+        putCred.isEmployee === true || putCred.isEmployee === false ? putCred.isEmployee : foundCred.isEmployee;
+      foundCred.isCoach = putCred.isCoach === true || putCred.isCoach === false ? putCred.isCoach : foundCred.isCoach;
       foundCred.isAthlete =
-        putCred.isAthlete === true || putCred.isAthlete === false
-          ? putCred.isAthlete
-          : foundCred.isAthlete;
+        putCred.isAthlete === true || putCred.isAthlete === false ? putCred.isAthlete : foundCred.isAthlete;
 
       await foundCred.save();
 
@@ -280,26 +249,22 @@ credentialRouter.put("/change_password", auth, async (req, res, next) => {
       }
     });
     if (foundCred) {
-      await bcrypt.compare(
-        credential.password,
-        foundCred.password,
-        async (err, result) => {
-          if (result) {
-            if (credential.password !== credential.newPassword) {
-              console.log("Old: ", foundCred.password);
-              foundCred.password = credential.newPassword;
-              console.log("Before: ", foundCred.password);
-              await foundCred.save();
-              console.log("After: ", foundCred.password);
-              res.send("Password successfully changed.");
-            } else {
-              res.status(400).send("Password cannot match previous password.");
-            }
+      await bcrypt.compare(credential.password, foundCred.password, async (err, result) => {
+        if (result) {
+          if (credential.password !== credential.newPassword) {
+            console.log("Old: ", foundCred.password);
+            foundCred.password = credential.newPassword;
+            console.log("Before: ", foundCred.password);
+            await foundCred.save();
+            console.log("After: ", foundCred.password);
+            res.send("Password successfully changed.");
           } else {
-            res.status(401).send("Credentials not valid");
+            res.status(400).send("Password cannot match previous password.");
           }
+        } else {
+          res.status(401).send("Credentials not valid");
         }
-      );
+      });
     } else {
       res.status(401).send("Credentials not found");
     }

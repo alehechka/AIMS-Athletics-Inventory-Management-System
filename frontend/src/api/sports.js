@@ -46,8 +46,12 @@ async function deleteSport(id) {
 }
 
 //Allows an admin, employee, or coach to update the sports of a user
-async function updateUserSports(id, sportIds) {
-  return await axios.put(`${apiUrl}/sports/user/${id}`, { sports: sportIds }, { withCredentials: true }).then((res) => {
+//Sports can either be an array of sport objects or an array of sportID's
+async function updateUserSports(userId, sports) {
+  if(sports.length > 0 && typeof sports[0] === "object") {
+    sports = sports.map(sport => sport.id);
+  }
+  return await axios.put(`${apiUrl}/sports/user/${userId}`, { sports }, { withCredentials: true }).then((res) => {
     return res.data;
   });
 }
