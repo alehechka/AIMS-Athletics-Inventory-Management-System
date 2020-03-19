@@ -14,6 +14,7 @@ import ListIcon from '@material-ui/icons/List';
 import PersonIcon from '@material-ui/icons/Person';
 import MenuIcon from '@material-ui/icons/Menu';
 import PowerSettingsNewIcon from '@material-ui/icons/PowerSettingsNew';
+import LockIcon from '@material-ui/icons/Lock';
 import Tooltip from '@material-ui/core/Tooltip';
 import Drawer from '@material-ui/core/Drawer';
 import Button from '@material-ui/core/Button';
@@ -103,7 +104,8 @@ function Navbar(props) {
         "Home": <DashboardIcon/>,
         "Athletes": <Icon className="fas fa-swimmer" />,
         "Inventory": <ListIcon/>,
-        "Staff": <PersonIcon/>
+        "Staff": <PersonIcon/>,
+        "Admin": <LockIcon/>
     };
     /**
      * Toggles menuOpen state

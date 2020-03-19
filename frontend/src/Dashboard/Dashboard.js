@@ -6,6 +6,7 @@ import Home from './Views/Home';
 import Inventory from './Views/Inventory';
 import Profile from './Views/Profile';
 import Staff from './Views/Staff';
+import Admin from './Views/Admin';
 
 import {
     BrowserRouter as Router,
@@ -45,16 +46,17 @@ class Dashboard extends React.Component {
         const username = this.props.username;
         const role = this.props.role;
         const permissions = {
-            "admin": ["Home", "Athletes", "Inventory", "Staff", "Profile"],
+            "admin": ["Home", "Athletes", "Inventory", "Staff", "Profile", "Admin"],
             "employee": ["Home", "Athletes", "Inventory", "Staff", "Profile"],
             "coach": ["Home", "Athletes", "Inventory", "Profile"],
             "athlete": ["Home", "Profile"]
         };
         let allowedViews = permissions[role];
+        //Default views that a newly signed up user can access.
         if (!allowedViews){
-            allowedViews = ["Home", "Athletes", "Inventory", "Staff", "Profile"];
+            allowedViews = ["Home", "Profile"];
         }
-    const unauthorizedUser = (role, page) => (<h3>401 - Unauthorized. As a(n) {role}, you're unauthorized to view {page}.</h3>);
+    const unauthorizedUser = (role, page) => (<h3>401 - Unauthorized. As a(n) {role}, you're unauthorized to view {page}. {role === "new user" ? "Please contact an admin to get a role.":""}</h3>);
 
         return(
             <React.Fragment>
@@ -105,6 +107,15 @@ class Dashboard extends React.Component {
                                         username = {username}
                                         role = {role}
                                     /> : unauthorizedUser(role, 'Staff')}
+                            </Route>
+                            <Route path={`/admin`}>
+                                {allowedViews.includes('Admin')?
+                                    <Admin
+                                        showMessage ={this.props.showMessage} 
+                                        email = {email}
+                                        username = {username}
+                                        role = {role}
+                                    /> : unauthorizedUser(role, 'Admin')}
                             </Route>
                             <Route path={`/home`}>
                                 <Home

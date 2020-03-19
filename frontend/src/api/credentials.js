@@ -20,7 +20,11 @@ async function getCredentials() {
         JSON.stringify({
           authorized: true,
           email: res.data.email,
-          username: res.data.username
+          username: res.data.username,
+          isAdmin: res.data.isAdmin,
+          isEmployee: res.data.isEmployee,
+          isAthlete: res.data.isAthlete,
+          isCoach: res.data.isCoach
         })
       );
       sessionStorage.setItem("org", JSON.stringify(res.data.organization));
@@ -45,7 +49,11 @@ async function signup(email, username, password, remember) {
         JSON.stringify({
           authorized: true,
           email: res.data.email,
-          username: res.data.username
+          username: res.data.username,
+          isAdmin: res.data.isAdmin,
+          isEmployee: res.data.isEmployee,
+          isAthlete: res.data.isAthlete,
+          isCoach: res.data.isCoach
         })
       );
       sessionStorage.setItem("org", JSON.stringify(res.data.organization));
@@ -70,7 +78,11 @@ async function login(email, password, remember) {
         JSON.stringify({
           authorized: true,
           email: res.data.email,
-          username: res.data.username
+          username: res.data.username,
+          isAdmin: res.data.isAdmin,
+          isEmployee: res.data.isEmployee,
+          isAthlete: res.data.isAthlete,
+          isCoach: res.data.isCoach
         })
       );
       sessionStorage.setItem("org", JSON.stringify(res.data.organization));
@@ -82,8 +94,8 @@ async function login(email, password, remember) {
 async function logout() {
   sessionStorage.removeItem("creds");
   sessionStorage.removeItem("org");
-  window.location.href = "/";
-  await axios.get(`${apiUrl}/credentials/logout`, { withCredentials: true });
+  
+  await axios.get(`${apiUrl}/credentials/logout`, { withCredentials: true }).then(() => {window.location.href = "/"});
 }
 
 //Updates current user credentials
