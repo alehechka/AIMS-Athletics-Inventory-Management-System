@@ -10,12 +10,9 @@ const credentialRouter = require("./routes/credential.route");
 const inventoryRouter = require("./routes/inventory.route");
 const url = require('url');
 
-// Load .env Enviroment Variables to process.env
+require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
 
-require('mandatoryenv').load([
-    'PORT',
-    'API_VER'
-]);
+// Load .env Enviroment Variables to process.env
 const { PORT, API_VER } = process.env;
 
 // Instantiate an Express Application

@@ -53,10 +53,16 @@
     {
       "name": "T-Shirt",
       "description": "Black UNO T-Shirt",
-      "size": "XL",
-      "remaining": 10,
-      "price": 20.99,
-      "total": 20,
+      "sizes": [{
+        "size": "XL",
+        "price": 29.99,
+        "quantity": 30
+      },
+      {
+        "size": "S",
+        "price": 29.99,
+        "quantity": 10
+      }],
       "surplus": false
     }
   ]

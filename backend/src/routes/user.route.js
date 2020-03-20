@@ -78,13 +78,17 @@ userRouter.get(
         where: Sequelize.and(
           { organizationId: req.user.organizationId },
           req.query.id ? { id: req.query.id } : null,
+          req.query.gender ? { gender: req.query.gender } : null
         ),
         include: [
           {
             model: Sport,
             attributes: ["id", "name", "gender"],
             through: { attributes: [] },
-            where: isCoach ? Sequelize.or({ id: coachSports }) : null
+            where: Sequelize.and(
+              req.query['sports[]'] ? Sequelize.or({id: req.query['sports[]']}) : null,
+              isCoach ? Sequelize.or({ id: coachSports }) : null
+            )
           },
           {
             model: PlayerSize,

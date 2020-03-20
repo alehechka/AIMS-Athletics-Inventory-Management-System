@@ -1,12 +1,9 @@
 "use strict";
 
-require("mandatoryenv").load([
-  "DB_HOST",
-  "DB_DATABASE",
-  "DB_USER",
-  "DB_PASSWORD"
-]);
+require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
 const { DB_HOST, DB_DATABASE, DB_USER, DB_PASSWORD } = process.env;
+
+console.log(DB_HOST, DB_DATABASE, DB_USER, DB_PASSWORD)
 
 const bcrypt = require("bcrypt");
 const Sequelize = require("sequelize");
@@ -149,7 +146,7 @@ const SportSize = db.define("sport_sizes", {
     //sizes: ["XL", "L", "M"]
   },
   {
-    timestamps: true
+    timestamps: false
   }
 );
 
@@ -170,29 +167,42 @@ const Inventory = db.define(
   {
     name: { type: Sequelize.STRING, allowNull: false },
     description: { type: Sequelize.STRING, allowNull: true },
-    size: { type: Sequelize.STRING, allowNull: false },
-    remaining: { type: Sequelize.INTEGER, allowNull: false },
-    price: { type: Sequelize.DOUBLE, allowNull: true },
-    total: { type: Sequelize.INTEGER, allowNull: false },
-    surplus: { type: Sequelize.BOOLEAN, allowNull: true }
+    surplus: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
+    taxable: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
+    expendable: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false }
   },
   {
     timestamps: true
   }
 );
 
-Sport.hasMany(Inventory);
-Inventory.belongsTo(Sport);
+SportSize.hasMany(Inventory);
+Inventory.belongsTo(SportSize);
 
 Organization.hasMany(Inventory, { foreignKey: { allowNull: false } });
 Inventory.belongsTo(Organization, { foreignKey: { allowNull: false } });
+
+const InventorySize = db.define(
+  "inventory_sizes",
+  {
+    size: { type: Sequelize.STRING, allowNull: false },
+    barcode: { type: Sequelize.STRING, allowNull: true },
+    price: { type: Sequelize.DECIMAL, allowNull: true },
+    quantity: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 0 },
+  },
+  {
+    timestamps: true
+  }
+);
+
+Inventory.hasMany(InventorySize);
+InventorySize.belongsTo(Inventory);
 
 /////// EQUIPMENT ///////////////////////////////////////////////////////////////////////////
 //Equipment that users have.
 const Equipment = db.define(
   "equipment",
   {
-    size: { type: Sequelize.STRING, allowNull: false },
     count: { type: Sequelize.INTEGER, allowNull: false }
   },
   {
@@ -203,8 +213,8 @@ const Equipment = db.define(
 User.hasMany(Equipment, { foreignKey: { allowNull: false } });
 Equipment.belongsTo(User, { foreignKey: { allowNull: false } });
 
-Inventory.hasMany(Equipment, { foreignKey: { allowNull: false } });
-Equipment.belongsTo(Inventory, { foreignKey: { allowNull: false } });
+InventorySize.hasMany(Equipment, { foreignKey: { allowNull: false } });
+Equipment.belongsTo(InventorySize, { foreignKey: { allowNull: false } });
 
 Organization.hasMany(Equipment, { foreignKey: { allowNull: false } });
 Equipment.belongsTo(Organization, { foreignKey: { allowNull: false } });
@@ -215,7 +225,7 @@ const Transaction = db.define(
   "transactions",
   {
     amount: { type: Sequelize.INTEGER, allowNull: false },
-    return: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false }
+    returned: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false }
   },
   {
     timestamps: true
@@ -261,7 +271,7 @@ const PlayerSize = db.define(
     size: { type: Sequelize.STRING, allowNull: false }
   },
   {
-    timestamps: true
+    timestamps: false
   }
 );
 
@@ -277,6 +287,7 @@ PlayerSize.belongsTo(SportSize, { foreignKey: { allowNull: false } });
 module.exports = {
   User,
   Inventory,
+  InventorySize,
   Equipment,
   Transaction,
   PlayerSize,

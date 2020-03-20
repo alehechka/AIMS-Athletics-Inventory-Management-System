@@ -7,7 +7,7 @@ export default function Home(props) {
   return (
     <div>
       <h1>Home</h1>
-      <button onClick={() => UsersAPI.getUsers(null, null, null)}>Get Users</button>
+      <button onClick={() => UsersAPI.getUsers(null, null, {sports: [3,2]})}>Get Users</button>
       <button onClick={() => UsersAPI.getCurrentUser()}>Get Current</button>
       <button onClick={() => UsersAPI.createUser("test@test.com", null, null, {})}>Create User</button>
       <button onClick={() => UsersAPI.updateCurrentUser({ address: "Admin City" })}>Update Current</button>

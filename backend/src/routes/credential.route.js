@@ -9,7 +9,7 @@ const Sequelize = require("sequelize");
 
 const credentialRouter = express.Router();
 
-require("mandatoryenv").load(["PRIVATE_KEY"]);
+require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
 const { PRIVATE_KEY } = process.env;
 
 const thirtyDays = 1000 * 60 * 60 * 24 * 30;

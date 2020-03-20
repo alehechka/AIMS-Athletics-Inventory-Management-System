@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-require("mandatoryenv").load(["PRIVATE_KEY"]);
+require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
 const { PRIVATE_KEY } = process.env;
 
 module.exports = function(roles) {

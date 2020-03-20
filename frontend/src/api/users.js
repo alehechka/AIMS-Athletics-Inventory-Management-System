@@ -66,10 +66,13 @@ async function createUser(
 // Retreives a list of users that the current user has access to (based on role or sport if coach)
 // The page and limit parameters are used for pagination (supply null to default to 200 user resposne)
 // When ID is supplied will return the single user object connected to that ID
-async function getUsers(page, limit, id) {
+async function getUsers(page, limit, {id, gender, sports}) {
+  if(sports.length > 0 && typeof sports[0] === "object") {
+    sports = sports.map(sport => sport.id);
+  }
   return await axios
     .get(`${apiUrl}/users`, {
-      params: { page, limit, id },
+      params: { page, limit, id, gender, sports },
       withCredentials: true
     })
     .then(res => {

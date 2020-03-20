@@ -59,6 +59,7 @@ typings/
 
 node_modules
 
-# Production build will use seperate .env file
-# The one included in Github is dev only. 
-#.env
+#Dev environment points to free DB so the file can be exposed to Github
+#.env.development
+.env
+.env.production

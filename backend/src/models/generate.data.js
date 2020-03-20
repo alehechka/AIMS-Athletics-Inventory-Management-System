@@ -62,10 +62,18 @@ const createInventories = async () => {
   for (let index in inventories) {
     await db.Inventory.create({
       ...inventories[index],
-      sportId: sports[index % sports.length].id,
+      sportSizeId: sport_sizes[index % sport_sizes.length].id,
       organizationId: organizations[0].id
-    }).then(res => {
+    }).then(async res => {
       inventories[index].id = res.id;
+      for (let i in inventories[index].sizes) {
+        await db.InventorySize.create({
+          ...inventories[index].sizes[i],
+          inventoryId: inventories[index].id,
+        }).then(resp => {
+          inventories[index].sizes[i].id = resp.id
+        })
+      }
     });
   }
 };
@@ -104,7 +112,7 @@ const create = async () => {
               size: inventories[index % inventories.length].size,
               count: index,
               userId: users[index].id,
-              inventoryId: inventories[index % inventories.length].id,
+              inventorySizeId: inventories[index % inventories.length].sizes[0].id,
               organizationId: organizations[0].id
             });
             await db.Transaction.create({
