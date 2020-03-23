@@ -40,8 +40,8 @@ credentialRouter.post("/signup", async (req, res, next) => {
     let createdCred = await Credential.create({
       email: credential.email,
       username: credential.username,
-      password: credential.password,
-      organizationId: 1
+      password: await bcrypt.hash(credential.password, 10),
+      organizationId: 1 //This needs to be changes to be set to whichever Organization the user must be a part of
     });
 
     await User.create({
@@ -156,7 +156,7 @@ credentialRouter.get("/logout", auth(), async (req, res, next) => {
 //PUT /api/v#/credentials/current
 //Updates the current user's email, username, and (roles if an admin)
 //Will update authorization cookie if need be.
-credentialRouter.put("/current", auth, async (req, res, next) => {
+credentialRouter.put("/current", auth(), async (req, res, next) => {
   let putCred = req.body;
   try {
     let foundCred = await Credential.findOne({
@@ -236,11 +236,9 @@ credentialRouter.put("/", auth(["isAdmin"]), async (req, res, next) => {
   }
 });
 
-//PUT /api/v#/credentials/change_password
-//Create new user
-/************** DO NOT USE *****************/
-/****** Passwords gets changed but you are unable to login afterwards, need to research what's happening ******/
-credentialRouter.put("/change_password", auth, async (req, res, next) => {
+//PUT /api/v#/credentials/changePassword
+//Update current user's password.
+credentialRouter.put("/changePassword", auth(), async (req, res, next) => {
   const credential = req.body;
   try {
     let foundCred = await Credential.findOne({
@@ -252,11 +250,8 @@ credentialRouter.put("/change_password", auth, async (req, res, next) => {
       await bcrypt.compare(credential.password, foundCred.password, async (err, result) => {
         if (result) {
           if (credential.password !== credential.newPassword) {
-            console.log("Old: ", foundCred.password);
-            foundCred.password = credential.newPassword;
-            console.log("Before: ", foundCred.password);
+            foundCred.password = await bcrypt.hash(credential.newPassword, 10);
             await foundCred.save();
-            console.log("After: ", foundCred.password);
             res.send("Password successfully changed.");
           } else {
             res.status(400).send("Password cannot match previous password.");
@@ -272,5 +267,7 @@ credentialRouter.put("/change_password", auth, async (req, res, next) => {
     next(err);
   }
 });
+
+/*********** Create route that sends an reset password email to user.  *****************/
 
 module.exports = credentialRouter;

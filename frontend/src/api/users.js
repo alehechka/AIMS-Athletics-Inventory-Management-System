@@ -63,16 +63,27 @@ async function createUser(
     });
 }
 
-// Retreives a list of users that the current user has access to (based on role or sport if coach)
-// The page and limit parameters are used for pagination (supply null to default to 200 user resposne)
-// When ID is supplied will return the single user object connected to that ID
-async function getUsers(page, limit, {id, gender, sports}) {
-  if(sports.length > 0 && typeof sports[0] === "object") {
-    sports = sports.map(sport => sport.id);
-  }
+// Retreives a a single user profile with full details (more for Admins)
+async function getSingleUser(id) {
   return await axios
     .get(`${apiUrl}/users`, {
-      params: { page, limit, id, gender, sports },
+      params: { id },
+      withCredentials: true
+    })
+    .then(res => {
+      return res.data;
+    });
+}
+
+// Retreives a list of users that the current user has access to (based on role or sport if coach)
+// The page and limit parameters are used for pagination (supply null to default to 200 user response)
+async function getUsers(page, limit, {gender, sports}) {
+  sports = sports.map((sport) => { 
+    return typeof sport === "object" ? sport.id : sport
+  });
+  return await axios
+    .get(`${apiUrl}/users`, {
+      params: { page, limit, gender, sports },
       withCredentials: true
     })
     .then(res => {
@@ -179,4 +190,4 @@ async function updateUser(
     });
 }
 
-export { createUser, getUsers, getCurrentUser, updateCurrentUser, updateUser };
+export { createUser, getUsers, getSingleUser, getCurrentUser, updateCurrentUser, updateUser };

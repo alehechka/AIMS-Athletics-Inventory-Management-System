@@ -3,14 +3,8 @@
 const express = require("express");
 const Sequelize = require("sequelize");
 const auth = require("../middleware/auth");
-const {
-  User,
-  PlayerSport,
-  Sport,
-  PlayerSize,
-  Credential,
-  SportSize
-} = require("../models/database");
+const queryParams = require("../middleware/queryParams");
+const { User, PlayerSport, Sport, PlayerSize, Credential, SportSize, Status } = require("../models/database");
 //const users = require('../models/database');
 const userRouter = express.Router();
 
@@ -54,13 +48,13 @@ userRouter.post("/", auth(["isAdmin"]), async (req, res, next) => {
 userRouter.get(
   "/",
   auth(["isAdmin", "isEmployee", "isCoach"]),
+  queryParams([], ["page", "limit", "id", "gender", "sports[]"]),
   async (req, res, next) => {
     try {
       let coachSports = [];
       const offset = req.query["page"] * req.query["limit"] || 0;
       const limit = req.query["limit"] || 200;
-      let isCoach =
-        req.user.isCoach && !req.user.isAdmin && !req.user.isEmployee;
+      let isCoach = req.user.isCoach && !req.user.isAdmin && !req.user.isEmployee;
       if (isCoach) {
         coachSports = await PlayerSport.findAll({
           offset,
@@ -69,7 +63,7 @@ userRouter.get(
             userId: req.user.id
           },
           attributes: ["sportId"]
-        }).map(sport => {
+        }).map((sport) => {
           return sport.sportId;
         });
       }
@@ -80,35 +74,39 @@ userRouter.get(
           req.query.id ? { id: req.query.id } : null,
           req.query.gender ? { gender: req.query.gender } : null
         ),
+        attributes: {
+          exclude: ["createdAt", "updatedAt", "credentialId", "organizationId", "statusId"]
+        },
         include: [
           {
             model: Sport,
             attributes: ["id", "name", "gender"],
             through: { attributes: [] },
             where: Sequelize.and(
-              req.query['sports[]'] ? Sequelize.or({id: req.query['sports[]']}) : null,
+              req.query["sports[]"] ? Sequelize.or({ id: req.query["sports[]"] }) : null,
               isCoach ? Sequelize.or({ id: coachSports }) : null
-            )
-          },
-          {
-            model: PlayerSize,
-            attributes: ["id", "sportSizeId", "size"],
+            ),
             include: [
               {
                 model: SportSize,
-                attributes: ["sportId", "name", "sizes"]
+                attributes: req.query.id ? ["sportId", "name", "sizes"] : []
               }
             ]
           },
           {
+            model: PlayerSize,
+            attributes: req.query.id ? ["id", "sportSizeId", "size"] : []
+          },
+          {
             model: Credential,
-            attributes: req.user.isAdmin
-              ? { exclude: ["organizationId", "password"] }
-              : ["email", "username"]
+            attributes: req.user.isAdmin ? { exclude: ["organizationId", "password"] } : ["email", "username"]
+          },
+          {
+            model: Status
           }
         ]
       });
-      res.json(req.query.id && allUsers.length === 1 ? allUsers[0] : allUsers);
+      res.json(req.query.id && allUsers.length ? allUsers[0] : allUsers);
     } catch (err) {
       next(err);
     }
@@ -123,18 +121,28 @@ userRouter.get("/current", auth(), async (req, res, next) => {
       where: {
         credentialId: req.user.id
       },
+      attributes: {
+        exclude: ["createdAt", "updatedAt", "credentialId", "organizationId", "statusId"]
+      },
       include: [
         {
           model: Sport,
           attributes: ["id", "name", "gender"],
-          through: { attributes: [] }
+          through: { attributes: [] },
+          include: [
+            {
+              model: SportSize,
+              attributes: ["sportId", "name", "sizes"]
+            }
+          ]
         },
-        { model: PlayerSize },
+        { model: PlayerSize, attributes: ["id", "sportSizeId", "size"] },
         {
           model: Credential,
-          attributes: req.user.isAdmin
-            ? { exclude: ["organizationId", "password"] }
-            : ["email", "username"]
+          attributes: req.user.isAdmin ? { exclude: ["organizationId", "password"] } : ["email", "username"]
+        },
+        {
+          model: Status
         }
       ]
     });
@@ -182,37 +190,33 @@ userRouter.put("/current", auth(), async (req, res, next) => {
 //PUT /api/v#/users
 //Updates the selected user (only by admin or employee)
 //Required URL Query Param: userId
-userRouter.put("/", auth(["isAdmin", "isEmployee"]), async (req, res, next) => {
-  if (!req.query.id) {
-    res.status(400).send("No user ID provided.");
-  } else {
-    let putUser = req.body;
-    try {
-      let foundUser = await User.findOne({
-        where: {
-          id: req.query.id
-        }
-      });
-      if (req.user.isAdmin) {
-        foundUser.schoolId = putUser.schoolId;
+userRouter.put("/", auth(["isAdmin", "isEmployee"]), queryParams(["id"]), async (req, res, next) => {
+  let putUser = req.body;
+  try {
+    let foundUser = await User.findOne({
+      where: {
+        id: req.query.id
       }
-      foundUser.lockerNumber = putUser.lockerNumber;
-      foundUser.lockerCode = putUser.lockerCode;
-      foundUser.firstName = putUser.firstname;
-      foundUser.lastName = putUser.lastName;
-      foundUser.address = putUser.address;
-      foundUser.city = putUser.city;
-      foundUser.state = putUser.state;
-      foundUser.zip = putUser.zip;
-      foundUser.phone = putUser.phone;
-      foundUser.gender = putUser.gender;
-      foundUser.height = putUser.height;
-      foundUser.weight = putUser.weight;
-      await foundUser.save();
-      res.json(foundUser);
-    } catch (err) {
-      next(err);
+    });
+    if (req.user.isAdmin) {
+      foundUser.schoolId = putUser.schoolId;
     }
+    foundUser.lockerNumber = putUser.lockerNumber;
+    foundUser.lockerCode = putUser.lockerCode;
+    foundUser.firstName = putUser.firstname;
+    foundUser.lastName = putUser.lastName;
+    foundUser.address = putUser.address;
+    foundUser.city = putUser.city;
+    foundUser.state = putUser.state;
+    foundUser.zip = putUser.zip;
+    foundUser.phone = putUser.phone;
+    foundUser.gender = putUser.gender;
+    foundUser.height = putUser.height;
+    foundUser.weight = putUser.weight;
+    await foundUser.save();
+    res.json(foundUser);
+  } catch (err) {
+    next(err);
   }
 });
 

@@ -12,7 +12,7 @@ import {
   Redirect
 } from "react-router-dom";
 
-import * as CredentialAPI from "./api/credentials";
+import { CredentialAPI } from "./api";
 
 /**
  * This main component mainly does the authentication and routing.

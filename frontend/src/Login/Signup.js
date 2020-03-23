@@ -8,7 +8,7 @@ import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import { withSnackbar } from 'notistack';
-import * as CredentialAPI from "../api/credentials";
+import { CredentialAPI } from "../api";
 
 /**
  * This Component contains the sign up page along with sign up logic.

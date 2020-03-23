@@ -157,11 +157,25 @@ async function updateCredentials({
     });
 }
 
+//Allows a user to change thier password. Must know previous password to update. 
+async function changePassword(password, newPassword) {
+  return await axios
+    .put(
+      `${apiUrl}/credentials/changePassword`,
+      { password, newPassword },
+      { withCredentials: true }
+    )
+    .then(res => {
+      return res.data;
+    });
+}
+
 export {
   login,
   logout,
   signup,
   getCredentials,
   updateCurrentCredentials,
-  updateCredentials
+  updateCredentials,
+  changePassword
 };

@@ -9,6 +9,7 @@
         "dev": "set NODE_ENV=development&& nodemon ./src/server.js",
         "build": "set NODE_ENV=production&& webpack",
         "prod": "set NODE_ENV=production&& node ./build/main.js",
+        "data": "set NODE_ENV=development&& node ./src/models/generate.data.js",
         "migration:init": "migrate init --migrations-dir ./src/migrations",
         "migration:create": "migrate create --migrations-dir ./src/migrations --template-file ./src/migrations/.template.js",
         "migration:list": "migrate list --migrations-dir ./src/migrations",

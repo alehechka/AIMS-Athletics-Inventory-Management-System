@@ -1,6 +1,7 @@
 "use strict";
 
 const db = require("./database");
+const bcrypt = require("bcrypt");
 
 const {
   credentials,
@@ -85,9 +86,11 @@ const create = async () => {
   await createSportSizes()
   await createInventories();
 
-  credentials.forEach((cred, index) => {
-    db.Credential.create({
+  for(let index in credentials) {
+    let cred = credentials[index];
+    await db.Credential.create({
       ...cred,
+      password: await bcrypt.hash(cred.password, 10),
       organizationId: organizations[0].id
     })
       .then(async created => {
@@ -129,10 +132,22 @@ const create = async () => {
           });
       })
       .catch(err => {
+        console.error(err);
         console.error("Cred already exists: " + cred.email);
       });
-  });
+  }
 };
-create();
 
-//db.db.close();
+const main = async () => {
+  console.log("Syncing database...");
+  await db.db.sync({ force: true, alter: true });
+  console.log("Database sync complete.");
+  console.log("\nPopulating data...");
+  await create();
+  console.log("Data population complete.");
+  console.log("\nClosing database connection...");
+  await db.db.close();
+  console.log("Database connection closed.")
+}
+
+main();

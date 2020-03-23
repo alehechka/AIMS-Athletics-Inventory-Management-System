@@ -14,7 +14,7 @@ import {
     Route,
     withRouter,
   } from "react-router-dom";
-import { logout } from '../api/credentials';
+import { CredentialAPI } from '../api';
 /**
  * This component contains the UI logic for Dashboard. Redirects based on view selected.
  * 
@@ -66,7 +66,7 @@ class Dashboard extends React.Component {
                     allowedViews = {allowedViews}
                     noOfItemsCheckedOut = {2}
                     openProfile = {this.openProfile}
-                    logOutUser = {logout}
+                    logOutUser = {CredentialAPI.logout}
                     organization = {this.props.organization}
                 />
                 <div style ={{marginLeft: "70px"}}>

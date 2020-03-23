@@ -8,7 +8,6 @@ const userRouter = require("./routes/user.route");
 const sportRouter = require("./routes/sport.route");
 const credentialRouter = require("./routes/credential.route");
 const inventoryRouter = require("./routes/inventory.route");
-const url = require('url');
 
 require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
 
@@ -19,7 +18,7 @@ const { PORT, API_VER } = process.env;
 const app = express();
 
 // Configure Express App Instance
-var whitelist = ['http://localhost:3000', 'https://stoplight.io']
+var whitelist = process.env.NODE_ENV === "production" ? [] : ['http://localhost:3000', 'https://stoplight.io']
 var corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1 || !origin) {
@@ -29,20 +28,18 @@ var corsOptions = {
     }
   },
   methods: "GET,PUT,POST,DELETE",
-  allowedHeaders: ['x-access-token', 'authorization', 'Content-Type', 'Accept', 'Origin', 'X-Request-With'],
+  allowedHeaders: ['authorization', 'Content-Type', 'Accept', 'Origin', 'X-Request-With'],
   credentials: true
 }
 app.use(cors(corsOptions));
 
 app.use(express.json( { limit: '50mb' } ));
 app.use(express.urlencoded( { extended: true, limit: '10mb' } ));
-app.use(morgan('dev'));
+if(process.env.NODE_ENV !== 'production') {
+  app.use(morgan('dev'));
+}
 app.use(cookieParser());
 app.use(helmet());
-app.use((req, res, next) => {
-  req.query = url.parse(req.url, true).query;
-  next();
-})
 
 // Setup a friendly greeting for the root route.
 app.get('/', (req, res) => {
@@ -67,9 +64,7 @@ app.use('*', (req, res, next) => {
 
 // Send 404 if no other route matched.
 app.use((req, res) => {
-    res.status(404).json({
-      message: 'Route Not Found',
-    });
+    res.status(404).send('Route not found.');
   });
 
 // Setup a global error handler.
