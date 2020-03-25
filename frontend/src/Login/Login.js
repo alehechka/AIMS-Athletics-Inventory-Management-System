@@ -43,6 +43,22 @@ class Login extends React.Component {
     }
   }
   /**
+   * parses query string params and displays relevant messages
+   * 
+   */
+  componentDidMount(){
+    const queryParams = window.location.search;
+    let searchParams = new URLSearchParams(queryParams);
+    if (searchParams.has("logout")) {
+      this.props.showMessage("You have successfully logged out.");
+    }
+    const email = searchParams.get("email");
+    if (email){
+      this.setState(Object.assign(this.state, {email}));
+      this.props.showMessage("Sent Password Reset Instructions to " + email + " !");
+    }
+  }
+  /**
    * Updates the email state variable
    * 
    * @param e event triggered if textbox changes
@@ -91,8 +107,8 @@ class Login extends React.Component {
         this.setState(Object.assign(this.state, {credentials: res}));
         this.props.showMessage("Logging in...");
 
-        //redirect to homepage
-        window.location ='/';
+        //redirect to current link
+        window.location.href = window.location.href;
     }).catch(error=>{
         this.setState(Object.assign(this.state, {invalid: true}));
         //show invalid creds and tell user to reset password if attempts > 3.

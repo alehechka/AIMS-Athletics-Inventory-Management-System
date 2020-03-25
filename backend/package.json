@@ -6,6 +6,7 @@
     "scripts": {
         "setup": "npm install && npm update",
         "start": "set NODE_ENV=development&& nodemon ./src/server.js",
+        "macstart": "export NODE_ENV=development && nodemon ./src/server.js",
         "dev": "set NODE_ENV=development&& nodemon ./src/server.js",
         "build": "set NODE_ENV=production&& webpack",
         "prod": "set NODE_ENV=production&& node ./build/main.js",

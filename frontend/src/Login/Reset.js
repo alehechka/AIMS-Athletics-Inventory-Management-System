@@ -56,17 +56,8 @@ class Reset extends React.Component {
     e.preventDefault();
     const email = this.state.email;
     //Pwd Reset API code here
-    
-    this.props.enqueueSnackbar("Sent Password Reset Instructions to " + email + " !", {
-      variant: 'success',
-      anchorOrigin: {
-          vertical: 'top',
-          horizontal: 'center',
-      },
-      preventDuplicate: true,
-      autoHideDuration: 30000,
-    });
-    setTimeout(()=>{ window.location.href ='/?email=' + email;},3000);
+
+    window.location.href = '/?email=' + email;
   }
   render() {
     return (

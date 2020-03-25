@@ -95,7 +95,7 @@ async function logout() {
   sessionStorage.removeItem("creds");
   sessionStorage.removeItem("org");
   
-  await axios.get(`${apiUrl}/credentials/logout`, { withCredentials: true }).then(() => {window.location.href = "/"});
+  await axios.get(`${apiUrl}/credentials/logout`, { withCredentials: true }).then(() => {window.location.href = "/?logout=true"});
 }
 
 //Updates current user credentials
