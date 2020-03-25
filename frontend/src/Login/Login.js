@@ -52,6 +52,9 @@ class Login extends React.Component {
     if (searchParams.has("logout")) {
       this.props.showMessage("You have successfully logged out.");
     }
+    if (searchParams.has("reset")) {
+      this.props.showMessage("Password reset performed successfully, please login with the new password.");
+    }
     const email = searchParams.get("email");
     if (email){
       this.setState(Object.assign(this.state, {email}));
@@ -108,7 +111,21 @@ class Login extends React.Component {
         this.props.showMessage("Logging in...");
 
         //redirect to current link
-        window.location.href = window.location.href;
+        let url = window.location.href.replace(window.location.search, "");
+        
+        let params = new URLSearchParams(window.location.search);
+        params.delete('reset');
+        params.delete('email');
+        params.delete('logout');
+
+        let queryString = params.toString();
+        
+        let append = "";
+
+        if (queryString) {
+          append = "?" + queryString;
+        }
+        window.location.href = url + append;
     }).catch(error=>{
         this.setState(Object.assign(this.state, {invalid: true}));
         //show invalid creds and tell user to reset password if attempts > 3.

@@ -2,6 +2,7 @@ import React from "react";
 import Login from "./Login/Login";
 import Reset from "./Login/Reset";
 import Signup from "./Login/Signup";
+import NewPassword from "./Login/NewPassword";
 import Dashboard from "./Dashboard/Dashboard";
 import { withSnackbar } from "notistack";
 
@@ -141,6 +142,13 @@ class App extends React.Component {
               redir("reset", "/")
             ) : (
               <Reset showMessage={this.showMessage} />
+            )}
+          </Route>
+          <Route path="/newpassword">
+            {this.state.authorized ? (
+              redir("newpassword", "/")
+            ) : (
+              <NewPassword showMessage={this.showMessage} />
             )}
           </Route>
           <Route path="/login">
