@@ -52,8 +52,8 @@ async function deleteSport(id) {
 //Array needs to contain the updated list of sports that the user will be part of
   //Anything new will be added and anything missing will be deleted.
 async function updateUserSports(userId, sports) {
-  sports = sports.map((sport) => { 
-    return typeof sport === "object" ? sport.id : sport
+  sports = sports?.map((sport) => {
+    return sport?.id ?? sport;
   });
   return await axios
     .put(`${apiUrl}/sports/user`, { sports }, { params: { userId }, withCredentials: true })

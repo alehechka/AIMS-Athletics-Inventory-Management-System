@@ -4,8 +4,7 @@ const express = require("express");
 const Sequelize = require("sequelize");
 const auth = require("../middleware/auth");
 const queryParams = require("../middleware/queryParams");
-const { User, PlayerSport, Sport, PlayerSize, Credential, SportSize, Status } = require("../models/database");
-//const users = require('../models/database');
+const { User, UserSport, Sport, UserSize, Credential, SportSize, Status, hashPassword } = require("../models/database");
 const userRouter = express.Router();
 
 //POST /api/v#/users
@@ -16,7 +15,7 @@ userRouter.post("/", auth(["isAdmin"]), async (req, res, next) => {
     let createdCred = await Credential.create({
       email: user.email,
       username: user.username,
-      password: user["password"] || "password123",
+      password: await hashPassword(user["password"] || "password123"),
       organizationId: req.user.organizationId
     });
     let createdUser = await User.create({
@@ -56,7 +55,7 @@ userRouter.get(
       const limit = req.query["limit"] || 200;
       let isCoach = req.user.isCoach && !req.user.isAdmin && !req.user.isEmployee;
       if (isCoach) {
-        coachSports = await PlayerSport.findAll({
+        coachSports = await UserSport.findAll({
           offset,
           limit,
           where: {
@@ -94,7 +93,7 @@ userRouter.get(
             ]
           },
           {
-            model: PlayerSize,
+            model: UserSize,
             attributes: req.query.id ? ["id", "sportSizeId", "size"] : []
           },
           {
@@ -136,7 +135,7 @@ userRouter.get("/current", auth(), async (req, res, next) => {
             }
           ]
         },
-        { model: PlayerSize, attributes: ["id", "sportSizeId", "size"] },
+        { model: UserSize, attributes: ["id", "sportSizeId", "size"] },
         {
           model: Credential,
           attributes: req.user.isAdmin ? { exclude: ["organizationId", "password"] } : ["email", "username"]

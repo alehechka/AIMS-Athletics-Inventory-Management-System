@@ -59,6 +59,8 @@ typings/
 
 node_modules
 
+package-lock.json
+
 #Dev environment points to free DB so the file can be exposed to Github
 #.env.development
 .env

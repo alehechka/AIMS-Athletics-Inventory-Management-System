@@ -1,8 +1,9 @@
 "use strict";
 
 const express = require("express");
-const { Credential, Organization, User } = require("../models/database");
+const { Credential, Organization, User, hashPassword } = require("../models/database");
 const auth = require("../middleware/auth");
+const queryParams = require("../middleware/queryParams");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const Sequelize = require("sequelize");
@@ -40,7 +41,7 @@ credentialRouter.post("/signup", async (req, res, next) => {
     let createdCred = await Credential.create({
       email: credential.email,
       username: credential.username,
-      password: await bcrypt.hash(credential.password, 10),
+      password: await hashPassword(credential.password),
       organizationId: 1 //This needs to be changes to be set to whichever Organization the user must be a part of
     });
 
@@ -203,36 +204,32 @@ credentialRouter.put("/current", auth(), async (req, res, next) => {
 
 //PUT /api/v#/credentials
 //Allows admin to update the desired user's email, username, and roles
-credentialRouter.put("/", auth(["isAdmin"]), async (req, res, next) => {
-  if (!req.query.id) {
-    res.status(400).send("No user ID provided.");
-  } else {
-    let putCred = req.body;
-    try {
-      let foundCred = await Credential.findOne({
-        where: {
-          id: req.query.id
-        }
-      });
-
-      foundCred.email = putCred["email"] || foundCred.email;
-      foundCred.username = putCred["username"] || foundCred.username;
-      if (req.user.id !== foundCred.id) {
-        //Cannot remove admin access from themselves
-        foundCred.isAdmin = putCred.isAdmin === true || putCred.isAdmin === false ? putCred.isAdmin : foundCred.isAdmin;
+credentialRouter.put("/", auth(["isAdmin"]), queryParams(["id"]), async (req, res, next) => {
+  let putCred = req.body;
+  try {
+    let foundCred = await Credential.findOne({
+      where: {
+        id: req.query.id
       }
-      foundCred.isEmployee =
-        putCred.isEmployee === true || putCred.isEmployee === false ? putCred.isEmployee : foundCred.isEmployee;
-      foundCred.isCoach = putCred.isCoach === true || putCred.isCoach === false ? putCred.isCoach : foundCred.isCoach;
-      foundCred.isAthlete =
-        putCred.isAthlete === true || putCred.isAthlete === false ? putCred.isAthlete : foundCred.isAthlete;
+    });
 
-      await foundCred.save();
-
-      res.send("Credential update successful");
-    } catch (err) {
-      next(err);
+    foundCred.email = putCred["email"] || foundCred.email;
+    foundCred.username = putCred["username"] || foundCred.username;
+    if (req.user.id !== foundCred.id) {
+      //Cannot remove admin access from themselves
+      foundCred.isAdmin = putCred.isAdmin === true || putCred.isAdmin === false ? putCred.isAdmin : foundCred.isAdmin;
     }
+    foundCred.isEmployee =
+      putCred.isEmployee === true || putCred.isEmployee === false ? putCred.isEmployee : foundCred.isEmployee;
+    foundCred.isCoach = putCred.isCoach === true || putCred.isCoach === false ? putCred.isCoach : foundCred.isCoach;
+    foundCred.isAthlete =
+      putCred.isAthlete === true || putCred.isAthlete === false ? putCred.isAthlete : foundCred.isAthlete;
+
+    await foundCred.save();
+
+    res.send("Credential update successful");
+  } catch (err) {
+    next(err);
   }
 });
 
@@ -250,8 +247,7 @@ credentialRouter.put("/changePassword", auth(), async (req, res, next) => {
       await bcrypt.compare(credential.password, foundCred.password, async (err, result) => {
         if (result) {
           if (credential.password !== credential.newPassword) {
-            foundCred.password = await bcrypt.hash(credential.newPassword, 10);
-            await foundCred.save();
+            (foundCred.password = await hashPassword(credential.newPassword)), await foundCred.save();
             res.send("Password successfully changed.");
           } else {
             res.status(400).send("Password cannot match previous password.");

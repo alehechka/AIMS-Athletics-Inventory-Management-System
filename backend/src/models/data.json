@@ -47,7 +47,8 @@
     }
   ],
   "sport_sizes": [
-    { "name": "T-Shirt", "sizes": ["XL", "L", "M", "S"] }
+    { "name": "T-Shirt", "sizes": ["XL", "L", "M", "S"] },
+    { "name": "Sweater", "sizes": ["XL", "L", "M", "S"] }
   ],
   "inventories": [
     {

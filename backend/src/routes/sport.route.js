@@ -2,7 +2,7 @@
 
 const express = require("express");
 const Sequelize = require("sequelize");
-const { Sport, PlayerSport, User } = require("../models/database");
+const { Sport, UserSport, User } = require("../models/database");
 const auth = require("../middleware/auth");
 const queryParams = require("../middleware/queryParams");
 const sportRouter = express.Router();
@@ -92,7 +92,7 @@ sportRouter.delete("/", auth(["isAdmin"]), queryParams(['id']), async (req, res,
 sportRouter.put("/user", auth(["isAdmin", "isEmployee"]), queryParams(['userId']), async (req, res, next) => {
     let putSports = req.body.sports;
   try {
-      let userSports = await PlayerSport.findAll({
+      let userSports = await UserSport.findAll({
           where: {
               userId: req.query.userId
           }
@@ -101,13 +101,13 @@ sportRouter.put("/user", auth(["isAdmin", "isEmployee"]), queryParams(['userId']
       let deleteSports = userSports.filter(sport => !putSports.includes(sport));
 
       for (let sport of addSports) {
-        await PlayerSport.create({
+        await UserSport.create({
           userId: req.query.userId,
           sportId: sport
         });
       }
       for (let sport of deleteSports) {
-        await PlayerSport.destroy({
+        await UserSport.destroy({
           where: {
             userId: req.query.userId,
             sportId: sport

@@ -10,50 +10,60 @@ const inventoryRouter = express.Router();
 //GET /api/v#/inventory
 //Get all inventory with filters
 //Sending an inventory ID will retreive the full details of the single item.
-inventoryRouter.get("/", auth(["isAdmin", "isEmployee", "isCoach"]), queryParams([], ['id', 'surplus', 'sportSizeId', 'sportId', 'gender']), async (req, res, next) => {
-  try {
-    let inventories = await Inventory.findAll({
-      where: Sequelize.and(
-        req.query.id ? { id: req.query.id } : null,
-        { organizationId: req.user.organizationId },
-        req.query.surplus ? { surplus: req.query.surplus } : null,
-        req.query.sportSizeId ? { sportSizeId: req.query.sportSizeId } : null
-      ),
-      attributes: {
-        exclude: ["createdAt", "updatedAt", "sportSizeId", "organizationId"],
-      },
-      include: [
-        {
-          model: SportSize,
-          where: Sequelize.and(
-            req.query.sportSizeId ? { id: req.query.sportSizeId } : null,
-            req.query.sportId ? { sportId: req.query.sportId } : null
-          ),
-          attributes: {
-            exclude: req.query.id ? ["sportId"] : ["sportId", "sizes"]
-          },
-          include: [
-            {
-              model: Sport,
-              where: Sequelize.and(
-                req.query.sportId ? { id: req.query.sportId } : null,
-                req.query.gender ? { gender: req.query.gender } : null
-              ),
-              attributes: { exclude: ["organizationId"] }
-            }
-          ]
+inventoryRouter.get(
+  "/",
+  auth(["isAdmin", "isEmployee", "isCoach"]),
+  queryParams([], ["page", "limit", "id", "surplus", "sportSizeId", "sports[]", "gender", "taxable", "expendable"]),
+  async (req, res, next) => {
+    try {
+      const offset = req.query["page"] * req.query["limit"] || 0;
+      const limit = req.query["limit"] || 200;
+      let inventories = await Inventory.findAll({
+        offset,
+        limit,
+        where: Sequelize.and(
+          req.query.id ? { id: req.query.id } : null,
+          { organizationId: req.user.organizationId },
+          req.query.surplus ? { surplus: req.query.surplus } : null,
+          req.query.sportSizeId ? { sportSizeId: req.query.sportSizeId } : null,
+          req.query.taxable ? { taxable : req.query.taxable } : null,
+          req.query.expendable ? { expendable : req.query.expendable } : null,
+        ),
+        attributes: {
+          exclude: ["createdAt", "updatedAt", "sportSizeId", "organizationId"]
         },
-        {
-          model: InventorySize,
-          attributes: req.query.id ? ["id", "size", "barcode", "price", "quantity"] : []   
-        }
-      ]
-    });
-    res.json(req.query.id && inventories.length ? inventories[0] : inventories);
-  } catch (err) {
-    next(err);
+        include: [
+          {
+            model: SportSize,
+            where: Sequelize.and(
+              req.query.sportSizeId ? { id: req.query.sportSizeId } : null,
+              req.query["sports[]"] ? Sequelize.or({ sportId: req.query["sports[]"] }) : null,
+            ),
+            attributes: {
+              exclude: req.query.id ? ["sportId"] : ["sportId", "sizes"]
+            },
+            include: [
+              {
+                model: Sport,
+                where: Sequelize.and(
+                  req.query.gender ? { gender: req.query.gender } : null
+                ),
+                attributes: { exclude: ["organizationId"] }
+              }
+            ]
+          },
+          {
+            model: InventorySize,
+            attributes: req.query.id ? ["id", "size", "barcode", "price", "quantity"] : []
+          }
+        ]
+      });
+      res.json(req.query.id && inventories.length ? inventories[0] : inventories);
+    } catch (err) {
+      next(err);
+    }
   }
-});
+);
 
 //POST /api/v#/inventory
 //Create new inventory item and its sizes
@@ -69,7 +79,7 @@ inventoryRouter.post("/", auth(["isAdmin", "isEmployee"]), async (req, res, next
       organizationId: req.user.organizationId,
       sportSizeId: postInventory.sportSizeId
     });
-    for(let inventorySize of postInventory.inventorySizes) {
+    for (let inventorySize of postInventory.inventorySizes) {
       await InventorySize.create({
         size: inventorySize.size,
         barcode: inventorySize.barcode,
@@ -78,15 +88,48 @@ inventoryRouter.post("/", auth(["isAdmin", "isEmployee"]), async (req, res, next
         inventoryId: inventory.id
       });
     }
-    res.status(201).json(await Inventory.findOne({
-      where: { id: inventory.id },
+    res.status(201).json(
+      await Inventory.findOne({
+        where: { id: inventory.id },
+        attributes: {
+          exclude: ["createdAt", "updatedAt", "sportSizeId", "organizationId"]
+        },
+        include: [
+          {
+            model: InventorySize,
+            attributes: { exclude: ["createdAt", "updatedAt", "inventoryId"] }
+          },
+          {
+            model: SportSize,
+            attributes: {
+              exclude: ["sportId"]
+            },
+            include: [{ model: Sport, attributes: { exclude: ["organizationId"] } }]
+          }
+        ]
+      })
+    );
+  } catch (err) {
+    next(err);
+  }
+});
+
+//POST /api/v#/inventory
+//Updates the selected inventory item and its sizes
+inventoryRouter.put("/", auth(["isAdmin", "isEmployee"]), queryParams(["id"]), async (req, res, next) => {
+  let putInventory = req.body;
+  try {
+    let foundItem = await Inventory.findOne({
+      where: {
+        id: req.query.id
+      },
       attributes: {
-        exclude: ["createdAt", "updatedAt", "sportSizeId"]
+        exclude: ["createdAt", "updatedAt", "sportSizeId", "organizationId"]
       },
       include: [
         {
           model: InventorySize,
-          attributes: { exclude: ["createdAt", "updatedAt"] }
+          attributes: { exclude: ["createdAt", "updatedAt", "inventoryId"] }
         },
         {
           model: SportSize,
@@ -96,25 +139,8 @@ inventoryRouter.post("/", auth(["isAdmin", "isEmployee"]), async (req, res, next
           include: [{ model: Sport, attributes: { exclude: ["organizationId"] } }]
         }
       ]
-    }));
-  } catch (err) {
-    next(err);
-  }
-});
+    })
 
-//POST /api/v#/inventory
-//Updates the selected inventory item and its sizes
-inventoryRouter.put("/", auth(["isAdmin", "isEmployee"]), queryParams(['id']), async (req, res, next) => {
-  let putInventory = req.body;
-  try {
-    let foundItem = await Inventory.findOne({
-      where: {
-        id: req.query.id
-      },
-      include: [{
-        model: InventorySize
-      }]
-    });
     foundItem.name = putInventory.name;
     foundItem.description = putInventory.description;
     foundItem.surplus = putInventory.surplus;
@@ -122,7 +148,48 @@ inventoryRouter.put("/", auth(["isAdmin", "isEmployee"]), queryParams(['id']), a
     foundItem.expendable = putInventory.expendable;
     foundItem.sportSizeId = putInventory.sportSizeId;
     await foundItem.save();
-    res.json(foundItem)
+
+    let addItems = putInventory.inventorySizes.filter((item) => !item.id);
+    let deleteItems = foundItem.inventorySizes.filter((item) => {
+      return putInventory.inventorySizes.filter((putItem) => putItem.id === item.id).length === 0;
+    });
+    let updateItems = putInventory.inventorySizes.filter((item) => item.id);
+
+    for (let item of updateItems) {
+      await InventorySize.update(
+        {
+          size: item.size,
+          barcode: item.barcode,
+          price: item.price,
+          quantity: item.quantity,
+        },
+        {
+          where: {
+            id: item.id
+          }
+        }
+      );
+    }
+
+    for (let item of addItems) {
+      await InventorySize.create({
+        size: item.size,
+        barcode: item.barcode,
+        price: item.price,
+        quantity: item.quantity,
+        inventoryId: foundItem.id
+      });
+    }
+    for (let item of deleteItems) {
+      await InventorySize.destroy({
+        where: {
+          id: item.id
+        }
+      });
+    }
+    res.json(
+      await foundItem.reload()
+    );
   } catch (err) {
     next(err);
   }

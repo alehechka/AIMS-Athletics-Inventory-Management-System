@@ -1,3 +1,4 @@
+"use strict";
 // Require Dependencies
 const express = require("express");
 const morgan = require("morgan");

@@ -2,7 +2,7 @@
 
 require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
 const { DB_HOST, DB_DATABASE, DB_USER, DB_PASSWORD } = process.env;
-
+const bcrypt = require("bcrypt");
 const Sequelize = require("sequelize");
 
 const db = new Sequelize(DB_DATABASE, DB_USER, DB_PASSWORD, {
@@ -76,6 +76,11 @@ const Credential = db.define(
   }
 );
 
+//This functions makes it so all hashing of passwords use the same salt.
+const hashPassword = async (password) => {
+  return await await bcrypt.hash(password, 10);
+}
+
 Organization.hasMany(Credential, { foreignKey: { allowNull: false } });
 Credential.belongsTo(Organization), { foreignKey: { allowNull: false } };
 
@@ -124,7 +129,7 @@ Status.hasMany(User);
 User.belongsTo(Status);
 
 /////// SPORTS //////////////////////////////////////////////////////////////////////////
-//All players will be contained inside a "base sport" that will contain the standard equipment that all athletes need
+//All users will be contained inside a "base sport" that will contain the standard equipment that all athletes need
 const Sport = db.define("sports", {
   name: { type: Sequelize.STRING, allowNull: false },
   gender: { type: Sequelize.STRING(1), allowNull: false }
@@ -150,12 +155,12 @@ const SportSize = db.define(
 Sport.hasMany(SportSize, { foreignKey: { allowNull: false } });
 SportSize.belongsTo(Sport, { foreignKey: { allowNull: false } });
 
-/////// PLAYER_SPORTS ///////////////////////////////////////////////////////////////////////////
+/////// USER_SPORTS ///////////////////////////////////////////////////////////////////////////
 
-const PlayerSport = db.define("playerSports", {});
+const UserSport = db.define("userSports", {});
 
-User.belongsToMany(Sport, { through: "playerSports" });
-Sport.belongsToMany(User, { through: "playerSports" });
+User.belongsToMany(Sport, { through: "userSports" });
+Sport.belongsToMany(User, { through: "userSports" });
 
 /////// INVENTORY ///////////////////////////////////////////////////////////////////////////
 //Inventory that the school has.
@@ -276,9 +281,9 @@ Transaction.belongsTo(User, {
 Organization.hasMany(Transaction, { foreignKey: { allowNull: false } });
 Transaction.belongsTo(Organization, { foreignKey: { allowNull: false } });
 
-/////// PLAYER_SIZES ///////////////////////////////////////////////////////////////////////////
-const PlayerSize = db.define(
-  "playerSizes",
+/////// USER_SIZES ///////////////////////////////////////////////////////////////////////////
+const UserSize = db.define(
+  "userSizes",
   {
     size: { type: Sequelize.STRING, allowNull: false }
   },
@@ -287,11 +292,11 @@ const PlayerSize = db.define(
   }
 );
 
-User.hasMany(PlayerSize, { foreignKey: { allowNull: false } });
-PlayerSize.belongsTo(User, { foreignKey: { allowNull: false } });
+User.hasMany(UserSize, { foreignKey: { allowNull: false } });
+UserSize.belongsTo(User, { foreignKey: { allowNull: false } });
 
-SportSize.hasMany(PlayerSize, { foreignKey: { allowNull: false } });
-PlayerSize.belongsTo(SportSize, { foreignKey: { allowNull: false } });
+SportSize.hasMany(UserSize, { foreignKey: { allowNull: false } });
+UserSize.belongsTo(SportSize, { foreignKey: { allowNull: false } });
 
 module.exports = {
   User,
@@ -299,12 +304,13 @@ module.exports = {
   InventorySize,
   Equipment,
   Transaction,
-  PlayerSize,
-  PlayerSport,
+  UserSize,
+  UserSport,
   Sport,
   SportSize,
   Status,
   Credential,
+  hashPassword,
   Organization,
   db
 };

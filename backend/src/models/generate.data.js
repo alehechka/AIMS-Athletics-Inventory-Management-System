@@ -1,7 +1,6 @@
 "use strict";
 
 const db = require("./database");
-const bcrypt = require("bcrypt");
 
 const {
   credentials,
@@ -90,7 +89,7 @@ const create = async () => {
     let cred = credentials[index];
     await db.Credential.create({
       ...cred,
-      password: await bcrypt.hash(cred.password, 10),
+      password: await db.hashPassword(cred.password),
       organizationId: organizations[0].id
     })
       .then(async created => {
@@ -102,11 +101,11 @@ const create = async () => {
         })
           .then(async res => {
             users[index].id = res.id;
-            await db.PlayerSport.create({
+            await db.UserSport.create({
               userId: res.id,
               sportId: sports[index % sports.length].id
             });
-            await db.PlayerSize.create({
+            await db.UserSize.create({
               userId: res.id,
               sportSizeId: sport_sizes[index % sport_sizes.length].id,
               size: sport_sizes[index % sport_sizes.length].sizes[0]
