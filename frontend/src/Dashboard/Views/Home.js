@@ -29,7 +29,7 @@ export default function Home(props) {
       <button onClick={() => SportsAPI.updateUserSports(5, [1])}>Update User Sports</button>
       <br />
       <br />
-      <button onClick={() => CredentialAPI.changePassword("admin", "test")}>Change Password</button>
+      <button onClick={() => CredentialAPI.changePassword("test", "admin")}>Change Password</button>
       <br />
       <br />
       <button onClick={() => InventoryAPI.getInventory(null, null, {})}>Get Inventory</button>
@@ -66,7 +66,7 @@ export default function Home(props) {
       </button>
       <br />
       <br />
-      <button onClick={() => CredentialAPI.changeFavicon("creighton.ico")}>Change Favicon</button>
+      <button onClick={() => CredentialAPI.changeFavicon("assets/creighton.ico")}>Change Favicon</button>
 
       <button onClick={() => props.history.push("/athletes")}>Athletes</button>
     </div>
