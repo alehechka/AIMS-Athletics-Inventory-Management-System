@@ -5,7 +5,13 @@ export default function Home(props) {
   return (
     <div>
       <h1>Home</h1>
-      <button onClick={() => UsersAPI.getUsers(null, null, {isAdmin: false, isEmployee: false, isCoach: false, isAthlete: false})}>Get Users</button>
+      <button
+        onClick={() =>
+          UsersAPI.getUsers(null, null, { isAdmin: false, isEmployee: false, isCoach: false, isAthlete: false })
+        }
+      >
+        Get Users
+      </button>
       <button onClick={() => UsersAPI.getSingleUser(5)}>Get Single User</button>
       <button onClick={() => UsersAPI.getCurrentUser()}>Get Current</button>
       <button onClick={() => UsersAPI.createUser("test@test.com", null, null, {})}>Create User</button>
@@ -58,8 +64,11 @@ export default function Home(props) {
       >
         Update Inventory
       </button>
+      <br />
+      <br />
+      <button onClick={() => CredentialAPI.changeFavicon("creighton.ico")}>Change Favicon</button>
 
-      <button onClick={() => CredentialAPI.changeFavicon('http://www.google.com/favicon.ico')}>Change Favicon</button>
+      <button onClick={() => props.history.push("/athletes")}>Athletes</button>
     </div>
   );
 }

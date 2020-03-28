@@ -8,7 +8,6 @@ import VerifiedUserIcon from '@material-ui/icons/VerifiedUser';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import { withSnackbar } from 'notistack';
-import { CredentialAPI } from "../api";
 
 /**
  * This Component contains the sign up page along with sign up logic.
@@ -105,17 +104,19 @@ class Signup extends React.Component {
     const password2Valid = this.state.password1 === this.state.password2;
     this.setState(Object.assign(this.state, {password2Valid}));
 
+    const { context } = this.props;
+    //const { from } = this.props.location.state || { from : { pathname: '/'}};
+
     const formValid =  this.state.usernameValid && this.state.emailValid && this.state.password1Valid && this.state.password2Valid;
     if(formValid) {
       //TODO logic
-      await CredentialAPI.signup(email, username, password)
+      await context.actions.signup(email, username, password)
       .then(res => {
-            this.setState(Object.assign(this.state, {credentials: res}));
-            this.props.showMessage(`You have successfully signed up ${email}, Redirecting...!`);
-            setTimeout(()=>(window.location.href ='/?email=' + email), 3000);
+            this.props.showMessage(`You have successfully signed up ${username}, Redirecting...!`);
+            setTimeout(()=>(this.props.history.push('/?email=' + email)), 3000);
         }).catch(error=>{
           this.props.showMessage(`An account holder already exists for this information. Redirecting to login...!`, "error");
-          setTimeout(()=>(window.location.href ='/?email=' + email), 5000);
+          setTimeout(()=>(this.props.history.push('/login/?email=' + email)), 5000);
         });
     }
     else {
@@ -207,7 +208,7 @@ render() {
             >
               Sign Up
             </Button>
-            <Link href="login" variant="body" style ={{display: "block", textAlign: "center", marginTop: "16px"}}>
+            <Link href="login" variant="body1" style ={{display: "block", textAlign: "center", marginTop: "16px"}}>
               Already have an account? Click here to Sign In.
             </Link>
           </form>

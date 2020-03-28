@@ -10,7 +10,6 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import { withSnackbar } from 'notistack';
-import { CredentialAPI } from "../api";
 /**
  * This Component contains the login page along with user authorization logic.
  * 
@@ -58,7 +57,7 @@ class Login extends React.Component {
     const email = searchParams.get("email");
     if (email){
       this.setState(Object.assign(this.state, {email}));
-      this.props.showMessage("Sent Password Reset Instructions to " + email + " !");
+      this.props.showMessage("Sent Password Reset Instructions to: " + email);
     }
   }
   /**
@@ -83,7 +82,6 @@ class Login extends React.Component {
    * @param e event triggered if checkbox changes
    */ 
   handleRememberChange =(e) =>{
-    console.log(e.target.checked);
     this.setState(Object.assign(this.state, {remember: e.target.checked}));
   }
   /**
@@ -102,38 +100,39 @@ class Login extends React.Component {
     const password = this.state.password;
     const remember = this.state.remember;
 
+    const { context } = this.props;
+    const { from } = this.props.location.state || { from : { pathname: '/'}};
+
     // await axios.post(`${apiUrl}/credentials/login`,
     //     { email, password},
-    await CredentialAPI.login(email, password, remember)
+    await context.actions.login(email, password, remember)
     .then(res => {
-      console.log(res)
-        this.setState(Object.assign(this.state, {credentials: res}));
-        this.props.showMessage("Logging in...");
+        this.props.showMessage("Logging in...", "success", 2000);
 
-        //redirect to current link
-        let url = window.location.href.replace(window.location.search, "");
+        // //redirect to current link
+        // let url = window.location.href.replace(window.location.search, "");
         
-        let params = new URLSearchParams(window.location.search);
-        params.delete('reset');
-        params.delete('email');
-        params.delete('logout');
+        // let params = new URLSearchParams(window.location.search);
+        // params.delete('reset');
+        // params.delete('email');
+        // params.delete('logout');
 
-        let queryString = params.toString();
+        // let queryString = params.toString();
         
-        let append = "";
+        // let append = "";
 
-        if (queryString) {
-          append = "?" + queryString;
-        }
-        window.location.href = url + append;
+        // if (queryString) {
+        //   append = "?" + queryString;
+        // }
+        //window.location.href = ("localhost:3000");
+        this.props.history.push(from);
     }).catch(error=>{
-        this.setState(Object.assign(this.state, {invalid: true}));
         //show invalid creds and tell user to reset password if attempts > 3.
         if (this.state.noOfAttempts < 3) {
           this.props.showMessage("Invalid Credentials", "error");
         }
         else{
-          this.props.showMessage("Invalid Credentials", "error", "5000");
+          this.props.showMessage("Invalid Credentials", "error", 5000);
           setTimeout(this.props.showMessage("Did you forget your password? \n Click on Forgot password to reset your password.", "warning", "20000"), 5100);
         }  
     }
@@ -197,7 +196,7 @@ class Login extends React.Component {
             >
               Log In
             </Button>
-            <Link href="signup" variant="body1" style ={{display: "block", textAlign: "center", marginTop: "16px"}}>
+            <Link href="" onClick={() => this.props.history.push("/signup")} variant="body1" style ={{display: "block", textAlign: "center", marginTop: "16px"}}>
               Don't have an account? Click here to Sign Up.
             </Link>
           </form>
