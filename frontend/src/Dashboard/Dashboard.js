@@ -7,6 +7,7 @@ import Inventory from "./Views/Inventory";
 import Profile from "./Views/Profile";
 import Staff from "./Views/Staff";
 import Admin from "./Views/Admin";
+import AuthRoute from "../AuthRoute";
 
 import { BrowserRouter as Router, Switch, Route, withRouter, Redirect } from "react-router-dom";
 
@@ -62,12 +63,6 @@ class Dashboard extends React.Component {
           ? "isAthlete"
           : "isNewUser"
       ];
-    //Default views that a newly signed up user can access.
-    const unauthorizedUser = (page) => (
-      <h3>
-        401 - You are unauthorized to view {page}. {authorize([]) ? "Please contact an admin to get a role." : ""}
-      </h3>
-    );
 
     return (
       <React.Fragment>
@@ -83,29 +78,25 @@ class Dashboard extends React.Component {
               />
               <Switch>
                 <Route path={`/profile`} component={(props) => <Profile {...props} />} />
-                <Route
+                <AuthRoute
                   path={`/athletes`}
-                  component={(props) =>
-                    allowedViews.includes("Athletes") ? <Athletes {...props} /> : unauthorizedUser("Athletes")
-                  }
+                  accessGranted={allowedViews.includes("Athletes")}
+                  component={(props) => <Athletes {...props} />}
                 />
-                <Route
+                <AuthRoute
                   path={`/inventory`}
-                  component={(props) =>
-                    allowedViews.includes("Inventory") ? <Inventory {...props} /> : unauthorizedUser("Inventory")
-                  }
+                  accessGranted={allowedViews.includes("Inventory")}
+                  component={(props) => <Inventory {...props} /> }
                 />
-                <Route
+                <AuthRoute
                   path={`/staff`}
-                  component={(props) =>
-                    allowedViews.includes("Staff") ? <Staff {...props} /> : unauthorizedUser("Staff")
-                  }
+                  accessGranted={allowedViews.includes("Staff")}
+                  component={(props) => <Staff {...props} />}
                 />
-                <Route
+                <AuthRoute
                   path={`/admin`}
-                  component={(props) =>
-                    allowedViews.includes("Admin") ? <Admin {...props} /> : unauthorizedUser("Admin")
-                  }
+                  accessGranted={allowedViews.includes("Admin")}
+                  component={(props) => <Admin {...props} /> }
                 />
                 <Route path={`/home`} component={(props) => <Home {...props} />} />
                 <Route exact path={pathname}>

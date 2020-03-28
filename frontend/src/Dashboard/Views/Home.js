@@ -22,7 +22,7 @@ export default function Home(props) {
       <button onClick={() => SportsAPI.getSports()}>Get Sports</button>
       <button onClick={() => SportsAPI.getSport(1)}>Get Sport</button>
       <button onClick={() => SportsAPI.createSport({ name: "Football", gender: "M" })}>Create Sport</button>
-      <button onClick={() => SportsAPI.updateSport({ id: 1, name: "Baseball", gender: "M" })}>Update Sport</button>
+      <button onClick={() => SportsAPI.updateSport({ id: 1, name: "Administration", gender: "M" })}>Update Sport</button>
       <button onClick={() => SportsAPI.deleteSport(4)}>Delete Sport</button>
       <br />
       <br />

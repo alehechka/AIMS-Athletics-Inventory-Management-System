@@ -5,13 +5,13 @@ const Context = React.createContext();
 
 export class Provider extends Component {
   state = {
-    authorized: true
+    credentials: JSON.parse(sessionStorage.getItem("creds")) || null,
+    organization: JSON.parse(sessionStorage.getItem("org")) || null,
+    authorized: sessionStorage.getItem("creds") ? true : false
   };
 
   componentDidMount() {
-    let credentials = JSON.parse(sessionStorage.getItem("creds")) || null;
-    let organization = JSON.parse(sessionStorage.getItem("org")) || null;
-    if (!(credentials && organization)) {
+    if (!(this.state.credentials && this.state.organization)) {
       CredentialAPI.getCredentials()
         .then((res) => {
           this.setCredentials(res, true);
@@ -20,7 +20,7 @@ export class Provider extends Component {
           this.setCredentials(null, false);
         });
     } else {
-      this.setCredentials({ ...credentials, organization }, true);
+      this.setCredentials({ ...this.state.credentials, organization: this.state.organization }, true);
     }
   }
 

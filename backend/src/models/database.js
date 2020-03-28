@@ -63,7 +63,7 @@ const Credential = db.define(
     isAthlete: {
       type: Sequelize.BOOLEAN,
       allowNull: false,
-      defaultValue: false
+      defaultValue: true
     },
     isCoach: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false }
   },

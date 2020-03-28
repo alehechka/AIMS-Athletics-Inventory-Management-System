@@ -57,7 +57,7 @@ class Reset extends React.Component {
     const email = this.state.email;
     //Pwd Reset API code here
 
-    window.location.href = '/?email=' + email;
+    this.props.history.push('/login/?email=' + email);
   }
   render() {
     return (
