@@ -1,6 +1,7 @@
 import React, {forwardRef} from "react";
 import MaterialTable from 'material-table'
-import AddBox from '@material-ui/icons/AddBox';
+import {Link} from "react-router-dom";
+import Add from '@material-ui/icons/Add';
 import ArrowUpward from '@material-ui/icons/ArrowUpward';
 import Check from '@material-ui/icons/Check';
 import ChevronLeft from '@material-ui/icons/ChevronLeft';
@@ -17,7 +18,7 @@ import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
 
 const tableIcons = {
-Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
+Add: forwardRef((props, ref) => <Add {...props} ref={ref} />),
 Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
 Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
 Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
@@ -42,16 +43,30 @@ export default function Athletes(props) {
   return (
     <div style={{ maxWidth: '100%' }}>
     <MaterialTable
-    icons={tableIcons}
-      columns={[
+      icons={tableIcons}
+      options= {{exportButton: true,
+                exportFileName: "AIMS_athlete_report"}}
+      actions={[
+        {
+          icon: Add,
+          tooltip: 'Add Athlete',
+          isFreeAction: true,
+          onClick: (event) => alert("You want to add a new row")
+        }]}
+        columns={[
+        { title: 'ID', field: 'id' , type: 'numeric'},
         { title: 'First', field: 'firstName' },
-        { title: 'Last', field: 'lastName' },
-        { title: 'Sport', field: 'sport', type: 'numeric' },
-        { title: 'Status', field: 'status', type: 'numeric' }
+        { title: 'Last', field: 'lastName'},
+        { title: 'Gender', field: 'gender' },
+        { title: 'Number', field: 'number' , type: 'numeric'},
+        { title: 'Locker', field: 'locker', type:'numeric' },
+        { title: 'Class', field: 'class', type: 'numeric' },
+        { title: 'Sport', field: 'sport'}
       ]}
-      data={[{ firstName: 'John', lastName: 'Sportsman', sport: "Soccer", status: "Senior" }]}
+      data={[{ id : 1, gender: "male", number: 10, locker: 200, firstName: "John", lastName: "Sportsman", sport: "Soccer", class: "Senior" }]}
       title="Athletes"
     />
+    <Link to="/addathlete" className="btn btn-primary">add page</Link>
   </div>
   );
 }

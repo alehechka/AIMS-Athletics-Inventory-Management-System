@@ -7,6 +7,7 @@ import Inventory from './Views/Inventory';
 import Profile from './Views/Profile';
 import Staff from './Views/Staff';
 import Admin from './Views/Admin';
+import AddAthlete from './Views/AddAthlete';
 
 import {
     BrowserRouter as Router,
@@ -90,6 +91,7 @@ class Dashboard extends React.Component {
                                         role = {role}
                                     /> : unauthorizedUser(role, 'Athletes')}
                             </Route>
+                            <Route path={'/addathlete'} component={AddAthlete} />
                             <Route path={`/inventory`}>
                                 {allowedViews.includes('Inventory')?
                                     <Inventory
