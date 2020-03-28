@@ -90,7 +90,7 @@ credentialRouter.post("/signup", async (req, res, next) => {
         organization: organization
       });
   } catch (err) {
-    next(err);
+    res.status(401).send("Email or username already in use.")
   }
 });
 

@@ -38,7 +38,7 @@ const Organization = db.define("organizations", {
   phone: { type: Sequelize.INTEGER, allowNull: true },
   primaryColor: { type: Sequelize.STRING(6), allowNull: true },
   secondaryColor: { type: Sequelize.STRING(6), allowNull: true },
-  logo: { type: Sequelize.BLOB, allowNull: true }
+  logo: { type: Sequelize.STRING, allowNull: true }
 });
 
 /////// USERS ///////////////////////////////////////////////////////////////////////////
@@ -63,7 +63,7 @@ const Credential = db.define(
     isAthlete: {
       type: Sequelize.BOOLEAN,
       allowNull: false,
-      defaultValue: false
+      defaultValue: true
     },
     isCoach: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false }
   },
