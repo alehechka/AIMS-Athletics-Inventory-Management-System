@@ -1,7 +1,7 @@
 "use strict";
 
 const express = require("express");
-const { Credential, Organization, User, hashPassword } = require("../models/database");
+const { Credential, Organization, User, UserSport, hashPassword } = require("../models/database");
 const auth = require("../middleware/auth");
 const queryParams = require("../middleware/queryParams");
 const jwt = require("jsonwebtoken");
@@ -42,12 +42,18 @@ credentialRouter.post("/signup", async (req, res, next) => {
       email: credential.email,
       username: credential.username,
       password: await hashPassword(credential.password),
-      organizationId: 1 //This needs to be changes to be set to whichever Organization the user must be a part of
+      organizationId: 1 //This needs to be changed to be set to whichever Organization the user must be a part of
     });
 
-    await User.create({
+    let createdUser = await User.create({
       credentialId: createdCred.id,
       organizationId: createdCred.organizationId
+    });
+
+    //This needs to be changed to be the "Admin" sport for whichever organization they are in
+    await UserSport.create({
+      userId: createdUser.id,
+      sportId: 1
     });
 
     let organization = await Organization.findOne({

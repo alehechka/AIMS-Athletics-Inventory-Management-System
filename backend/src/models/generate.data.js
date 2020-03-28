@@ -103,7 +103,11 @@ const create = async () => {
             users[index].id = res.id;
             await db.UserSport.create({
               userId: res.id,
-              sportId: sports[index % sports.length].id
+              sportId: sports[0].id
+            });
+            await db.UserSport.create({
+              userId: res.id,
+              sportId: sports[(index % (sports.length -1))+1].id
             });
             await db.UserSize.create({
               userId: res.id,

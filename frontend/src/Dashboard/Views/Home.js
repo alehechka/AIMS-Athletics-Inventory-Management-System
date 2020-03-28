@@ -5,8 +5,8 @@ export default function Home(props) {
   return (
     <div>
       <h1>Home</h1>
-      <button onClick={() => UsersAPI.getUsers(null, null, { sports: [3, { id: 2 }, 1] })}>Get Users</button>
-      <button onClick={() => UsersAPI.getSingleUser(1)}>Get Single User</button>
+      <button onClick={() => UsersAPI.getUsers(null, null, {isAdmin: false, isEmployee: false, isCoach: false, isAthlete: false})}>Get Users</button>
+      <button onClick={() => UsersAPI.getSingleUser(5)}>Get Single User</button>
       <button onClick={() => UsersAPI.getCurrentUser()}>Get Current</button>
       <button onClick={() => UsersAPI.createUser("test@test.com", null, null, {})}>Create User</button>
       <button onClick={() => UsersAPI.updateCurrentUser({ address: "Admin City" })}>Update Current</button>
@@ -20,7 +20,7 @@ export default function Home(props) {
       <button onClick={() => SportsAPI.deleteSport(4)}>Delete Sport</button>
       <br />
       <br />
-      <button onClick={() => SportsAPI.updateUserSports(1, [1, { id: 2 }])}>Update User Sports</button>
+      <button onClick={() => SportsAPI.updateUserSports(5, [1])}>Update User Sports</button>
       <br />
       <br />
       <button onClick={() => CredentialAPI.changePassword("admin", "test")}>Change Password</button>
@@ -33,7 +33,7 @@ export default function Home(props) {
             name: "Game Jersey",
             description: "Home Game Jersey",
             surplus: false,
-            taxable: true,
+            taxable: false,
             expendable: false,
             sportSize: 1,
             inventorySizes: [{ size: "M", price: 40.35, quantity: 25 }]
@@ -45,19 +45,21 @@ export default function Home(props) {
       <button
         onClick={() =>
           InventoryAPI.updateInventory({
-            id: 4,
+            id: 2,
             name: "Game Jersey",
             description: "Away Game Jersey",
             surplus: true,
-            taxable: false,
+            taxable: true,
             expendable: true,
             sportSize: 2,
-            inventorySizes: [{ size: "XL", price: 50.25, quantity: 10 }]
+            inventorySizes: [{ id: 3, size: "XL", price: 50.25, quantity: 10 }]
           })
         }
       >
         Update Inventory
       </button>
+
+      <button onClick={() => CredentialAPI.changeFavicon('http://www.google.com/favicon.ico')}>Change Favicon</button>
     </div>
   );
 }

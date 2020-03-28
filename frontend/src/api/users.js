@@ -77,13 +77,13 @@ async function getSingleUser(id) {
 
 // Retreives a list of users that the current user has access to (based on role or sport if coach)
 // The page and limit parameters are used for pagination (supply null to default to 200 user response)
-async function getUsers(page, limit, {gender, sports}) {
+async function getUsers(page, limit, {gender, sports, isAdmin, isEmployee, isCoach, isAthlete}) {
   sports = sports?.map((sport) => {
     return sport?.id ?? sport;
   });
   return await axios
     .get(`${apiUrl}/users`, {
-      params: { page, limit, gender, sports },
+      params: { page, limit, gender, sports, isAdmin, isEmployee, isCoach, isAthlete },
       withCredentials: true
     })
     .then(res => {

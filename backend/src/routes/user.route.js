@@ -35,6 +35,11 @@ userRouter.post("/", auth(["isAdmin"]), async (req, res, next) => {
       credentialId: createdCred.id,
       organizationId: req.user.organizationId
     });
+    //This needs to be changed to be the "Admin" for whichever organization they are in
+    await UserSport.create({
+      userId: createdUser.id,
+      sportId: 1
+    });
     res.json(createdUser);
   } catch (err) {
     next(err);
@@ -47,7 +52,7 @@ userRouter.post("/", auth(["isAdmin"]), async (req, res, next) => {
 userRouter.get(
   "/",
   auth(["isAdmin", "isEmployee", "isCoach"]),
-  queryParams([], ["page", "limit", "id", "gender", "sports[]"]),
+  queryParams([], ["page", "limit", "id", "gender", "sports[]", "isAdmin", "isEmployee", "isCoach", "isAthlete"]),
   async (req, res, next) => {
     try {
       let coachSports = [];
@@ -98,7 +103,13 @@ userRouter.get(
           },
           {
             model: Credential,
-            attributes: req.user.isAdmin ? { exclude: ["organizationId", "password"] } : ["email", "username"]
+            attributes: req.user.isAdmin ? { exclude: ["organizationId", "password"] } : ["email", "username"],
+            where: Sequelize.and(
+              req.query.isAdmin ? { isAdmin: req.query.isAdmin } : null,
+              req.query.isEmployee ? { isEmployee: req.query.isEmployee } : null,
+              req.query.isCoach ? { isCoach: req.query.isCoach } : null,
+              req.query.isAthlete ? { isAthlete: req.query.isAthlete } : null,
+            )
           },
           {
             model: Status

@@ -95,6 +95,9 @@ class App extends React.Component {
    *
    */
   componentDidMount() {
+
+    console.log("app", new Date());
+
     let sessionCreds = JSON.parse(sessionStorage.getItem('creds'));
     let sessionOrg = JSON.parse(sessionStorage.getItem('org'));
     if (sessionCreds && sessionOrg) {

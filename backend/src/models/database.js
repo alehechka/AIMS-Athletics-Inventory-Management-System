@@ -132,7 +132,7 @@ User.belongsTo(Status);
 //All users will be contained inside a "base sport" that will contain the standard equipment that all athletes need
 const Sport = db.define("sports", {
   name: { type: Sequelize.STRING, allowNull: false },
-  gender: { type: Sequelize.STRING(1), allowNull: false }
+  gender: { type: Sequelize.STRING(1), allowNull: true }
 });
 
 Organization.hasMany(Sport, { foreignKey: { allowNull: false } });
