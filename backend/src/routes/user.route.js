@@ -71,7 +71,6 @@ userRouter.get(
           return sport.sportId;
         });
       }
-
       let allUsers = await User.findAll({
         where: Sequelize.and(
           { organizationId: req.user.organizationId },
@@ -104,12 +103,13 @@ userRouter.get(
           {
             model: Credential,
             attributes: req.user.isAdmin ? { exclude: ["organizationId", "password"] } : ["email", "username"],
-            where: Sequelize.and(
+            where: req.query.isAdmin || req.query.isEmployee || req.query.isCoach || req.query.isAthlete
+            ? Sequelize.or(
               req.query.isAdmin ? { isAdmin: req.query.isAdmin } : null,
               req.query.isEmployee ? { isEmployee: req.query.isEmployee } : null,
               req.query.isCoach ? { isCoach: req.query.isCoach } : null,
               req.query.isAthlete ? { isAthlete: req.query.isAthlete } : null,
-            )
+            ) : null
           },
           {
             model: Status

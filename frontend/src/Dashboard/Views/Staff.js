@@ -23,10 +23,7 @@ export default function Staff(props) {
     const [dialogOpen, setDialogOpen] = React.useState(false);
     
     React.useEffect(()=>{
-        UsersAPI.getUsers(null, null, {isAdmin: true, isEmployee: false, isCoach: false, isAthlete: false}).then( (admins)=> {
-            UsersAPI.getUsers(null, null, {isAdmin: false, isEmployee: true, isCoach: false, isAthlete: false}).then( (employees)=> {
-                UsersAPI.getUsers(null, null, {isAdmin: false, isEmployee: false, isCoach: true, isAthlete: false}).then( (coaches)=> { 
-                    const staff = admins.concat(employees, coaches);
+        UsersAPI.getUsers(null, null, {isAdmin: true, isEmployee: true, isCoach: true,}).then( (staff)=> {
                     
                     let newPageSize = staff.length > 20 ? 20: staff.length;
                     newPageSize = newPageSize < 5 ? 5 : newPageSize;
@@ -43,13 +40,11 @@ export default function Staff(props) {
                         firstName: user.firstName,
                         lastName: user.lastName,
                         sportsJson: JSON.stringify(user.sports),
-                        sports: user.sports.map(val=> `${val.name} (${val.gender})`).join(", ")
+                        sports: user.sports.map(val=> `${val.name}` + (val.gender ? ` (${val.gender})` : "")).join(", ")
                     }));
                     updateData(customData);
                     updateLoading(false);
                 });
-            });
-        });
     }, []);
     const closeDialog = () => setDialogOpen(false);
     return (

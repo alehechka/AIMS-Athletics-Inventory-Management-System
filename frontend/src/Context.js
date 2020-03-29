@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { CredentialAPI } from "./api";
+import { CredentialAPI, changeFavicon } from "./api";
 
 const Context = React.createContext();
 
@@ -73,6 +73,7 @@ export class Provider extends Component {
       },
       organization: credentials?.organization
     });
+    changeFavicon("assets/" + credentials?.organization.logo || "favicon.ico")
   };
 }
 

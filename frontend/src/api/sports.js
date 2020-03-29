@@ -2,14 +2,6 @@ import axios from "axios";
 
 import { apiUrl } from "./index";
 
-/**
- *
- * All authorization is handled by the HttpOnly cookie: Authorization.
- *
- * Cookies will be sent with all API requests
- *
- */
-
 //Gets all sports in the user's organization
 async function getSports() {
   return await axios.get(`${apiUrl}/sports`, { withCredentials: true }).then((res) => {

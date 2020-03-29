@@ -78,28 +78,28 @@ class Dashboard extends React.Component {
                 logOutUser={context.actions.logout}
               />
               <Switch>
-                <Route path={`/profile`} component={(props) => <Profile {...props} />} />
+                <Route path={`/profile`} component={(props) => <Profile {...props} context={context}/>} />
                 <AuthRoute
                   path={`/athletes`}
                   accessGranted={allowedViews.includes("Athletes")}
-                  component={(props) => <Athletes {...props} />}
+                  component={(props) => <Athletes {...props} context={context} />}
                 />
                 <AuthRoute
                   path={`/inventory`}
                   accessGranted={allowedViews.includes("Inventory")}
-                  component={(props) => <Inventory {...props} /> }
+                  component={(props) => <Inventory {...props} context={context}/> }
                 />
                 <AuthRoute
                   path={`/staff`}
                   accessGranted={allowedViews.includes("Staff")}
-                  component={(props) => <Staff {...props} />}
+                  component={(props) => <Staff {...props} context={context} />}
                 />
                 <AuthRoute
                   path={`/admin`}
                   accessGranted={allowedViews.includes("Admin")}
-                  component={(props) => <Admin {...props} /> }
+                  component={(props) => <Admin {...props} context={context}/> }
                 />
-                <Route path={`/home`} component={(props) => <Home {...props} />} />
+                <Route path={`/home`} component={(props) => <Home {...props} context={context}/>} />
                 <Route exact path={pathname}>
                   <Redirect to="/home" />
                 </Route>

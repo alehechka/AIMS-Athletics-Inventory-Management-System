@@ -16,7 +16,8 @@ const createOrganizations = async () => {
   for (let org of organizations) {
     await db.Organization.create({
       name: org.name,
-      shortName: org.shortName
+      shortName: org.shortName, 
+      logo: org.logo
     }).then(res => {
       org.id = res.id;
     });
@@ -97,7 +98,7 @@ const create = async () => {
           ...users[index],
           credentialId: created.id,
           statusId: statuses[index % statuses.length].id,
-          organizationId: organizations[0].id
+          organizationId: created.organizationId
         })
           .then(async res => {
             users[index].id = res.id;
@@ -141,12 +142,40 @@ const create = async () => {
   }
 };
 
+const creightonAccount = async () => {
+  let sport = await db.Sport.create({
+    name: "Admin",
+    organizationId: 2
+  });
+  await db.Credential.create({
+    email: "creighton@creighton.edu",
+    username: "cu",
+    password: await db.hashPassword("cu"),
+    isAdmin: true,
+    organizationId: 2
+  }).then(async res => {
+    await db.User.create({
+      credentialId: res.id,
+      firstName: "Creighton",
+      lastName: "Account",
+      organizationId: 2,
+      statusId: 1
+    }).then(async res => {
+      await db.UserSport.create({
+        userId: res.id,
+        sportId: sport.id
+      })
+    })
+  })
+}
+
 const main = async () => {
   console.log("Syncing database...");
   await db.db.sync({ force: true, alter: true });
   console.log("Database sync complete.");
   console.log("\nPopulating data...");
   await create();
+  await creightonAccount();
   console.log("Data population complete.");
   console.log("\nClosing database connection...");
   await db.db.close();

@@ -1,5 +1,5 @@
 import React from "react";
-import { UsersAPI, SportsAPI, CredentialAPI, InventoryAPI } from "../../api";
+import { UsersAPI, SportsAPI, CredentialAPI, InventoryAPI, changeFavicon } from "../../api";
 
 export default function Home(props) {
   return (
@@ -7,7 +7,7 @@ export default function Home(props) {
       <h1>Home</h1>
       <button
         onClick={() =>
-          UsersAPI.getUsers(null, null, { isAdmin: false, isEmployee: false, isCoach: false, isAthlete: false })
+          UsersAPI.getUsers(null, null, {})
         }
       >
         Get Users
@@ -66,9 +66,8 @@ export default function Home(props) {
       </button>
       <br />
       <br />
-      <button onClick={() => CredentialAPI.changeFavicon("assets/creighton.ico")}>Change Favicon</button>
+      <button onClick={() => changeFavicon("assets/creighton.ico")}>Change Favicon</button>
 
-      <button onClick={() => props.history.push("/athletes")}>Athletes</button>
     </div>
   );
 }

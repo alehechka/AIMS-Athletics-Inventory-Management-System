@@ -2,14 +2,6 @@ import axios from "axios";
 
 import { apiUrl } from "./index";
 
-/**
- *
- * All authorization is handled by the HttpOnly cookie: Authorization.
- *
- * Cookies will be sent with all API requests
- *
- */
-
 //Gets all inventory items in the based on pagination and filters provided
 async function getInventory(page, limit, { id, surplus, sportSize, sports, gender, taxable, expendable }) {
   let sportSizeId = sportSize?.id ?? sportSize;

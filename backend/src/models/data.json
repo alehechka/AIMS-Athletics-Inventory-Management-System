@@ -6,7 +6,8 @@
     }
   ],
   "organizations": [
-    { "name": "University of Nebraska Omaha", "shortName": "UNO"}
+    { "name": "University of Nebraska Omaha", "shortName": "UNO", "logo": "unomaha.ico" },
+    { "name": "Creighton University", "shortName": "Creighton", "logo": "creighton.ico"}
   ],
   "credentials": [
     { "email": "admin@admin.com", "password": "admin", "isAdmin": true },

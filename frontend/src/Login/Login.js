@@ -61,6 +61,12 @@ class Login extends React.Component {
       this.props.showMessage("Sent Password Reset Instructions to: " + email);
     }
   }
+
+  componentDidUpdate() {
+    if(this.props.context.authorized) {
+      this.props.history.push("/");
+    }
+  }
   /**
    * Updates the email state variable
    *

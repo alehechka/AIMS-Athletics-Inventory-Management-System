@@ -3,14 +3,9 @@ import axios from "axios";
 import { apiUrl } from "./index";
 
 /**
- *
- * All authorization is handled by the HttpOnly cookie: Authorization.
- *
- * Cookies will be sent with all API requests
- *
+ * Pings the backend to get current credentials of user logged in
+ * @return credential object from backend to be used as authorization in the app state
  */
-
-//If successful, returns the current user's credential data
 async function getCredentials() {
   return await axios.get(`${apiUrl}/credentials/current`, { withCredentials: true }).then((res) => {
     sessionStorage.setItem(
@@ -30,10 +25,15 @@ async function getCredentials() {
   });
 }
 
-//If successful, returns a JWT that is stored in httpOnly authorization cookie.
-//Remember boolean
-//  false -> session only
-//  true  -> 30d expire
+/**
+ * Allows user to signup through the backend
+ * @param {string} email user entered email address
+ * @param {string} usernamer user entered username
+ * @param {string} password user entered password
+ * @param {boolean} remember determines whether authorization cookie will be session or 30 day expiration
+ * 
+ * @return credential object from backend to be used as authorization in the app state
+ */
 async function signup(email, username, password, remember) {
   return await axios
     .post(`${apiUrl}/credentials/signup`, { email, username, password, remember }, { withCredentials: true })
@@ -55,10 +55,14 @@ async function signup(email, username, password, remember) {
     });
 }
 
-//If successful, returns a JWT that is stored in httpOnly authorization cookie.
-//Remember boolean
-//  false -> session only
-//  true  -> 30d expire
+/**
+ * Allows user to login through the backend
+ * @param {string} email user entered email address or username (backend checks against both)
+ * @param {string} password user entered password
+ * @param {boolean} remember determines whether authorization cookie will be session or 30 day expiration
+ * 
+ * @return credential object from backend to be used as authorization in the app state
+ */
 async function login(email, password, remember) {
   return await axios
     .post(`${apiUrl}/credentials/login`, { email, password, remember }, { withCredentials: true })
@@ -80,7 +84,10 @@ async function login(email, password, remember) {
     });
 }
 
-//Pings the backend to delete the authorization cookie and sets URL to root
+/**
+ * Will clear sessionStorage and have backend clear cookies.
+ * @return {null} null credential object
+ */
 async function logout() {
   sessionStorage.removeItem("creds");
   sessionStorage.removeItem("org");
@@ -90,17 +97,23 @@ async function logout() {
   });
 }
 
-//Updates current user credentials
-//If user is an admin they can update roles
-//Params in {} so you can send credentials object instead of individual params
-async function updateCurrentCredentials({ email, username, isAdmin, isEmployee, isCoach, isAthlete }) {
+/**
+ * Allows user to to update their credentials 
+ * @param {string} email user entered email address
+ * @param {string} user user entered username
+ * @param {boolean} isEmployee employee role
+ * @param {boolean} isCoach coach role
+ * @param {boolean} isAthlete athlete role
+ * 
+ * @return message describing if the operation was successful
+ */
+async function updateCurrentCredentials({ email, username, isEmployee, isCoach, isAthlete }) {
   return await axios
     .put(
       `${apiUrl}/credentials/current`,
       {
         email,
         username,
-        isAdmin,
         isEmployee,
         isCoach,
         isAthlete
@@ -112,9 +125,17 @@ async function updateCurrentCredentials({ email, username, isAdmin, isEmployee, 
     });
 }
 
-//Allows an admin to update a user's credentials
-//If user is an admin they can update roles
-//Params in {} so you can send credentials object instead of individual params
+/**
+ * Allows an admin to to update the credentials of another user
+ * @param {string} email user entered email address
+ * @param {string} user user entered username
+ * @param {boolean} isAdmin admin role (if trying to update current user the isAdmin role will not be updated)
+ * @param {boolean} isEmployee employee role
+ * @param {boolean} isCoach coach role
+ * @param {boolean} isAthlete athlete role
+ * 
+ * @return message describing if the operation was successful
+ */
 async function updateCredentials({
   id, //Required to make successful request
   email,
@@ -142,7 +163,13 @@ async function updateCredentials({
     });
 }
 
-//Allows a user to change thier password. Must know previous password to update.
+/**
+ * Allows an admin to to update the credentials of another user
+ * @param {string} password user entered current password
+ * @param {string} newPassword user entered new password
+ * 
+ * @return message describing if the operation was successful
+ */
 async function changePassword(password, newPassword) {
   return await axios
     .put(`${apiUrl}/credentials/changePassword`, { password, newPassword }, { withCredentials: true })
@@ -159,20 +186,4 @@ export {
   updateCurrentCredentials,
   updateCredentials,
   changePassword,
-  changeFavicon
 };
-
-//document.head = document.head || document.getElementsByTagName('head')[0];
-
-function changeFavicon(src) {
-  console.log(src)
-  var link = document.createElement("link"),
-    oldLink = document.getElementById("dynamic-favicon");
-  link.id = "dynamic-favicon";
-  link.rel = "shortcut icon";
-  link.href = src;
-  if (oldLink) {
-    document.head.removeChild(oldLink);
-  }
-  document.head.appendChild(link);
-}

@@ -2,14 +2,6 @@ import axios from "axios";
 
 import { apiUrl } from "./index";
 
-/**
- *
- * All authorization is handled by the HttpOnly cookie: Authorization.
- *
- * Cookies will be sent with all API requests
- *
- */
-
 // Allows an admin to create a user profile with temporary credentials
 // Only required field is the email, username can be generated from email
 // If password is null will be auto set to "password123"
