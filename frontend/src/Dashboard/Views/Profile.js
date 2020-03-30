@@ -14,6 +14,7 @@ import TableRow from "@material-ui/core/TableRow";
 
 import { getCurrentUser, updateCurrentUser } from "../../api/users";
 import { UserInfoCard, UserPhysicalCard } from "./ProfileComponents/userinfo";
+import UserTabs from "./ProfileComponents/usertabs";
 import UserItemCard from "./ProfileComponents/useritems";
 
 /**
@@ -142,7 +143,8 @@ export default function Profile(props) {
   return (
     <Grid container spacing={3}>
       <Grid item xs={6}>
-        <UserInfoCard
+        <UserTabs
+          name={name}
           firstName={firstName}
           lastName={lastName}
           email={email}
@@ -155,19 +157,14 @@ export default function Profile(props) {
           role={role}
           lockerNumber={lockerNumber}
           lockerCode={lockerCode}
-        ></UserInfoCard>
-      </Grid>
-      <Grid item xs={6}>
-        <UserItemCard name={name} equipment={dummyEquipment}></UserItemCard>
-      </Grid>
-      <Grid item xs={6}>
-        <UserPhysicalCard
-          name={name}
           height={height}
           weight={weight}
           gender={gender}
           sizes={dummySizes}
-        ></UserPhysicalCard>
+        ></UserTabs>
+      </Grid>
+      <Grid item xs={6}>
+        <UserItemCard name={name} equipment={dummyEquipment}></UserItemCard>
       </Grid>
     </Grid>
   );
