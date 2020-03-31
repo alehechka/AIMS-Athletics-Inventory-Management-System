@@ -8,15 +8,12 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import Divider from "@material-ui/core/Divider";
-import FormControl from "@material-ui/core/FormControl";
-import Button from "@material-ui/core/Button";
 
 function UserInfoCard(props) {
   const {
     firstName,
     lastName,
     email,
-    username,
     address,
     city,
     state,
@@ -162,7 +159,7 @@ function UserPhysicalCard(props) {
   const { name, height, weight, gender, sizes } = props;
   const hockeySizes = sizes.hockey; // Loading dummy data for now
   const [head, setHead] = useState(hockeySizes.head);
-  const [shirt, setShirt] = useState(hockeySizes.shirt);
+  const [shirt, /*setShirt*/] = useState(hockeySizes.shirt);
   const [pants, setPants] = useState(hockeySizes.pants);
   const [socks, setSocks] = useState(hockeySizes.socks);
   const [shoes, setShoes] = useState(hockeySizes.shoes);

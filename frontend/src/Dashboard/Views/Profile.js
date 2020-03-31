@@ -1,19 +1,5 @@
 import React, { useState } from "react";
 import Grid from "@material-ui/core/Grid";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import Typography from "@material-ui/core/Typography";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
-
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-
-import { getCurrentUser, updateCurrentUser } from "../../api/users";
-import { UserInfoCard, UserPhysicalCard } from "./ProfileComponents/UserInfo";
 import UserTabs from "./ProfileComponents/UserTabs";
 import UserItemCard from "./ProfileComponents/UserItems";
 
@@ -136,9 +122,9 @@ export default function Profile(props) {
   const lockerCode = String(dummyUser.lockerCode);
 
   // TODO: handle submit logic
-  const onSubmit = (event) => {
-    return null;
-  };
+  // const onSubmit = (event) => {
+  //   return null;
+  // };
 
   return (
     <Grid container spacing={3}>
