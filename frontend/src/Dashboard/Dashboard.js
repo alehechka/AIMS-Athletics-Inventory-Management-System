@@ -7,7 +7,6 @@ import Inventory from "./Views/Inventory";
 import Profile from "./Views/Profile";
 import Staff from "./Views/Staff";
 import Admin from "./Views/Admin";
-import AddAthlete from './Views/AddAthlete';
 import AuthRoute from "../AuthRoute";
 
 import { BrowserRouter as Router, Switch, Route, withRouter, Redirect } from "react-router-dom";

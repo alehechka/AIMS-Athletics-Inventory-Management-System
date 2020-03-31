@@ -28,6 +28,7 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import { Link } from "react-router-dom";
+import StyledLink from "../components/StyledLink";
 
 const drawerWidth = 200;
 
@@ -151,7 +152,7 @@ function Navbar(props) {
             Welcome, {username}
             <Badge badgeContent={props.noOfItemsCheckedOut} color="error">
               <Tooltip title="Profile">
-                <Link to="/profile" style={{ color: organization?.secondaryColor || '#FFF' }}>
+                <Link to="/profile" style={{ color: organization?.secondaryColor || "#FFF" }}>
                   <IconButton color="inherit">
                     <AccountCircle />
                   </IconButton>
@@ -184,14 +185,14 @@ function Navbar(props) {
           {Object.entries(menuItems)
             .filter(([key, value]) => allowedViews.includes(key))
             .map(([key, value]) => (
-              <Tooltip title={key} key={key + Math.random()} placement="right">
-                <Link to={`/${key.toLowerCase()}`}>
+              <StyledLink to={`/${key.toLowerCase()}`}>
+                <Tooltip title={key} key={key + Math.random()} placement="right">
                   <ListItem button key={key + Math.random()}>
                     <ListItemIcon>{value}</ListItemIcon>
                     <ListItemText primary={key} />
                   </ListItem>
-                </Link>
-              </Tooltip>
+                </Tooltip>
+              </StyledLink>
             ))}
         </List>
       </Drawer>

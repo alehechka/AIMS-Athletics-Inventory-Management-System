@@ -4,6 +4,7 @@ require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
 const { DB_HOST, DB_DATABASE, DB_USER, DB_PASSWORD } = process.env;
 const bcrypt = require("bcrypt");
 const Sequelize = require("sequelize");
+const { DataTypes } = require("sequelize");
 
 const db = new Sequelize(DB_DATABASE, DB_USER, DB_PASSWORD, {
   host: DB_HOST,
@@ -14,7 +15,7 @@ const db = new Sequelize(DB_DATABASE, DB_USER, DB_PASSWORD, {
     idle: 10000
   },
   dialect: "postgres",
-  logging: false,
+  logging: false,//process.env.NODE_ENV === "production" ? false : console.log,
   dialectOptions: {
     options: {
       useUTC: false,
@@ -99,7 +100,8 @@ const User = db.define(
     lockerCode: { type: Sequelize.INTEGER, allowNull: true },
     gender: { type: Sequelize.STRING(1), allowNull: true },
     height: { type: Sequelize.INTEGER, comment: "in inches", allowNull: true },
-    weight: { type: Sequelize.INTEGER, comment: "in pounds", allowNull: true }
+    weight: { type: Sequelize.INTEGER, comment: "in pounds", allowNull: true },
+    active: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: true }
   },
   {
     timestamps: true
@@ -132,7 +134,8 @@ User.belongsTo(Status);
 //All users will be contained inside a "base sport" that will contain the standard equipment that all athletes need
 const Sport = db.define("sports", {
   name: { type: Sequelize.STRING, allowNull: false },
-  gender: { type: Sequelize.STRING(1), allowNull: true }
+  gender: { type: Sequelize.STRING(1), allowNull: true },
+  icon: { type: Sequelize.STRING, allowNull: true }
 });
 
 Organization.hasMany(Sport, { foreignKey: { allowNull: false } });
@@ -161,6 +164,23 @@ const UserSport = db.define("userSports", {});
 
 User.belongsToMany(Sport, { through: "userSports" });
 Sport.belongsToMany(User, { through: "userSports" });
+
+/////// TEAMS ///////////////////////////////////////////////////////////////////////////////
+
+const Team = db.define("teams", {
+  name: { type: Sequelize.STRING, allowNull: false },
+  description: { type: Sequelize.STRING, allowNull: true },
+  schoolYear: { type: Sequelize.INTEGER, allowNull: true },
+  season: { type: DataTypes.STRING, allowNull: true },
+});
+
+Sport.hasMany(Team, { foreignKey: { allowNull: false } });
+Team.belongsTo(Sport, { foreignKey: { allowNull: false } });
+
+const TeamMember = db.define("teamMembers", {});
+
+User.belongsToMany(Team, { through: "teamMembers" });
+Team.belongsToMany(User, { through: "teamMembers" });
 
 /////// INVENTORY ///////////////////////////////////////////////////////////////////////////
 //Inventory that the school has.
@@ -312,5 +332,7 @@ module.exports = {
   Credential,
   hashPassword,
   Organization,
+  Team,
+  TeamMember,
   db
 };
