@@ -13,9 +13,9 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 
 import { getCurrentUser, updateCurrentUser } from "../../api/users";
-import { UserInfoCard, UserPhysicalCard } from "./ProfileComponents/userinfo";
-import UserTabs from "./ProfileComponents/usertabs";
-import UserItemCard from "./ProfileComponents/useritems";
+import { UserInfoCard, UserPhysicalCard } from "./ProfileComponents/UserInfo";
+import UserTabs from "./ProfileComponents/UserTabs";
+import UserItemCard from "./ProfileComponents/UserItems";
 
 /**
  * This component contains the UI logic for Profile.

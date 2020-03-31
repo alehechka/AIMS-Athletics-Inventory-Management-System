@@ -7,7 +7,7 @@ import Tab from "@material-ui/core/Tab";
 import Typography from "@material-ui/core/Typography";
 import Card from "@material-ui/core/Card";
 import Box from "@material-ui/core/Box";
-import { UserInfoCard, UserPhysicalCard } from "./userinfo";
+import { UserInfoCard, UserPhysicalCard } from "./UserInfo";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
