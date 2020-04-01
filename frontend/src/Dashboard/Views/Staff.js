@@ -2,7 +2,7 @@ import React from 'react';
 import MaterialTable from 'material-table';
 import Chip from '@material-ui/core/Chip';
 import ProfileDialog from './Components/ProfileDialog'
-import { UsersAPI, SportsAPI} from "../../api";
+import { UsersAPI, SportsAPI } from "../../api";
 
 /**
  * Contains the material table which lets the user edit staff entries.
@@ -69,9 +69,6 @@ export default function Staff(props) {
      */
     React.useEffect(()=>{
         UsersAPI.getUsers(null, null, {isAdmin: true, isEmployee: true, isCoach: true,}).then( (staff)=> {
-            let newPageSize = staff.length > 20 ? 20: staff.length;
-            newPageSize = newPageSize < 5 ? 5 : newPageSize;
-            updatePageSize(newPageSize);
             updateColumns([
                 {title: 'ID', field: 'id', hidden: true},
                 {title: 'Sport', field: 'sportsJson', hidden: true},
@@ -161,7 +158,7 @@ export default function Staff(props) {
             setTimeout(()=> {updateLoading(false); props.showMessage(dialogTitle + " Done");}, 2000);
         }
         else {
-            props.showMessage(dialogTitle + " Canceled", "warning");
+            props.showMessage(dialogTitle + " Canceled", "info");
             updateLoading(false);
         }    
     };
@@ -172,11 +169,12 @@ export default function Staff(props) {
             isLoading= {isLoading}
             columns={columns}
             data={data}
+            pageSize = {pageSize}
+            onChangeRowsPerPage = {updatePageSize}
             options={{
                 search: true,
                 filtering: true,
                 exportButton: true,
-                pageSize,
                 actionsColumnIndex: -1,
                 tableLayout: "fixed"
             }}
@@ -196,7 +194,7 @@ export default function Staff(props) {
                         UsersAPI.getSingleUser(rowData.id).then((data)=>{
                             updateLoading(true);
                             //Remove all Null entries in json
-                            Object.keys(data).map(key => data[key] = !data[key] ? data[key]: "");
+                            Object.keys(data).map(key => {data[key] = data[key] ? data[key]: ""; return null;});
                             setInputs(deepCopy(data));
                             const rowSportsJson = JSON.parse(rowData.sportsJson);
                             setSport(rowSportsJson.map(sport => getName(sport)));
@@ -220,6 +218,7 @@ export default function Staff(props) {
             ]}
         />
         <ProfileDialog
+            {...props}
             dialogOpen = {dialogOpen} 
             closeDialog = {closeDialog}
             dialogTitle = {dialogTitle}
