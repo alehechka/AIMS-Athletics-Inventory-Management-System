@@ -66,7 +66,9 @@ const Credential = db.define(
       allowNull: false,
       defaultValue: true
     },
-    isCoach: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false }
+    isCoach: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
+    isApproved: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
+    isVerified: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
   },
   {
     hooks: {
@@ -135,7 +137,8 @@ User.belongsTo(Status);
 const Sport = db.define("sports", {
   name: { type: Sequelize.STRING, allowNull: false },
   gender: { type: Sequelize.STRING(1), allowNull: true },
-  icon: { type: Sequelize.STRING, allowNull: true }
+  icon: { type: Sequelize.STRING, allowNull: true },
+  default: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false }
 });
 
 Organization.hasMany(Sport, { foreignKey: { allowNull: false } });

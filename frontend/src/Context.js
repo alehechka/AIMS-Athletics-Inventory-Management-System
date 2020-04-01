@@ -73,7 +73,9 @@ export class Provider extends Component {
       },
       organization: credentials?.organization
     });
-    changeFavicon("assets/" + credentials?.organization.logo || "favicon.ico")
+    if (credentials?.organization?.logo) {
+      changeFavicon("assets/" + credentials.organization.logo)
+    }
   };
 }
 

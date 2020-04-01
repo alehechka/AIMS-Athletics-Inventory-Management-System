@@ -40,7 +40,8 @@ const createSports = async () => {
     await db.Sport.create({
       name: sport.name,
       gender: sport.gender,
-      organizationId: organizations[0].id
+      organizationId: organizations[0].id,
+      default: sport.name === "Administration"
     }).then(res => {
       sport.id = res.id;
     });
@@ -145,6 +146,7 @@ const create = async () => {
 const creightonAccount = async () => {
   let sport = await db.Sport.create({
     name: "Admin",
+    default: true,
     organizationId: 2
   });
   await db.Credential.create({

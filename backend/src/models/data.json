@@ -10,10 +10,10 @@
     { "name": "Creighton University", "shortName": "Creighton", "logo": "creighton.ico"}
   ],
   "credentials": [
-    { "email": "admin@admin.com", "password": "admin", "isAdmin": true },
-    { "email": "employee@employee.com", "password": "employee", "isEmployee": true },
-    { "email": "coach@coach.com", "password": "coach", "isCoach": true },
-    { "email": "athlete@athlete.com", "password": "athlete", "isAthlete": true }
+    { "email": "admin@admin.com", "password": "admin", "isAdmin": true, "isApproved": true, "isVerified": true },
+    { "email": "employee@employee.com", "password": "employee", "isEmployee": true, "isApproved": true, "isVerified": true },
+    { "email": "coach@coach.com", "password": "coach", "isCoach": true, "isApproved": true, "isVerified": true },
+    { "email": "athlete@athlete.com", "password": "athlete", "isAthlete": true, "isApproved": true, "isVerified": true }
   ],
   "users": [
     {
@@ -52,6 +52,7 @@
   ],
   "sport_sizes": [
     { "name": "T-Shirt", "sizes": ["XL", "L", "M", "S"] },
+    { "name": "Hat", "sizes": ["XL", "L", "M", "S"] },
     { "name": "Sweater", "sizes": ["XL", "L", "M", "S"] }
   ],
   "inventories": [
@@ -67,6 +68,36 @@
         "size": "S",
         "price": 29.99,
         "quantity": 10
+      }],
+      "surplus": false
+    },
+    {
+      "name": "Hat",
+      "description": "Away Hat",
+      "sizes": [{
+        "size": "S",
+        "price": 15.99,
+        "quantity": 40
+      },
+      {
+        "size": "M",
+        "price": 19.99,
+        "quantity": 59
+      }],
+      "surplus": false
+    },
+    {
+      "name": "Sweater",
+      "description": "White Sweater",
+      "sizes": [{
+        "size": "M",
+        "price": 45.99,
+        "quantity": 20
+      },
+      {
+        "size": "L",
+        "price": 49.99,
+        "quantity": 15
       }],
       "surplus": false
     }
