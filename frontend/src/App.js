@@ -36,7 +36,7 @@ class App extends React.Component {
    *
    * Displays a snackbar
    */
-  showMessage = (msg, type = "success", duration = 30000, vertical = "top", horizontal = "center") => {
+  showMessage = (msg, type = "success", duration = 7000, vertical = "top", horizontal = "center") => {
     this.props.enqueueSnackbar(msg, {
       variant: type,
       anchorOrigin: {

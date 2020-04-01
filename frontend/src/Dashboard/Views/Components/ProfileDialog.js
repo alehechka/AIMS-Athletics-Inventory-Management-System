@@ -42,7 +42,7 @@ export default function ProfileDialog(props) {
     const isEditDialog = dialogTitle.includes("Edit");
     
     return(
-        <Dialog open={dialogOpen} onClose={closeDialog}>
+        <Dialog open={dialogOpen} onClose={closeDialog} disableBackdropClick>
             <DialogTitle>{dialogTitle}</DialogTitle>
             <DialogContent>
                 <Grid container spacing={2}>
@@ -118,7 +118,16 @@ export default function ProfileDialog(props) {
                             onChange= {changeInput}
                         />
                     </Grid>
-                    <Grid item xs = {12}>
+                    <Grid item xs= {4}>
+                        <FormControl required component="fieldset">
+                            <FormLabel component="legend">Gender</FormLabel>
+                            <RadioGroup row value={inputs.gender} name= "gender" onChange={changeInput}>
+                                <FormControlLabel value="F" labelPlacement="bottom" control={<Radio />} label="Female" />
+                                <FormControlLabel value="M" labelPlacement="bottom" control={<Radio />} label="Male" />
+                            </RadioGroup>
+                        </FormControl>
+                    </Grid>
+                    <Grid item xs = {8}>
                         <SportsSelect
                             sport = {sport}
                             sports = {sports}
@@ -178,7 +187,7 @@ export default function ProfileDialog(props) {
                                     label="Organization"
                                     name="schoolId"
                                     autoComplete="schoolId"
-                                    value= {inputs.schoolId}
+                                    value= {props.context.organization.shortName}
                                     disabled
                                 />
                             </Grid>
@@ -240,29 +249,6 @@ export default function ProfileDialog(props) {
                                     margin="normal"
                                     type = "number"
                                     fullWidth
-                                    id="phone"
-                                    label="Phone Number"
-                                    name="phone"
-                                    autoComplete="phone"
-                                    value= {inputs.phone}
-                                    onChange= {changeInput}
-                                />
-                            </Grid>
-                            <Grid item xs= {6}>
-                                <FormControl component="fieldset">
-                                    <FormLabel component="legend">Gender</FormLabel>
-                                    <RadioGroup row value={inputs.gender} name= "gender" onChange={changeInput}>
-                                        <FormControlLabel value="F" labelPlacement="bottom" control={<Radio />} label="Female" />
-                                        <FormControlLabel value="M" labelPlacement="bottom" control={<Radio />} label="Male" />
-                                    </RadioGroup>
-                                </FormControl>
-                            </Grid>
-                            <Grid item xs={6}>
-                                <TextField
-                                    variant="outlined"
-                                    margin="normal"
-                                    type = "number"
-                                    fullWidth
                                     id="lockerNumber"
                                     label="Locker Number"
                                     name="lockerNumber"
@@ -283,6 +269,21 @@ export default function ProfileDialog(props) {
                                     onChange= {changeInput}
                                 />
                             </Grid>
+                            <Grid item xs={6}>
+                                <TextField
+                                    variant="outlined"
+                                    margin="normal"
+                                    type = "number"
+                                    fullWidth
+                                    id="phone"
+                                    label="Phone Number"
+                                    name="phone"
+                                    autoComplete="phone"
+                                    value= {inputs.phone}
+                                    onChange= {changeInput}
+                                />
+                            </Grid>
+                            
                         </Grid>
                     </ExpansionPanelDetails>
                 </ExpansionPanel>
