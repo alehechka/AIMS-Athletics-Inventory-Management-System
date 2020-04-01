@@ -20,7 +20,7 @@ const { PORT, API_VER } = process.env;
 const app = express();
 
 // Configure Express App Instance
-var whitelist = process.env.NODE_ENV === "production" ? [] : ['http://localhost:3000', 'https://stoplight.io']
+var whitelist = process.env.NODE_ENV === "production" ? ['https://aims-frontend-blkgoerjhq-uc.a.run.app/'] : ['http://localhost:3000', 'https://stoplight.io']
 var corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1 || !origin) {

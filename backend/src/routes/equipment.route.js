@@ -2,15 +2,28 @@
 
 const express = require("express");
 const Sequelize = require("sequelize");
-const { Equipment, InventorySize, Inventory, SportSize, Sport } = require("../models/database");
+const { Equipment, InventorySize, Inventory, SportSize, Sport, User, UserSport } = require("../models/database");
 const auth = require("../middleware/auth");
 const queryParams = require("../middleware/queryParams");
 const equipmentRouter = express.Router();
 
 //Get /api/v#/sports
 //Create new sport
-equipmentRouter.get("/", auth(), queryParams([], ["userId", "sports[]", "sportSizeId", "inventoryId", "taxable", "surplus", "expendable"]), async (req, res, next) => {
+equipmentRouter.get("/", auth(["isAdmin", "isEmployee", "isCoach"]), queryParams([], ["page", "limit", "userId", "sports[]", "sportSizeId", "inventoryId", "taxable", "surplus", "expendable"]), async (req, res, next) => {
   try {
+
+    let coachSports = [];
+      if (req.user.highestAccess.isCoach) {
+        coachSports = await UserSport.findAll({
+          where: {
+            userId: req.user.id
+          },
+          attributes: ["sportId"]
+        }).map((sport) => {
+          return sport.sportId;
+        });
+      }
+
     let equipment = await Equipment.findAll({
       where: Sequelize.and(req.query.userId ? { userId: req.query.userId } : null),
       attributes: {
@@ -44,12 +57,16 @@ equipmentRouter.get("/", auth(), queryParams([], ["userId", "sports[]", "sportSi
                 },
                 where: Sequelize.and(
                     req.query.sportSizeId ? { id: req.query.sportSizeId } : null, 
-                    req.query["sports[]"] ? Sequelize.or({ sportId: req.query["sports[]"] }) : null
+                    req.query["sports[]"] ? Sequelize.or({ sportId: req.query["sports[]"] }) : null,
+                    req.user.highestAccess.isCoach ? Sequelize.or({ id: coachSports }) : null
                 ),
                 include: [
                   {
                     model: Sport,
-                    where: req.query["sports[]"] ? Sequelize.or({ id: req.query["sports[]"] }) : null,
+                    where: Sequelize.and(
+                      req.query["sports[]"] ? Sequelize.or({ id: req.query["sports[]"] }) : null,
+                      req.user.highestAccess.isCoach ? Sequelize.or({ id: coachSports }) : null
+                    ),
                     attributes: {
                       exclude: ["organizationId"]
                     }
@@ -72,6 +89,59 @@ equipmentRouter.get("/", auth(), queryParams([], ["userId", "sports[]", "sportSi
           })
         : equipment
     );
+  } catch (err) {
+    next(err);
+  }
+});
+
+//Get /api/v#/sports
+//Create new sport
+equipmentRouter.get("/current", auth(), async (req, res, next) => {
+  try {
+    let user = await User.findOne({
+      where: {
+        credentialId: req.user.id
+      }
+    });
+    let equipment = await Equipment.findAll({
+      where: {
+        userId: user.id
+      },
+      attributes: {
+        exclude: ["createdAt", "updatedAt", "inventorySizeId", "organizationId"]
+      },
+      include: [
+        {
+          model: InventorySize,
+          attributes: {
+            exclude: ["createdAt", "updatedAt", "inventoryId"]
+          },
+          include: {
+            model: Inventory,
+            attributes: {
+              exclude: ["createdAt", "updatedAt", "sportSizeId", "organizationId"]
+            },
+            include: [
+              {
+                model: SportSize,
+                attributes: {
+                  exclude: ["sportId"]
+                },
+                include: [
+                  {
+                    model: Sport,
+                    attributes: {
+                      exclude: ["organizationId"]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    });
+    res.json(equipment);
   } catch (err) {
     next(err);
   }

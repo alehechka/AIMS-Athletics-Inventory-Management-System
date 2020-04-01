@@ -185,7 +185,7 @@ function Navbar(props) {
           {Object.entries(menuItems)
             .filter(([key, value]) => allowedViews.includes(key))
             .map(([key, value]) => (
-              <StyledLink to={`/${key.toLowerCase()}`}>
+              <StyledLink to={`/${key.toLowerCase()}`} key={key + Math.random()}>
                 <Tooltip title={key} key={key + Math.random()} placement="right">
                   <ListItem button key={key + Math.random()}>
                     <ListItemIcon>{value}</ListItemIcon>

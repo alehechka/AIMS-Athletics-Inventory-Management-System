@@ -56,13 +56,8 @@ userRouter.get(
   async (req, res, next) => {
     try {
       let coachSports = [];
-      const offset = req.query["page"] * req.query["limit"] || 0;
-      const limit = req.query["limit"] || 200;
-      let isCoach = req.user.isCoach && !req.user.isAdmin && !req.user.isEmployee;
-      if (isCoach) {
+      if (req.user.highestAccess.isCoach) {
         coachSports = await UserSport.findAll({
-          offset,
-          limit,
           where: {
             userId: req.user.id
           },
@@ -71,7 +66,12 @@ userRouter.get(
           return sport.sportId;
         });
       }
+
+      const offset = req.query["page"] * req.query["limit"] || 0;
+      const limit = req.query["limit"] || 200;
       let allUsers = await User.findAll({
+        offset,
+        //limit, //limit gets placed in the wrong location in the SQL query and caused nothing to return
         where: Sequelize.and(
           { organizationId: req.user.organizationId },
           req.query.id ? { id: req.query.id } : null,
@@ -87,7 +87,7 @@ userRouter.get(
             through: { attributes: [] },
             where: Sequelize.and(
               req.query["sports[]"] ? Sequelize.or({ id: req.query["sports[]"] }) : null,
-              isCoach ? Sequelize.or({ id: coachSports }) : null
+              req.user.highestAccess.isCoach ? Sequelize.or({ id: coachSports }) : null
             ),
             include: [
               {

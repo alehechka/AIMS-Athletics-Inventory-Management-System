@@ -21,8 +21,9 @@
   },
   "scripts": {
     "start": "set NODE_ENV=development&& react-scripts start",
-    "build": "set NODE_ENV=production&&react-scripts build",
+    "build": "react-scripts build",
     "test": "react-scripts test",
+    "prod": "serve -s -l 8080 build",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -41,6 +42,7 @@
     ]
   },
   "devDependencies": {
-    "prettier": "^1.19.1"
+    "prettier": "^1.19.1",
+    "serve": "^11.3.0"
   }
 }

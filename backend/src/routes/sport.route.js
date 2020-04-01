@@ -13,7 +13,9 @@ sportRouter.post("/", auth(["isAdmin"]), async (req, res, next) => {
   const sport = req.body;
   try {
     let createdSport = await Sport.create({
-      ...sport,
+      name: sport.name,
+      gender: sport.gender,
+      icon: sport.icon,
       organizationId: req.user.organizationId
     });
     res.json(createdSport);
@@ -50,7 +52,7 @@ sportRouter.put("/", auth(["isAdmin"]), queryParams(['id']), async (req, res, ne
       {
         name: reqSport.name,
         gender: reqSport.gender,
-        sizes: reqSport.sizes
+        icon: reqSport.icon
       },
       {
         where: {

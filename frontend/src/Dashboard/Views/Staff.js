@@ -23,7 +23,7 @@ export default function Staff(props) {
     const [dialogOpen, setDialogOpen] = React.useState(false);
     
     React.useEffect(()=>{
-        UsersAPI.getUsers(null, null, {isAdmin: true, isEmployee: true, isCoach: true,}).then( (staff)=> {
+        UsersAPI.getUsers(null, null, {isAdmin: true, isEmployee: true, isCoach: true}).then((staff)=> {
                     
                     let newPageSize = staff.length > 20 ? 20: staff.length;
                     newPageSize = newPageSize < 5 ? 5 : newPageSize;

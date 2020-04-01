@@ -14,6 +14,16 @@ module.exports = function(roles) {
     try {
       //if can verify the token, set req.user and pass to next middleware
       const decoded = jwt.verify(token, PRIVATE_KEY);
+      decoded.highestAccess = {};
+      if(decoded.isAdmin) {
+        decoded.highestAccess.isAdmin = true;
+      } else if (decoded.isEmployee) {
+        decoded.highestAccess.isEmployee = true;
+      } else if (decoded.isCoach) {
+        decoded.highestAccess.isCoach = true;
+      } else if (decoded.isAthlete) {
+        decoded.highestAccess.isAthlete = true;
+      }
       if (roles) {
         for (let role of roles) {
           if (decoded[role]) {
