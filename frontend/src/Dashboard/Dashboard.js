@@ -91,7 +91,7 @@ class Dashboard extends React.Component {
                 <AuthRoute
                   path={`/staff`}
                   accessGranted={allowedViews.includes("Staff")}
-                  component={(props) => <Staff {...props} context={context} />}
+                  component={(props) => <Staff {...props} showMessage = {this.props.showMessage} context={context} />}
                 />
                 <AuthRoute
                   path={`/admin`}
