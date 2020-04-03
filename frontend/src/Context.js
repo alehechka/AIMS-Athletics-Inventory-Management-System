@@ -7,7 +7,8 @@ export class Provider extends Component {
   state = {
     credentials: JSON.parse(sessionStorage.getItem("creds")) || null,
     organization: JSON.parse(sessionStorage.getItem("org")) || null,
-    authorized: sessionStorage.getItem("creds") ? true : false
+    authorized: sessionStorage.getItem("creds") ? true : false,
+    loadingCredentials: true
   };
 
   componentDidMount() {
@@ -22,14 +23,16 @@ export class Provider extends Component {
     } else {
       this.setCredentials({ ...this.state.credentials, organization: this.state.organization }, true);
     }
+    this.setState({ loadingCredentials: false });
   }
 
   render() {
-    const { credentials, organization, authorized } = this.state;
+    const { credentials, organization, authorized, loadingCredentials } = this.state;
     const value = {
       authorized,
       credentials,
       organization,
+      loadingCredentials,
       actions: {
         signup: this.signup,
         login: this.login,
@@ -73,8 +76,13 @@ export class Provider extends Component {
       },
       organization: credentials?.organization
     });
+    if(credentials?.isOwner) {
+      this.setState(prev => {
+        return {credentials: {...prev.credentials, isOwner: credentials.isOwner}}
+      })
+    } 
     if (credentials?.organization?.logo) {
-      changeFavicon("assets/" + credentials.organization.logo)
+      changeFavicon("assets/" + credentials.organization.logo);
     }
   };
 }

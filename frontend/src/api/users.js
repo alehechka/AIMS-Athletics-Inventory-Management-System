@@ -24,7 +24,8 @@ async function createUser(
     height,
     weight,
     lockerNumber,
-    lockerCode
+    lockerCode,
+    sports,
   }
 ) {
   return await axios
@@ -46,7 +47,8 @@ async function createUser(
         height,
         weight,
         lockerNumber,
-        lockerCode
+        lockerCode,
+        sports
       },
       { withCredentials: true }
     )

@@ -6,7 +6,7 @@ const cookieParser = require("cookie-parser");
 const cors = require('cors');
 const helmet = require("helmet");
 const userRouter = require("./routes/user.route");
-const sportRouter = require("./routes/sport.route");
+const { sportRouter } = require("./routes/sport.route");
 const credentialRouter = require("./routes/credential.route");
 const inventoryRouter = require("./routes/inventory.route");
 const equipmentRouter = require("./routes/equipment.route");
@@ -20,7 +20,7 @@ const { PORT, API_VER } = process.env;
 const app = express();
 
 // Configure Express App Instance
-var whitelist = process.env.NODE_ENV === "production" ? ['https://aims-frontend-blkgoerjhq-uc.a.run.app/'] : ['http://localhost:3000', 'https://stoplight.io']
+var whitelist = process.env.NODE_ENV === "production" ? ['https://aims-frontend-blkgoerjhq-uc.a.run.app'] : ['http://localhost:3000', 'https://stoplight.io']
 var corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1 || !origin) {
@@ -30,7 +30,7 @@ var corsOptions = {
     }
   },
   methods: "GET,PUT,POST,DELETE",
-  allowedHeaders: ['authorization', 'Content-Type', 'Accept', 'Origin', 'X-Request-With'],
+  allowedHeaders: ['authorization', 'x-access-token', 'Content-Type', 'Accept', 'Origin', 'X-Request-With'],
   credentials: true
 }
 app.use(cors(corsOptions));

@@ -6,6 +6,7 @@ const auth = require("../middleware/auth");
 const queryParams = require("../middleware/queryParams");
 const { User, UserSport, Sport, UserSize, Credential, SportSize, Status, hashPassword } = require("../models/database");
 const userRouter = express.Router();
+const { updateUserSports } = require("./sport.route");
 
 //POST /api/v#/users
 //Allows an admin to create a new user profile with temporary login credentials
@@ -36,10 +37,20 @@ userRouter.post("/", auth(["isAdmin"]), async (req, res, next) => {
       organizationId: req.user.organizationId
     });
     //This needs to be changed to be the "Admin" for whichever organization they are in
-    await UserSport.create({
-      userId: createdUser.id,
-      sportId: 1
-    });
+    await Sport.findOne({
+      where: {
+        organizationId: req.user.organizationId,
+        default: true
+      }
+    }).then(async sport => {
+      await UserSport.create({
+        userId: createdUser.id,
+        sportId: sport.id
+      });
+    })
+    if(user.sports) {
+      updateUserSports(createdUser.id, user.sports)
+    }
     res.json(createdUser);
   } catch (err) {
     next(err);
@@ -178,6 +189,9 @@ userRouter.put("/current", auth(), async (req, res, next) => {
     if (req.user.isAdmin || req.user.isEmployee) {
       user.lockerNumber = putUser.lockerNumber;
       user.lockerCode = putUser.lockerCode;
+      if(putUser.sports) {
+        updateUserSports(user.id, putUser.sports)
+      }
     }
     user.firstName = putUser.firstname;
     user.lastName = putUser.lastName;
@@ -210,6 +224,9 @@ userRouter.put("/", auth(["isAdmin", "isEmployee"]), queryParams(["id"]), async 
     });
     if (req.user.isAdmin) {
       foundUser.schoolId = putUser.schoolId;
+    }
+    if(putUser.sports) {
+      updateUserSports(foundUser.id, putUser.sports)
     }
     foundUser.lockerNumber = putUser.lockerNumber;
     foundUser.lockerCode = putUser.lockerCode;

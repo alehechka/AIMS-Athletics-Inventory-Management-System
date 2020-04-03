@@ -1,0 +1,38 @@
+swagger: '2.0'
+info:
+  title: AIMS Backend
+  version: '1.0'
+  description: 'This API represents all of the endpoints that are available for use within the AIMS system. '
+  contact:
+    name: AIMS Support
+host: "aims-backend-blkgoerjhq-uc.a.run.app"
+# x-google-backend:
+#   address: 'https://aims-backend-blkgoerjhq-uc.a.run.app'
+#   protocol: h2
+x-google-endpoints:
+- name: "aims-backend-blkgoerjhq-uc.a.run.app"
+  allowCors: True
+paths:
+  /:
+    get:
+      summary: Entry point to API
+      operationId: get-entrypoint
+      responses:
+        '200':
+          description: A successful response
+  /api/v1/credentials/login:
+    post:
+      summary: Login user
+      operationId: post-credentials-login
+      responses:
+        '200':
+          description: A successful response
+          schema:
+            type: object
+  /api/v1/credentials/current:
+    get:
+      summary: Get current user credentials
+      operationId: get-credentials-current
+      responses:
+        '200':
+          description: A successful response

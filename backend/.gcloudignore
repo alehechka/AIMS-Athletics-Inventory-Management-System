@@ -1,6 +1,5 @@
 node_modules
 npm-debug.log
-Dockerfile*
 docker-compose*
 .dockerignore
 .gcloudignore
@@ -9,3 +8,4 @@ docker-compose*
 README.md
 LICENSE
 .vscode
+gcloud

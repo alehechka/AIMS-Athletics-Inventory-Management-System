@@ -33,20 +33,17 @@ async function updateSport({ id, name, gender }) {
 }
 
 //Allows an admin to delete a sport
-async function deleteSport(id) {
-  return await axios.delete(`${apiUrl}/sports`, { params: { id }, withCredentials: true }).then((res) => {
-    return res.data;
-  });
-}
+// async function deleteSport(id) {
+//   return await axios.delete(`${apiUrl}/sports`, { params: { id }, withCredentials: true }).then((res) => {
+//     return res.data;
+//   });
+// }
 
 //Allows an admin, employee, or coach to update the sports of a user
 //Sports can either be an array of sport objects or an array of sportID's
 //Array needs to contain the updated list of sports that the user will be part of
   //Anything new will be added and anything missing will be deleted.
 async function updateUserSports(userId, sports) {
-  sports = sports?.map((sport) => {
-    return sport?.id ?? sport;
-  });
   return await axios
     .put(`${apiUrl}/sports/user`, { sports }, { params: { userId }, withCredentials: true })
     .then((res) => {
@@ -54,4 +51,4 @@ async function updateUserSports(userId, sports) {
     });
 }
 
-export { getSports, getSport, createSport, updateSport, deleteSport, updateUserSports };
+export { getSports, getSport, createSport, updateSport, updateUserSports };

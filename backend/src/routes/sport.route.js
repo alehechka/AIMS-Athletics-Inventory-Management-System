@@ -29,10 +29,7 @@ sportRouter.post("/", auth(["isAdmin"]), async (req, res, next) => {
 sportRouter.get("/", auth(), queryParams([], ["id"]), async (req, res, next) => {
   try {
     let sports = await Sport.findAll({
-      where: Sequelize.and(
-        {organizationId: req.user.organizationId},
-        req.query.id ? { id: req.query.id } : null
-      ),
+      where: Sequelize.and({ organizationId: req.user.organizationId }, req.query.id ? { id: req.query.id } : null),
       attributes: {
         exclude: ["organizationId"]
       }
@@ -45,7 +42,7 @@ sportRouter.get("/", auth(), queryParams([], ["id"]), async (req, res, next) => 
 
 //PUT /api/v#/sports/:id
 //Update one sport by id
-sportRouter.put("/", auth(["isAdmin"]), queryParams(['id']), async (req, res, next) => {
+sportRouter.put("/", auth(["isAdmin"]), queryParams(["id"]), async (req, res, next) => {
   const reqSport = req.body;
   try {
     await Sport.update(
@@ -77,63 +74,79 @@ sportRouter.put("/", auth(["isAdmin"]), queryParams(['id']), async (req, res, ne
 
 //GET /api/v#/sports/:id
 //Delete one sport by id
-sportRouter.delete("/", auth(["isAdmin"]), queryParams(['id']), async (req, res, next) => {
+// sportRouter.delete("/", auth(["isAdmin"]), queryParams(["id"]), async (req, res, next) => {
+//   try {
+//     await Sport.destroy({
+//       where: {
+//         id: req.query.id,
+//         organizationId: req.user.organizationId
+//       }
+//     });
+//     res.send("Sport " + req.query.id + " deleted.");
+//   } catch (err) {
+//     next(err);
+//   }
+// });
+
+sportRouter.put("/user", auth(["isAdmin", "isEmployee"]), queryParams(["userId"]), async (req, res, next) => {
+  res.json(await updateUserSports(req.query.userId, req.body.sports));
+});
+
+async function updateUserSports(userId, sports) {
+  sports = sports.map((sport) => {
+    return sport.id || sport;
+  });
   try {
-    await Sport.destroy({
+    let userSports = await Sport.findAll({
       where: {
-        id: req.query.id,
-        organizationId: req.user.organizationId
-      }
-    });
-    res.send("Sport " + req.query.id + " deleted.");
-  } catch (err) {
-    next(err);
-  }
-});
-
-sportRouter.put("/user", auth(["isAdmin", "isEmployee"]), queryParams(['userId']), async (req, res, next) => {
-    let putSports = req.body.sports;
-  try {
-      let userSports = await UserSport.findAll({
+        default: false
+      },
+      include: [
+        {
+          model: User,
           where: {
-              userId: req.query.userId
-          }
-      }).map(sport => sport.sportId);
-      let addSports = putSports.filter(sport => !userSports.includes(sport));
-      let deleteSports = userSports.filter(sport => !putSports.includes(sport));
+            id: userId
+          },
+          attributes: []
+        }
+      ]
+    }).map(sport => sport.id)
+    let addSports = sports.filter((sport) => !userSports.includes(sport));
+    let deleteSports = userSports.filter((sport) => !sports.includes(sport));
 
-      for (let sport of addSports) {
-        await UserSport.create({
-          userId: req.query.userId,
-          sportId: sport
-        });
-      }
-      for (let sport of deleteSports) {
-        await UserSport.destroy({
-          where: {
-            userId: req.query.userId,
-            sportId: sport
-          }
-        });
-      }
-      let user = await User.findOne({
-        where: {
-          id: req.query.userId
-        },
-        include: [
-          {
-            model: Sport,
-            through: { attributes: []},
-            attributes: {
-              exclude: ["organizationId"]
-            }
-          }
-        ]
+    for (let sport of addSports) {
+      await UserSport.create({
+        userId,
+        sportId: sport
       });
-      res.json(user.sports);
+    }
+    for (let sport of deleteSports) {
+      await UserSport.destroy({
+        where: {
+          userId,
+          sportId: sport,
+        }
+      });
+    }
+    let user = await User.findOne({
+      where: {
+        id: userId
+      },
+      include: [
+        {
+          model: Sport,
+          through: { attributes: [] },
+          attributes: {
+            exclude: ["organizationId"]
+          }
+        }
+      ]
+    });
+    return user.sports;
   } catch (err) {
-    next(err);
+    console.log(err)
+    return err;
   }
-});
+};
 
-module.exports = sportRouter;
+module.exports = { sportRouter, updateUserSports };

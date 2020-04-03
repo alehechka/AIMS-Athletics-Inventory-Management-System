@@ -1,7 +1,7 @@
 "use strict";
 
 const express = require("express");
-const { Credential, Organization, User, UserSport, hashPassword } = require("../models/database");
+const { Credential, Organization, User, Sport, UserSport, hashPassword } = require("../models/database");
 const auth = require("../middleware/auth");
 const queryParams = require("../middleware/queryParams");
 const jwt = require("jsonwebtoken");
@@ -23,7 +23,7 @@ credentialRouter.get("/current", auth(), async (req, res, next) => {
       where: {
         id: req.user.id
       },
-      attributes: ["email", "username", "isAdmin", "isEmployee", "isAthlete", "isCoach"],
+      attributes: ["email", "username", "isAdmin", "isEmployee", "isAthlete", "isCoach", "isVerified", "isApproved"],
       include: { model: Organization }
     });
     res.json(credential);
@@ -42,7 +42,7 @@ credentialRouter.post("/signup", async (req, res, next) => {
       email: credential.email,
       username: credential.username,
       password: await hashPassword(credential.password),
-      organizationId: 1 //This needs to be changed to be set to whichever Organization the user must be a part of
+      organizationId: credential.organizationId || 1
     });
 
     let createdUser = await User.create({
@@ -50,18 +50,22 @@ credentialRouter.post("/signup", async (req, res, next) => {
       organizationId: createdCred.organizationId
     });
 
-    //This needs to be changed to be the "Admin" sport for whichever organization they are in
-    await UserSport.create({
-      userId: createdUser.id,
-      sportId: 1
-    });
-
+    await Sport.findOne({
+      where: {
+        organizationId: createdCred.organizationId,
+        default: true
+      }
+    }).then(async sport => {
+      await UserSport.create({
+        userId: createdUser.id,
+        sportId: sport.id
+      });
+    })
     let organization = await Organization.findOne({
       where: {
-        id: 1
+        id: createdCred.organizationId
       }
     });
-
     const token = await jwt.sign(
       {
         id: createdCred.id,
@@ -76,7 +80,7 @@ credentialRouter.post("/signup", async (req, res, next) => {
     );
     res
       .status(201)
-      .cookie("authorization", token, {
+      .cookie("x-access-token", token, {
         expires: credential.remember ? new Date(Date.now() + thirtyDays) : 0,
         httpOnly: true
       })
@@ -87,10 +91,12 @@ credentialRouter.post("/signup", async (req, res, next) => {
         isEmployee: createdCred.isEmployee,
         isCoach: createdCred.isCoach,
         isAthlete: createdCred.isAthlete,
-        organization: organization
+        isVerified: createdCred.isVerified,
+        isApproved: createdCred.isApproved,
+        organization
       });
   } catch (err) {
-    res.status(401).send("Email or username already in use.")
+    res.status(401).send("Email or username already in use.");
   }
 });
 
@@ -126,7 +132,7 @@ credentialRouter.post("/login", async (req, res, next) => {
             }
           );
           res
-            .cookie("authorization", token, {
+            .cookie("x-access-token", token, {
               expires: credential.remember ? new Date(Date.now() + thirtyDays) : 0,
               httpOnly: true
             })
@@ -137,6 +143,8 @@ credentialRouter.post("/login", async (req, res, next) => {
               isEmployee: foundCred.isEmployee,
               isCoach: foundCred.isCoach,
               isAthlete: foundCred.isAthlete,
+              isVerified: foundCred.isVerified,
+              isApproved: foundCred.isApproved,
               organization: foundCred.organization
             });
         } else {
@@ -156,7 +164,7 @@ credentialRouter.post("/login", async (req, res, next) => {
 credentialRouter.get("/logout", auth(), async (req, res, next) => {
   res
     .status(200)
-    .clearCookie("authorization")
+    .clearCookie("x-access-token")
     .send("User has been logged out.");
 });
 
@@ -197,7 +205,7 @@ credentialRouter.put("/current", auth(), async (req, res, next) => {
           expiresIn: "30d"
         }
       );
-      res.cookie("authorization", token, {
+      res.cookie("x-access-token", token, {
         expires: 0,
         httpOnly: true
       });

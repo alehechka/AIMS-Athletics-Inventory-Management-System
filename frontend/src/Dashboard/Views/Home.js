@@ -12,9 +12,9 @@ export default function Home(props) {
       >
         Get Users
       </button>
-      <button onClick={() => UsersAPI.getSingleUser(5)}>Get Single User</button>
+      <button onClick={() => UsersAPI.getSingleUser(4)}>Get Single User</button>
       <button onClick={() => UsersAPI.getCurrentUser()}>Get Current</button>
-      <button onClick={() => UsersAPI.createUser("test@test.com", null, null, {})}>Create User</button>
+      <button onClick={() => UsersAPI.createUser("test5@test.com", null, null, {sports:[2, {id:3}]})}>Create User</button>
       <button onClick={() => UsersAPI.updateCurrentUser({ address: "Admin City" })}>Update Current</button>
       <button onClick={() => UsersAPI.updateUser({ id: 3, address: "Athlete Town" })}>Update User</button>
       <br />
@@ -23,10 +23,9 @@ export default function Home(props) {
       <button onClick={() => SportsAPI.getSport(1)}>Get Sport</button>
       <button onClick={() => SportsAPI.createSport({ name: "Football", gender: "M" })}>Create Sport</button>
       <button onClick={() => SportsAPI.updateSport({ id: 1, name: "Administration", gender: "M" })}>Update Sport</button>
-      <button onClick={() => SportsAPI.deleteSport(4)}>Delete Sport</button>
       <br />
       <br />
-      <button onClick={() => SportsAPI.updateUserSports(5, [1])}>Update User Sports</button>
+      <button onClick={() => SportsAPI.updateUserSports(4, [3, {id:2}])}>Update User Sports</button>
       <br />
       <br />
       <button onClick={() => CredentialAPI.changePassword("test", "admin")}>Change Password</button>

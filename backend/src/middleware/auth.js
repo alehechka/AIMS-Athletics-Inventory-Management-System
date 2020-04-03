@@ -6,7 +6,7 @@ const { PRIVATE_KEY } = process.env;
 module.exports = function(roles) {
   return function(req, res, next) {
     //get the token from the header if present
-    const token = req.cookies["authorization"];
+    const token = req.cookies["x-access-token"];
     //if no token found, return response (without going to the next middelware)
     if (!token)
       return res.status(401).send("Access denied. No token provided.");
@@ -40,7 +40,7 @@ module.exports = function(roles) {
       //if invalid token
       return res
         .status(400)
-        .clearCookie("authorization")
+        .clearCookie("x-access-token")
         .send("Invalid token.");
     }
   };

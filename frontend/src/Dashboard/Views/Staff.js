@@ -75,8 +75,8 @@ export default function Staff(props) {
                 {title: 'First Name', field: 'firstName'},
                 {title: 'Last Name', field: 'lastName'},
                 {title: 'Sport(s)', field: 'sports',
-                    render: rowData => rowData.sports.map(val =>
-                        <Chip key={rowData.id + `${val.name}` + (val.gender ? ` (${val.gender})` : "")} 
+                    render: rowData => rowData.sports.map((val, index) =>
+                        <Chip key={index} 
                             label={`${val.name}` + (val.gender ? ` (${val.gender})` : "")} style ={{margin: 2}}>
                         </Chip>),
                     customFilterAndSearch: (term, rowData) => 
@@ -184,7 +184,7 @@ export default function Staff(props) {
                   tooltip: 'Transactions',
                   onClick: (event, rowData) => {
                     props.showMessage("Redirecting to Profile Page");
-                    window.location.href = `/profile?id=${rowData.id}`;
+                    props.history.push(`/profile?id=${rowData.id}`);
                   }
                 },
                 {
