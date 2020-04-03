@@ -11,7 +11,9 @@ const credentialRouter = require("./routes/credential.route");
 const inventoryRouter = require("./routes/inventory.route");
 const equipmentRouter = require("./routes/equipment.route");
 
-require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
+if(process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
 
 // Load .env Enviroment Variables to process.env
 const { PORT, API_VER } = process.env;
@@ -85,5 +87,5 @@ app.use((err, req, res, next) => {
 app.set('port', PORT || 5000);
 
 const server = app.listen( app.get('port'), () => { 
-    console.info(`Server listening on localhost:${PORT}`);
+    console.info(`Server listening on localhost:${app.get('port')}`);
 });

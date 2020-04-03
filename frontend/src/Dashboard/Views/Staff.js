@@ -60,8 +60,6 @@ export default function Staff(props) {
     const [sports, setSports] = React.useState([]);
     const [sportIdLookup, setSportIdLookup]= React.useState({});
 
-    //Converts a object to a user-readble string
-    const getName = (sport) => sport.gender ? `${sport.name} (${sport.gender})`: sport.name;
     /**
      * Emulates ComponentDidMount lifecycle function
      * 
@@ -77,11 +75,11 @@ export default function Staff(props) {
                 {title: 'Sport(s)', field: 'sports',
                     render: rowData => rowData.sports.map((val, index) =>
                         <Chip key={index} 
-                            label={`${val.name}` + (val.gender ? ` (${val.gender})` : "")} style ={{margin: 2}}>
+                            label={val.displayName} style ={{margin: 2}}>
                         </Chip>),
                     customFilterAndSearch: (term, rowData) => 
                         rowData.sports
-                        .map(val => `${val.name}` + (val.gender ? ` (${val.gender})` : ""))
+                        .map(val => val.displayName)
                         .some(val => val.toLowerCase().includes(term.toLowerCase()))
                 },
             ]);
@@ -96,9 +94,9 @@ export default function Staff(props) {
             updateLoading(false);
         });
         SportsAPI.getSports().then((sports)=> {
-            setSports(sports.map(sport =>  getName(sport)));
+            setSports(sports.map(sport => sport.displayName));
             setSportIdLookup(sports.reduce((obj, sport) => {
-                obj[getName(sport)] = sport
+                obj[sport.displayName] = sport
                 return obj
             }, {}));
         });
@@ -197,7 +195,7 @@ export default function Staff(props) {
                             Object.keys(data).map(key => {data[key] = data[key] ? data[key]: ""; return null;});
                             setInputs(deepCopy(data));
                             const rowSportsJson = JSON.parse(rowData.sportsJson);
-                            setSport(rowSportsJson.map(sport => getName(sport)));
+                            setSport(rowSportsJson.map(sport => sport.displayName));
                             setDialogOpen(true);
                             setDialogTitle("Edit Staff");
                         });

@@ -4,7 +4,7 @@ const express = require("express");
 const Sequelize = require("sequelize");
 const auth = require("../middleware/auth");
 const queryParams = require("../middleware/queryParams");
-const { User, UserSport, Sport, UserSize, Credential, SportSize, Status, hashPassword } = require("../models/database");
+const { User, UserSport, Sport, UserSize, Credential, SportSize, Status, hashPassword, addDisplayNameToSports } = require("../models/database");
 const userRouter = express.Router();
 const { updateUserSports } = require("./sport.route");
 
@@ -94,7 +94,7 @@ userRouter.get(
         include: [
           {
             model: Sport,
-            attributes: ["id", "name", "gender"],
+            attributes: ["id", "name", "gender", "displayName"],
             through: { attributes: [] },
             where: Sequelize.and(
               req.query["sports[]"] ? Sequelize.or({ id: req.query["sports[]"] }) : null,
@@ -127,6 +127,9 @@ userRouter.get(
           }
         ]
       });
+      for(let user of allUsers) {
+        user.sports = addDisplayNameToSports(user.sports);
+      }
       res.json(req.query.id && allUsers.length ? allUsers[0] : allUsers);
     } catch (err) {
       next(err);
@@ -148,7 +151,7 @@ userRouter.get("/current", auth(), async (req, res, next) => {
       include: [
         {
           model: Sport,
-          attributes: ["id", "name", "gender"],
+          attributes: ["id", "name", "gender", "displayName"],
           through: { attributes: [] },
           include: [
             {
@@ -167,6 +170,7 @@ userRouter.get("/current", auth(), async (req, res, next) => {
         }
       ]
     });
+    user.sports = addDisplayNameToSports(user.sports);
     res.json(user);
   } catch (err) {
     next(err);

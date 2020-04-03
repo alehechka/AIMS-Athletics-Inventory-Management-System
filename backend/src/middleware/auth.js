@@ -1,6 +1,8 @@
 const jwt = require("jsonwebtoken");
 
-require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
+if(process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
 const { PRIVATE_KEY } = process.env;
 
 module.exports = function(roles) {

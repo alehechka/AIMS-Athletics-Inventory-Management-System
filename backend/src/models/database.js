@@ -1,6 +1,8 @@
 "use strict";
 
-require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
+if(process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
 const { DB_HOST, DB_DATABASE, DB_USER, DB_PASSWORD } = process.env;
 const bcrypt = require("bcrypt");
 const Sequelize = require("sequelize");
@@ -15,7 +17,7 @@ const db = new Sequelize(DB_DATABASE, DB_USER, DB_PASSWORD, {
     idle: 10000
   },
   dialect: "postgres",
-  logging: false,//process.env.NODE_ENV === "production" ? false : console.log,
+  logging: false,
   dialectOptions: {
     options: {
       useUTC: false,
@@ -138,8 +140,26 @@ const Sport = db.define("sports", {
   name: { type: Sequelize.STRING, allowNull: false },
   gender: { type: Sequelize.STRING(1), allowNull: true },
   icon: { type: Sequelize.STRING, allowNull: true },
-  default: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false }
+  default: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
+  displayName: { type: Sequelize.VIRTUAL }
+}, {
+  hooks: {
+    afterFind: async (sports, options) => {
+      sports = addDisplayNameToSports(sports);
+    }
+  }
 });
+
+function addDisplayNameToSports(sports) {
+  if (sports.length) {
+    for(let sport of sports) {
+      sport.displayName = `${sport.name}` + (sport.gender ? ` (${sport.gender})` : "");
+    }
+  } else {
+    sports.displayName = `${sports.name}` + (sports.gender ? ` (${sports.gender})` : "");
+  }
+  return sports;
+}
 
 Organization.hasMany(Sport, { foreignKey: { allowNull: false } });
 Sport.belongsTo(Organization, { foreignKey: { allowNull: false } });
@@ -330,6 +350,7 @@ module.exports = {
   UserSize,
   UserSport,
   Sport,
+  addDisplayNameToSports,
   SportSize,
   Status,
   Credential,

@@ -10,7 +10,9 @@ const Sequelize = require("sequelize");
 
 const credentialRouter = express.Router();
 
-require("dotenv").config({ path: `.env.${process.env.NODE_ENV}` });
+if(process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
 const { PRIVATE_KEY } = process.env;
 
 const thirtyDays = 1000 * 60 * 60 * 24 * 30;
@@ -161,7 +163,7 @@ credentialRouter.post("/login", async (req, res, next) => {
 
 //GET /api/v#/credentials/logout
 //Removes authorization cookie.
-credentialRouter.get("/logout", auth(), async (req, res, next) => {
+credentialRouter.get("/logout", async (req, res, next) => {
   res
     .status(200)
     .clearCookie("x-access-token")
