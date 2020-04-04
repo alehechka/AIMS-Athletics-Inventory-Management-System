@@ -226,7 +226,7 @@ async function getUsers(user, {
       include: [
         {
           model: Sport,
-          attributes: ["id", "name", "gender", "displayName"],
+          attributes: ["id", "name", "gender", "displayName", "icon"],
           through: { attributes: [] },
           where: Sequelize.and(
             sports ? Sequelize.or({ id: sports }) : null,

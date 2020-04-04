@@ -38,16 +38,18 @@
   ],
   "sports": [
     {
-      "name": "Administration"
+      "name": "Administration",
+      "icon": "people"
     },
     {
       "name": "Baseball",
-      "gender": "M"
+      "gender": "M",
+      "icon": "sports_baseball"
     },
     {
       "name": "Volleyball",
       "gender": "F",
-      "sizes": [{ "name": "Court Shoes", "values": ["8", "9", "10", "11"] }]
+      "icon": "sports_volleyball"
     }
   ],
   "sport_sizes": [

@@ -3,6 +3,7 @@ import MaterialTable from 'material-table';
 import Chip from '@material-ui/core/Chip';
 import ProfileDialog from './Components/ProfileDialog'
 import { UsersAPI, SportsAPI } from "../../api";
+import Icon from "@material-ui/core/Icon";
 
 /**
  * Contains the material table which lets the user edit staff entries.
@@ -75,7 +76,8 @@ export default function Staff(props) {
                 {title: 'Sport(s)', field: 'sports',
                     render: rowData => rowData.sports.map((val, index) =>
                         <Chip key={index} 
-                            label={val.displayName} style ={{margin: 2}}>
+                            label={val.displayName} style ={{margin: 2}}
+                            icon={<Icon>{val.icon}</Icon>}>
                         </Chip>),
                     customFilterAndSearch: (term, rowData) => 
                         rowData.sports

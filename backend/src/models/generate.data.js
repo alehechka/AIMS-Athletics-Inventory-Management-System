@@ -41,7 +41,8 @@ const createSports = async () => {
       name: sport.name,
       gender: sport.gender,
       organizationId: organizations[0].id,
-      default: sport.name === "Administration"
+      default: sport.name === "Administration",
+      icon: sport.icon
     }).then(res => {
       sport.id = res.id;
     });
@@ -53,7 +54,7 @@ const createSportSizes = async () => {
     await db.SportSize.create({
       name: sport_sizes[index].name,
       sizes: sport_sizes[index].sizes,
-      sportId: sports[index % sports.length].id
+      sportId: sports[index % sports.length].id,
     }).then(res => {
       sport_sizes[index].id = res.id;
     });
