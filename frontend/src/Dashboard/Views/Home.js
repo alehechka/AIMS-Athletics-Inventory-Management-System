@@ -12,10 +12,10 @@ export default function Home(props) {
       >
         Get Users
       </button>
-      <button onClick={() => UsersAPI.getSingleUser(4)}>Get Single User</button>
+      <button onClick={() => UsersAPI.getSingleUser(7)}>Get Single User</button>
       <button onClick={() => UsersAPI.getCurrentUser()}>Get Current</button>
-      <button onClick={() => UsersAPI.createUser("test5@test.com", null, null, {sports:[2, {id:3}]})}>Create User</button>
-      <button onClick={() => UsersAPI.updateCurrentUser({ address: "Admin City" })}>Update Current</button>
+      <button onClick={() => UsersAPI.createUser("test6@test.com", null, null, {sports:[2, {id:3}]})}>Create User</button>
+      <button onClick={() => UsersAPI.updateCurrentUser({ address: "Admin City", userSizes: [{size: "L", sportSizeId: 2}] })}>Update Current</button>
       <button onClick={() => UsersAPI.updateUser({ id: 3, address: "Athlete Town" })}>Update User</button>
       <br />
       <br />

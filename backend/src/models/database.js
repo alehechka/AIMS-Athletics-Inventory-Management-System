@@ -1,6 +1,6 @@
 "use strict";
 
-if(process.env.NODE_ENV !== "production") {
+if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 const { DB_HOST, DB_DATABASE, DB_USER, DB_PASSWORD } = process.env;
@@ -70,7 +70,7 @@ const Credential = db.define(
     },
     isCoach: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
     isApproved: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
-    isVerified: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
+    isVerified: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false }
   },
   {
     hooks: {
@@ -84,7 +84,7 @@ const Credential = db.define(
 //This functions makes it so all hashing of passwords use the same salt.
 const hashPassword = async (password) => {
   return await await bcrypt.hash(password, 10);
-}
+};
 
 Organization.hasMany(Credential, { foreignKey: { allowNull: false } });
 Credential.belongsTo(Organization), { foreignKey: { allowNull: false } };
@@ -105,12 +105,31 @@ const User = db.define(
     gender: { type: Sequelize.STRING(1), allowNull: true },
     height: { type: Sequelize.INTEGER, comment: "in inches", allowNull: true },
     weight: { type: Sequelize.INTEGER, comment: "in pounds", allowNull: true },
-    active: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: true }
+    isActive: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: true },
+    fullName: { type: Sequelize.VIRTUAL }
   },
   {
-    timestamps: true
+    timestamps: true,
+    hooks: {
+      afterFind: async (users, options) => {
+        users = addFullNameToUsers(users);
+      }
+    }
   }
 );
+
+function addFullNameToUsers(users) {
+  if (users.length) {
+    for (let user of users) {
+      let fullName = (user.firstName ? user.firstName : "") + (user.lastName ? " " + user.lastName : "");
+      user.fullName = fullName || null;
+    }
+  } else {
+    let fullName = (user.firstName ? user.firstName : "") + (user.lastName ? " " + user.lastName : "");
+    users.fullName = fullName || null;
+    return users;
+  }
+}
 
 Credential.hasOne(User, {
   foreignKey: { allowNull: false, unique: true },
@@ -136,23 +155,27 @@ User.belongsTo(Status);
 
 /////// SPORTS //////////////////////////////////////////////////////////////////////////
 //All users will be contained inside a "base sport" that will contain the standard equipment that all athletes need
-const Sport = db.define("sports", {
-  name: { type: Sequelize.STRING, allowNull: false },
-  gender: { type: Sequelize.STRING(1), allowNull: true },
-  icon: { type: Sequelize.STRING, allowNull: true },
-  default: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
-  displayName: { type: Sequelize.VIRTUAL }
-}, {
-  hooks: {
-    afterFind: async (sports, options) => {
-      sports = addDisplayNameToSports(sports);
+const Sport = db.define(
+  "sports",
+  {
+    name: { type: Sequelize.STRING, allowNull: false },
+    gender: { type: Sequelize.STRING(1), allowNull: true },
+    icon: { type: Sequelize.STRING, allowNull: true },
+    default: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
+    displayName: { type: Sequelize.VIRTUAL }
+  },
+  {
+    hooks: {
+      afterFind: async (sports, options) => {
+        sports = addDisplayNameToSports(sports);
+      }
     }
   }
-});
+);
 
 function addDisplayNameToSports(sports) {
   if (sports.length) {
-    for(let sport of sports) {
+    for (let sport of sports) {
       sport.displayName = `${sport.name}` + (sport.gender ? ` (${sport.gender})` : "");
     }
   } else {
@@ -194,7 +217,7 @@ const Team = db.define("teams", {
   name: { type: Sequelize.STRING, allowNull: false },
   description: { type: Sequelize.STRING, allowNull: true },
   schoolYear: { type: Sequelize.INTEGER, allowNull: true },
-  season: { type: DataTypes.STRING, allowNull: true },
+  season: { type: DataTypes.STRING, allowNull: true }
 });
 
 Sport.hasMany(Team, { foreignKey: { allowNull: false } });
@@ -335,14 +358,15 @@ const UserSize = db.define(
   }
 );
 
-User.hasMany(UserSize, { foreignKey: { allowNull: false } });
-UserSize.belongsTo(User, { foreignKey: { allowNull: false } });
+User.hasMany(UserSize, { foreignKey: { allowNull: false }, unique: 'compositeIndex' });
+UserSize.belongsTo(User, { foreignKey: { allowNull: false }, unique: 'compositeIndex' });
 
-SportSize.hasMany(UserSize, { foreignKey: { allowNull: false } });
-UserSize.belongsTo(SportSize, { foreignKey: { allowNull: false } });
+SportSize.hasMany(UserSize, { foreignKey: { allowNull: false }, unique: 'compositeIndex' });
+UserSize.belongsTo(SportSize, { foreignKey: { allowNull: false }, unique: 'compositeIndex' });
 
 module.exports = {
   User,
+  addFullNameToUsers,
   Inventory,
   InventorySize,
   Equipment,

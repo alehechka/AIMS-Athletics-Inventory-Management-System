@@ -25,7 +25,10 @@ async function createUser(
     weight,
     lockerNumber,
     lockerCode,
+    isActive,
+    status,
     sports,
+    userSizes,
   }
 ) {
   return await axios
@@ -48,7 +51,10 @@ async function createUser(
         weight,
         lockerNumber,
         lockerCode,
-        sports
+        isActive,
+        statusId: status?.id,
+        sports,
+        userSizes
       },
       { withCredentials: true }
     )
@@ -110,7 +116,11 @@ async function updateCurrentUser(
     height,
     weight,
     lockerNumber, //Can only be changed with admin or employee access
-    lockerCode //Can only be changed with admin or employee access
+    lockerCode, //Can only be changed with admin or employee access
+    isActive,
+    status,
+    sports,
+    userSizes
   }
 ) {
   return await axios
@@ -129,7 +139,11 @@ async function updateCurrentUser(
         height,
         weight,
         lockerNumber,
-        lockerCode
+        lockerCode,
+        isActive,
+        statusId: status?.id,
+        sports,
+        userSizes
       },
       { withCredentials: true }
     )
@@ -156,7 +170,11 @@ async function updateUser(
     height,
     weight,
     lockerNumber,   //Can only be changed with admin or employee access
-    lockerCode      //Can only be changed with admin or employee access
+    lockerCode,      //Can only be changed with admin or employee access
+    isActive,
+    status,
+    sports,
+    userSizes,
   }
 ) {
   return await axios
@@ -175,7 +193,11 @@ async function updateUser(
         height,
         weight,
         lockerNumber,
-        lockerCode
+        lockerCode,
+        isActive,
+        statusId: status?.id,
+        sports,
+        userSizes
       },
       { params: { id }, withCredentials: true }
     )

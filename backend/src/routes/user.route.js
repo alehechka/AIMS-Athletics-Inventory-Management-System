@@ -4,7 +4,17 @@ const express = require("express");
 const Sequelize = require("sequelize");
 const auth = require("../middleware/auth");
 const queryParams = require("../middleware/queryParams");
-const { User, UserSport, Sport, UserSize, Credential, SportSize, Status, hashPassword, addDisplayNameToSports } = require("../models/database");
+const {
+  User,
+  UserSport,
+  Sport,
+  UserSize,
+  Credential,
+  SportSize,
+  Status,
+  hashPassword,
+  addDisplayNameToSports
+} = require("../models/database");
 const userRouter = express.Router();
 const { updateUserSports } = require("./sport.route");
 
@@ -34,7 +44,9 @@ userRouter.post("/", auth(["isAdmin"]), async (req, res, next) => {
       lockerNumber: user.lockerNumber,
       lockerCode: user.lockerCode,
       credentialId: createdCred.id,
-      organizationId: req.user.organizationId
+      organizationId: req.user.organizationId,
+      isActive: user.isActive === true || user.isActive === false ? user.isActive : true,
+      statusId: user.statusId
     });
     //This needs to be changed to be the "Admin" for whichever organization they are in
     await Sport.findOne({
@@ -42,16 +54,19 @@ userRouter.post("/", auth(["isAdmin"]), async (req, res, next) => {
         organizationId: req.user.organizationId,
         default: true
       }
-    }).then(async sport => {
+    }).then(async (sport) => {
       await UserSport.create({
         userId: createdUser.id,
         sportId: sport.id
       });
-    })
-    if(user.sports) {
-      updateUserSports(createdUser.id, user.sports)
+    });
+    if (user.sports) {
+      await updateUserSports(createdUser.id, user.sports);
     }
-    res.json(createdUser);
+    if (user.userSizes) {
+      await updateUserSizes(createdUser.id, user.userSizes);
+    }
+    res.json(await getUsers(req.user, {userId: createdUser.id}));
   } catch (err) {
     next(err);
   }
@@ -66,71 +81,17 @@ userRouter.get(
   queryParams([], ["page", "limit", "id", "gender", "sports[]", "isAdmin", "isEmployee", "isCoach", "isAthlete"]),
   async (req, res, next) => {
     try {
-      let coachSports = [];
-      if (req.user.highestAccess.isCoach) {
-        coachSports = await UserSport.findAll({
-          where: {
-            userId: req.user.id
-          },
-          attributes: ["sportId"]
-        }).map((sport) => {
-          return sport.sportId;
-        });
-      }
-
-      const offset = req.query["page"] * req.query["limit"] || 0;
-      const limit = req.query["limit"] || 200;
-      let allUsers = await User.findAll({
-        offset,
-        //limit, //limit gets placed in the wrong location in the SQL query and caused nothing to return
-        where: Sequelize.and(
-          { organizationId: req.user.organizationId },
-          req.query.id ? { id: req.query.id } : null,
-          req.query.gender ? { gender: req.query.gender } : null
-        ),
-        attributes: {
-          exclude: ["createdAt", "updatedAt", "credentialId", "organizationId", "statusId"]
-        },
-        include: [
-          {
-            model: Sport,
-            attributes: ["id", "name", "gender", "displayName"],
-            through: { attributes: [] },
-            where: Sequelize.and(
-              req.query["sports[]"] ? Sequelize.or({ id: req.query["sports[]"] }) : null,
-              req.user.highestAccess.isCoach ? Sequelize.or({ id: coachSports }) : null
-            ),
-            include: [
-              {
-                model: SportSize,
-                attributes: req.query.id ? ["sportId", "name", "sizes"] : []
-              }
-            ]
-          },
-          {
-            model: UserSize,
-            attributes: req.query.id ? ["id", "sportSizeId", "size"] : []
-          },
-          {
-            model: Credential,
-            attributes: req.user.isAdmin ? { exclude: ["organizationId", "password"] } : ["email", "username"],
-            where: req.query.isAdmin || req.query.isEmployee || req.query.isCoach || req.query.isAthlete
-            ? Sequelize.or(
-              req.query.isAdmin ? { isAdmin: req.query.isAdmin } : null,
-              req.query.isEmployee ? { isEmployee: req.query.isEmployee } : null,
-              req.query.isCoach ? { isCoach: req.query.isCoach } : null,
-              req.query.isAthlete ? { isAthlete: req.query.isAthlete } : null,
-            ) : null
-          },
-          {
-            model: Status
-          }
-        ]
-      });
-      for(let user of allUsers) {
-        user.sports = addDisplayNameToSports(user.sports);
-      }
-      res.json(req.query.id && allUsers.length ? allUsers[0] : allUsers);
+      res.json(await getUsers(req.user, {
+        page: req.query.page,
+        limit: req.query.limit,
+        userId: req.query.id,
+        gender: req.query.gender,
+        sports: req.query["sports[]"],
+        isAdmin: req.query.isAdmin,
+        isEmployee: req.query.isEmployee,
+        isCoach: req.query.isCoach,
+        isAthlete: req.query.isAthlete,
+      }));
     } catch (err) {
       next(err);
     }
@@ -141,37 +102,7 @@ userRouter.get(
 //Retrieves the currently logged in user
 userRouter.get("/current", auth(), async (req, res, next) => {
   try {
-    let user = await User.findOne({
-      where: {
-        credentialId: req.user.id
-      },
-      attributes: {
-        exclude: ["createdAt", "updatedAt", "credentialId", "organizationId", "statusId"]
-      },
-      include: [
-        {
-          model: Sport,
-          attributes: ["id", "name", "gender", "displayName"],
-          through: { attributes: [] },
-          include: [
-            {
-              model: SportSize,
-              attributes: ["sportId", "name", "sizes"]
-            }
-          ]
-        },
-        { model: UserSize, attributes: ["id", "sportSizeId", "size"] },
-        {
-          model: Credential,
-          attributes: req.user.isAdmin ? { exclude: ["organizationId", "password"] } : ["email", "username"]
-        },
-        {
-          model: Status
-        }
-      ]
-    });
-    user.sports = addDisplayNameToSports(user.sports);
-    res.json(user);
+    res.json(await getUsers(req.user, {credentialId: req.user.id}));
   } catch (err) {
     next(err);
   }
@@ -182,20 +113,21 @@ userRouter.get("/current", auth(), async (req, res, next) => {
 userRouter.put("/current", auth(), async (req, res, next) => {
   let putUser = req.body;
   try {
-    let user = await User.findOne({
-      where: {
-        credentialId: req.user.id
-      }
-    });
+    let user = await getUsers(req.user, {credentialId: req.user.id});
     if (req.user.isAdmin) {
       user.schoolId = putUser.schoolId;
     }
     if (req.user.isAdmin || req.user.isEmployee) {
       user.lockerNumber = putUser.lockerNumber;
       user.lockerCode = putUser.lockerCode;
-      if(putUser.sports) {
-        updateUserSports(user.id, putUser.sports)
+      user.statusId = putUser.statusId;
+      user.isActive = putUser.isActive === true || putUser.isActive === false ? putUser.isActive : true;
+      if (putUser.sports) {
+        await updateUserSports(user.id, putUser.sports);
       }
+    }
+    if (putUser.userSizes) {
+      await updateUserSizes(user.id, putUser.userSizes);
     }
     user.firstName = putUser.firstname;
     user.lastName = putUser.lastName;
@@ -209,7 +141,7 @@ userRouter.put("/current", auth(), async (req, res, next) => {
     user.height = putUser.height;
     user.weight = putUser.weight;
     await user.save();
-    res.json(user);
+    res.json(await user.reload());
   } catch (err) {
     next(err);
   }
@@ -221,16 +153,15 @@ userRouter.put("/current", auth(), async (req, res, next) => {
 userRouter.put("/", auth(["isAdmin", "isEmployee"]), queryParams(["id"]), async (req, res, next) => {
   let putUser = req.body;
   try {
-    let foundUser = await User.findOne({
-      where: {
-        id: req.query.id
-      }
-    });
+    let foundUser = await getUsers(req.user, {userId: req.query.id});
     if (req.user.isAdmin) {
       foundUser.schoolId = putUser.schoolId;
     }
-    if(putUser.sports) {
-      updateUserSports(foundUser.id, putUser.sports)
+    if (putUser.sports) {
+      user.userSports = await updateUserSports(foundUser.id, putUser.sports);
+    }
+    if (putUser.userSizes) {
+      user.userSizes = await updateUserSizes(user.id, putUser.userSizes);
     }
     foundUser.lockerNumber = putUser.lockerNumber;
     foundUser.lockerCode = putUser.lockerCode;
@@ -244,11 +175,159 @@ userRouter.put("/", auth(["isAdmin", "isEmployee"]), queryParams(["id"]), async 
     foundUser.gender = putUser.gender;
     foundUser.height = putUser.height;
     foundUser.weight = putUser.weight;
+    foundUser.statusId = putUser.statusId;
+    foundUser.isActive = putUser.isActive === true || putUser.isActive === false ? putUser.isActive : true;
     await foundUser.save();
-    res.json(foundUser);
+    res.json(await foundUser.reload());
   } catch (err) {
     next(err);
   }
 });
+
+async function getUsers(user, {
+  page,
+  limit,
+  userId,
+  credentialId,
+  gender,
+  sports,
+  isAdmin,
+  isEmployee,
+  isCoach,
+  isAthlete
+}) {
+  try {
+    let coachSports = [];
+    if (user.highestAccess.isCoach) {
+      coachSports = await UserSport.findAll({
+        where: {
+          userId: user.id
+        },
+        attributes: ["sportId"]
+      }).map((sport) => {
+        return sport.sportId;
+      });
+    }
+
+    const offset = page * limit || 0;
+    const pageLimit = limit || 200;
+    let allUsers = await User.findAll({
+      offset,
+      //limit: pageLimit, //limit gets placed in the wrong location in the SQL query and caused nothing to return
+      where: Sequelize.and(
+        { organizationId: user.organizationId },
+        credentialId ? { credentialId: user.id } : null,
+        userId ? { id: userId } : null,
+        gender ? { gender } : null
+      ),
+      attributes: {
+        exclude: ["createdAt", "updatedAt", "credentialId", "organizationId", "statusId"]
+      },
+      include: [
+        {
+          model: Sport,
+          attributes: ["id", "name", "gender", "displayName"],
+          through: { attributes: [] },
+          where: Sequelize.and(
+            sports ? Sequelize.or({ id: sports }) : null,
+            user.highestAccess.isCoach ? Sequelize.or({ id: coachSports }) : null
+          ),
+          include: [
+            {
+              model: SportSize,
+              attributes: userId || credentialId ? ["sportId", "name", "sizes"] : []
+            }
+          ]
+        },
+        {
+          model: UserSize,
+          attributes: userId || credentialId ? ["id", "sportSizeId", "size"] : []
+        },
+        {
+          model: Credential,
+          attributes: user.isAdmin ? { exclude: ["organizationId", "password"] } : ["email", "username"],
+          where:
+            isAdmin || isEmployee || isCoach || isAthlete
+              ? Sequelize.or(
+                  isAdmin ? { isAdmin } : null,
+                  isEmployee ? { isEmployee } : null,
+                  isCoach ? { isCoach } : null,
+                  isAthlete ? { isAthlete } : null
+                )
+              : null
+        },
+        {
+          model: Status
+        }
+      ]
+    });
+    for (let user of allUsers) {
+      user.sports = await addDisplayNameToSports(user.sports);
+    }
+    return (userId || credentialId) && allUsers.length ? allUsers[0] : allUsers;
+  } catch (err) {
+    console.log(err)
+    throw err;
+  }
+}
+
+async function updateUserSizes(userId, sizes) {
+  try {
+    let userSizes = await UserSize.findAll({
+      where: {
+        userId
+      }
+    });
+
+    let addSizes = sizes.filter((size) => {
+      return !userSizes.map((userSize) => userSize.sportSizeId).includes(size.sportSizeId);
+    });
+    let updateSizes = sizes.filter((size) => {
+      return userSizes.map((userSize) => userSize.sportSizeId).includes(size.sportSizeId);
+    });
+    let deleteSizes = userSizes.filter((userSize) => {
+      return !sizes.map((size) => size.sportSizeId).includes(userSize.sportSizeId);
+    });
+
+    for (let size of addSizes) {
+      await UserSize.create({
+        userId,
+        sportSizeId: size.sportSizeId,
+        size: size.size
+      });
+    }
+
+    for (let size of updateSizes) {
+      await UserSize.update(
+        {
+          size: size.size
+        },
+        {
+          where: {
+            userId,
+            sportSizeId: size.sportSizeId
+          }
+        }
+      );
+    }
+
+    for (let size of deleteSizes) {
+      await UserSize.destroy({
+        where: {
+          userId,
+          sportSizeId: size.sportSizeId
+        }
+      });
+    }
+
+    return await await UserSize.findAll({
+      where: {
+        userId
+      }
+    });
+  } catch (err) {
+    throw err;
+  }
+}
 
 module.exports = userRouter;

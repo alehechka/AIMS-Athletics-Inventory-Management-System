@@ -144,8 +144,7 @@ async function updateUserSports(userId, sports) {
     });
     return user.sports;
   } catch (err) {
-    console.log(err)
-    return err;
+    throw err;
   }
 };
 
