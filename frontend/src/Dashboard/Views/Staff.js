@@ -134,9 +134,10 @@ export default function Staff(props) {
         setDialogOpen(false);
         if (type){
             const sportIds = sport.map(name => sportIdLookup[name].id);
+            
             const newSportsJson = sport.map(sportName => ({
                 id: sportIdLookup[sportName].id,
-                name: sportIdLookup[sportName].name,
+                displayName: sportIdLookup[sportName].displayName,
                 gender: sportIdLookup[sportName].gender,
                 icon: sportIdLookup[sportName].icon,
             }));
@@ -147,15 +148,37 @@ export default function Staff(props) {
                 sports: newSportsJson
             };
             console.log("Updated SportIds:" + sportIds);
+            const newUser = deepCopy(inputs);
+            Object.keys(newUser).map(key => {
+                if (newUser[key] === "") {
+                    delete newUser[key];
+                }
+                return null;
+            });
+            newUser.schoolId = props.context.organization.id;
+            newUser.sports = sportIds;
             if (dialogTitle.includes("Edit")) { 
                 updatedUser.id = inputs.id;
-                updateData(data.map(row => row.id === updatedUser.id? updatedUser: row));
+                newUser.id = inputs.id;
+                UsersAPI.updateUser(newUser).then((res)=>{
+                    console.log(res);
+                    updatedUser.id = res.id;
+                    updateData(data.map(row => row.id === updatedUser.id? updatedUser: row));
+                    updateLoading(false); 
+                    props.showMessage(dialogTitle + " Done");
+                }).catch(err => props.showMessage("Error:" + err));
             }
             else {
-                updatedUser.id = data.length + 1;
-                updateData([...data, updatedUser]);
+
+                UsersAPI.createUser(inputs.email, inputs.userName, inputs.password, newUser).then((res)=>{
+                    console.log(res);
+                    updatedUser.id = res.id;
+                    updateData([...data, updatedUser]);
+                    updateLoading(false); 
+                    props.showMessage(dialogTitle + " Done");
+                }).catch(err =>props.showMessage("Error:" + err));
+                
             }
-            setTimeout(()=> {updateLoading(false); props.showMessage(dialogTitle + " Done");}, 2000);
         }
         else {
             props.showMessage(dialogTitle + " Canceled", "info");
