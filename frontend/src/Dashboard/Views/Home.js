@@ -65,7 +65,7 @@ export default function Home(props) {
       </button>
       <br/><br/>
       <button onClick={() => EquipmentAPI.getEquipment({sports:[1, {id: 2}]})}>Get Equipment</button>
-      <button onClick={() => EquipmentAPI.getCurrentEquipment()}>Get Current Equipment</button>
+      <button onClick={() => EquipmentAPI.getCurrentEquipment({count:0})}>Get Current Equipment</button>
       <br />
       <br />
       <button onClick={() => changeFavicon("assets/creighton.ico")}>Change Favicon</button>
