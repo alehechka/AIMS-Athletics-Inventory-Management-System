@@ -7,6 +7,7 @@ import Inventory from "./Views/Inventory";
 import Profile from "./Views/Profile";
 import Staff from "./Views/Staff";
 import Admin from "./Views/Admin";
+import Transaction from "./Views/Transaction";
 import AuthRoute from "../AuthRoute";
 
 import { BrowserRouter as Router, Switch, Route, withRouter, Redirect } from "react-router-dom";
@@ -82,6 +83,11 @@ class Dashboard extends React.Component {
                   path={`/athletes`}
                   accessGranted={allowedViews.includes("Athletes")}
                   component={(props) => <Athletes {...props} showMessage={this.props.showMessage} context={context} />}
+                />
+                <AuthRoute
+                  path={`/transaction`}
+                  accessGranted={allowedViews.includes("Admin")}
+                  component={(props) => <Transaction {...props} showMessage={this.props.showMessage} context={context} />}
                 />
                 <AuthRoute
                   path={`/inventory`}
