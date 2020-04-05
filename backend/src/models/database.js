@@ -125,7 +125,7 @@ function addFullNameToUsers(users) {
       user.fullName = fullName || null;
     }
   } else {
-    let fullName = (user.firstName ? user.firstName : "") + (user.lastName ? " " + user.lastName : "");
+    let fullName = (users.firstName ? users.firstName : "") + (users.lastName ? " " + users.lastName : "");
     users.fullName = fullName || null;
     return users;
   }
@@ -316,7 +316,8 @@ const Transaction = db.define(
   "transactions",
   {
     amount: { type: Sequelize.INTEGER, allowNull: false },
-    returned: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false }
+    returned: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
+    comment: { type: Sequelize.STRING, allowNull: true }
   },
   {
     timestamps: true

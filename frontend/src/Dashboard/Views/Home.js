@@ -1,5 +1,5 @@
 import React from "react";
-import { UsersAPI, SportsAPI, CredentialAPI, InventoryAPI, changeFavicon } from "../../api";
+import { UsersAPI, SportsAPI, CredentialAPI, InventoryAPI, changeFavicon, EquipmentAPI } from "../../api";
 
 export default function Home(props) {
   return (
@@ -63,6 +63,9 @@ export default function Home(props) {
       >
         Update Inventory
       </button>
+      <br/><br/>
+      <button onClick={() => EquipmentAPI.getEquipment({sports:[1, {id: 2}]})}>Get Equipment</button>
+      <button onClick={() => EquipmentAPI.getCurrentEquipment()}>Get Current Equipment</button>
       <br />
       <br />
       <button onClick={() => changeFavicon("assets/creighton.ico")}>Change Favicon</button>

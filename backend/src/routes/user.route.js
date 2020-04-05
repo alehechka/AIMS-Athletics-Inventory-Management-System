@@ -27,7 +27,11 @@ userRouter.post("/", auth(["isAdmin"]), async (req, res, next) => {
       email: user.email,
       username: user.username,
       password: await hashPassword(user["password"] || "password123"),
-      organizationId: req.user.organizationId
+      organizationId: req.user.organizationId,
+      isAdmin: user.isAdmin,
+      isEmployee: user.isEmployee,
+      isCoach: user.isCoach,
+      isAthlete: user.isAthlete
     });
     let createdUser = await User.create({
       schoolId: user.schoolId,
@@ -199,13 +203,21 @@ async function getUsers(user, {
   try {
     let coachSports = [];
     if (user.highestAccess.isCoach) {
-      coachSports = await UserSport.findAll({
+      coachSports = await Sport.findAll({
         where: {
-          userId: user.id
+          default: false
         },
-        attributes: ["sportId"]
+        attributes: ["id"],
+        include: [
+          {
+            model: User,
+            where: {
+              credentialId: user.id
+            }
+          }
+        ]
       }).map((sport) => {
-        return sport.sportId;
+        return sport.id;
       });
     }
 

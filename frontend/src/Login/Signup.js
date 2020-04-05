@@ -122,7 +122,7 @@ class Signup extends React.Component {
         .signup(email, username, password)
         .then((res) => {
           this.props.showMessage(`You have successfully signed up ${username}, Redirecting...!`);
-          setTimeout(() => this.props.history.push("/?email=" + email), 3000);
+          setTimeout(() => this.props.history.push("profile/?email=" + email), 3000);
         })
         .catch((error) => {
           this.props.showMessage(

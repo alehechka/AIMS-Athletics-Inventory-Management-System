@@ -10,6 +10,10 @@ async function createUser(
   email,
   username,
   password,
+  isAdmin,
+  isEmployee,
+  isCoach,
+  isAthlete,
   //below is in curly braces so you can send a user object that contains all inner variables
   {
     schoolId,
@@ -38,6 +42,10 @@ async function createUser(
         email,
         username,
         password,
+        isAdmin,
+        isEmployee,
+        isCoach,
+        isAthlete,
         schoolId,
         firstName,
         lastName,

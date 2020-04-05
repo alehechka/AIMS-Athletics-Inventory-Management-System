@@ -10,6 +10,7 @@ const { sportRouter } = require("./routes/sport.route");
 const credentialRouter = require("./routes/credential.route");
 const inventoryRouter = require("./routes/inventory.route");
 const equipmentRouter = require("./routes/equipment.route");
+const transactionRouter = require("./routes/transaction.route");
 
 if(process.env.NODE_ENV !== "production") {
   require("dotenv").config();
@@ -59,6 +60,7 @@ app.use(baseRoute + 'users', userRouter);
 app.use(baseRoute + 'sports', sportRouter);
 app.use(baseRoute + 'inventory', inventoryRouter);
 app.use(baseRoute + 'equipment', equipmentRouter);
+app.use(baseRoute + 'transactions', transactionRouter);
 
 
 // This middleware adds the json header to every response
