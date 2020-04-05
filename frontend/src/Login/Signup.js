@@ -3,12 +3,20 @@ import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from "@material-ui/core/InputLabel";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
 import Link from "@material-ui/core/Link";
 import { Link as RouterLink } from "react-router-dom";
 import VerifiedUserIcon from "@material-ui/icons/VerifiedUser";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import { withSnackbar } from "notistack";
+import { OrganizationAPI } from "../api";
+import OrganizationIcon from "../Logo/OrganizationIcon";
 
 /**
  * This Component contains the sign up page along with sign up logic.
@@ -43,26 +51,43 @@ class Signup extends React.Component {
       usernameValid: "",
       emailValid: "",
       password1Valid: false,
-      password2Valid: false
+      password2Valid: false,
+      organizations: [],
+      organization: null
     };
   }
+
+  async componentDidMount() {
+    this.setState({ organizations: await OrganizationAPI.getOrganizations() });
+    console.log(this.state.organizations);
+  }
+
+  /**
+   * Updates the organization variable
+   *
+   * @param e event triggered if textbox changes
+   */
+  handleOrganizationChange = (e) => {
+    const organization = e.target.value;
+    this.setState(Object.assign(this.state, { organization }));
+  };
+
   /**
    * Updates the username state variable
    *
    * @param e event triggered if textbox changes
    */
-
   handleUsernameChange = (e) => {
     const username = e.target.value;
     this.setState(Object.assign(this.state, { username }));
     Object.assign(this.state, { usernameValid: username.length >= 5 });
   };
+
   /**
    * Updates the email state variable and checks if @ is present
    *
    * @param e event triggered if textbox changes
    */
-
   handleEmailChange = (e) => {
     const email = e.target.value;
     this.setState(Object.assign(this.state, { email }));
@@ -107,6 +132,7 @@ class Signup extends React.Component {
     const email = this.state.email;
     const password = this.state.password1;
     const username = this.state.username;
+    const organization = this.state.organization;
 
     const password2Valid = this.state.password1 === this.state.password2;
     this.setState(Object.assign(this.state, { password2Valid }));
@@ -115,11 +141,16 @@ class Signup extends React.Component {
     //const { from } = this.props.location.state || { from : { pathname: '/'}};
 
     const formValid =
-      this.state.usernameValid && this.state.emailValid && this.state.password1Valid && this.state.password2Valid;
+      this.state.usernameValid &&
+      this.state.emailValid &&
+      this.state.password1Valid &&
+      this.state.password2Valid &&
+      organization;
     if (formValid) {
       //TODO logic
+      console.log("submit", organization)
       await context.actions
-        .signup(email, username, password)
+        .signup(email, username, password, organization)
         .then((res) => {
           this.props.showMessage(`You have successfully signed up ${username}, Redirecting...!`);
           setTimeout(() => this.props.history.push("profile/?email=" + email), 3000);
@@ -152,6 +183,27 @@ class Signup extends React.Component {
             Sign Up
           </Typography>
           <form style={{ marginTop: "16px" }} onSubmit={this.handleSubmit} noValidate>
+            <FormControl variant="outlined" margin="normal" required fullWidth>
+              <InputLabel id="organization-label">Organization</InputLabel>
+              <Select
+                id="organization"
+                labelId="organization-label"
+                label="Organization *"
+                value={this.state.organization}
+                onChange={this.handleOrganizationChange}
+                autoFocus
+              >
+                {this.state.organizations.map((organization) => (
+                  <MenuItem value={organization}>
+                    {/* When you select and organization the logo and name are on different lines */}
+                    {/* <ListItemIcon>
+                      <OrganizationIcon logo={organization.logo} />
+                    </ListItemIcon> */}
+                    <ListItemText primary={organization.name}/>
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
             <TextField
               variant="outlined"
               margin="normal"
@@ -163,7 +215,6 @@ class Signup extends React.Component {
               autoComplete="username"
               value={this.state.username}
               onChange={this.handleUsernameChange}
-              autoFocus
               error={usernameError}
               helperText={usernameError ? "Username needs to be at least 5 characters long" : ""}
             />

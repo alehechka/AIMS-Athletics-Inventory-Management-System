@@ -7,6 +7,7 @@ const cors = require('cors');
 const helmet = require("helmet");
 const userRouter = require("./routes/user.route");
 const { sportRouter } = require("./routes/sport.route");
+const { organizationRouter } = require("./routes/organization.route");
 const credentialRouter = require("./routes/credential.route");
 const inventoryRouter = require("./routes/inventory.route");
 const equipmentRouter = require("./routes/equipment.route");
@@ -61,7 +62,7 @@ app.use(baseRoute + 'sports', sportRouter);
 app.use(baseRoute + 'inventory', inventoryRouter);
 app.use(baseRoute + 'equipment', equipmentRouter);
 app.use(baseRoute + 'transactions', transactionRouter);
-
+app.use(baseRoute + 'organizations', organizationRouter);
 
 // This middleware adds the json header to every response
 app.use('*', (req, res, next) => {

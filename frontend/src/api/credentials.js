@@ -31,12 +31,18 @@ async function getCredentials() {
  * @param {string} usernamer user entered username
  * @param {string} password user entered password
  * @param {boolean} remember determines whether authorization cookie will be session or 30 day expiration
- * 
+ * @param {object} organization the selected organization to be apart of
+ *
  * @return credential object from backend to be used as authorization in the app state
  */
-async function signup(email, username, password, remember) {
+async function signup(email, username, password, organization, remember) {
+  console.log("axios", organization)
   return await axios
-    .post(`${apiUrl}/credentials/signup`, { email, username, password, remember }, { withCredentials: true })
+    .post(
+      `${apiUrl}/credentials/signup`,
+      { email, username, password, remember, organizationId: organization?.id || organization },
+      { withCredentials: true }
+    )
     .then((res) => {
       sessionStorage.setItem(
         "creds",
@@ -60,7 +66,7 @@ async function signup(email, username, password, remember) {
  * @param {string} email user entered email address or username (backend checks against both)
  * @param {string} password user entered password
  * @param {boolean} remember determines whether authorization cookie will be session or 30 day expiration
- * 
+ *
  * @return credential object from backend to be used as authorization in the app state
  */
 async function login(email, password, remember) {
@@ -98,13 +104,13 @@ async function logout() {
 }
 
 /**
- * Allows user to to update their credentials 
+ * Allows user to to update their credentials
  * @param {string} email user entered email address
  * @param {string} user user entered username
  * @param {boolean} isEmployee employee role
  * @param {boolean} isCoach coach role
  * @param {boolean} isAthlete athlete role
- * 
+ *
  * @return message describing if the operation was successful
  */
 async function updateCurrentCredentials({ email, username, isEmployee, isCoach, isAthlete }) {
@@ -133,7 +139,7 @@ async function updateCurrentCredentials({ email, username, isEmployee, isCoach, 
  * @param {boolean} isEmployee employee role
  * @param {boolean} isCoach coach role
  * @param {boolean} isAthlete athlete role
- * 
+ *
  * @return message describing if the operation was successful
  */
 async function updateCredentials({
@@ -167,7 +173,7 @@ async function updateCredentials({
  * Allows an admin to to update the credentials of another user
  * @param {string} password user entered current password
  * @param {string} newPassword user entered new password
- * 
+ *
  * @return message describing if the operation was successful
  */
 async function changePassword(password, newPassword) {
@@ -178,12 +184,4 @@ async function changePassword(password, newPassword) {
     });
 }
 
-export {
-  login,
-  logout,
-  signup,
-  getCredentials,
-  updateCurrentCredentials,
-  updateCredentials,
-  changePassword,
-};
+export { login, logout, signup, getCredentials, updateCurrentCredentials, updateCredentials, changePassword };

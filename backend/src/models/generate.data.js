@@ -148,7 +148,8 @@ const creightonAccount = async () => {
   let sport = await db.Sport.create({
     name: "Admin",
     default: true,
-    organizationId: 2
+    organizationId: 2,
+    icon: "people"
   });
   await db.Credential.create({
     email: "creighton@creighton.edu",

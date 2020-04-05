@@ -44,7 +44,7 @@ credentialRouter.post("/signup", async (req, res, next) => {
       email: credential.email,
       username: credential.username,
       password: await hashPassword(credential.password),
-      organizationId: credential.organizationId || 1
+      organizationId: credential.organizationId
     });
 
     let createdUser = await User.create({
