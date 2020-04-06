@@ -19,7 +19,8 @@ import {SportsAPI, UsersApi, UsersAPI} from "../../api";
 
 export default function Transaction(props) {
 
-    const [checked, setChecked] = React.useState([0]);
+    const [checked, setChecked] = React.useState([]);
+    const [checkedUsers, setCheckedUsers] = React.useState([]);
     const [sports, setSports] = React.useState([]);
     const [sportsFilter, setSportsFilter] = React.useState([]);
     const [usersMaster, setUsersMaster] = React.useState([]);
@@ -33,17 +34,24 @@ export default function Transaction(props) {
 
     };
 
-    const handleToggle = (value, userId) => () => {
+    const handleToggle = (value) => () => {
       const currentIndex = checked.indexOf(value);
       const newChecked = [...checked];
+      const newCheckedUsers = [...checkedUsers];
+      const newCheckedUser = usersMaster.find(user => user.id === value);
+
+      console.log(newCheckedUser);
   
       if (currentIndex === -1) {
         newChecked.push(value);
+        newCheckedUsers.push(newCheckedUser);
       } else {
         newChecked.splice(currentIndex, 1);
+        newCheckedUsers.splice(currentIndex,1);
       }
-      console.log(newChecked);
+
       setChecked(newChecked);
+      setCheckedUsers(newCheckedUsers);
 
     };
 
@@ -64,7 +72,6 @@ export default function Transaction(props) {
 
     return (
         <Grid item xs = {12} >
-
             <Card variant = "outlined">
                 <CardContent>
                 <Grid container spacing = {3}>
@@ -103,7 +110,9 @@ export default function Transaction(props) {
                             {users.map( (user) => {
                                 return (
                                     <ListItem key = {user.id} dense button onClick={handleToggle(user.id)}>
-                                        <ListItemText primary = {`${user.firstName} ${user.lastName}`}></ListItemText>
+                                        <ListItemText 
+                                            primary = {user.fullName}
+                                            secondary = {user.isActive}/>
                                         <ListItemIcon>
                                         <Checkbox
                                             edge="start"
@@ -118,6 +127,17 @@ export default function Transaction(props) {
                 </Grid>
                 </CardContent>
             </Card>
+            <Grid item xs = {12}>
+                {checkedUsers.map(user => 
+                <Card variant = "outlined">
+                    <CardContent>
+                        <Typography>{user.fullName}</Typography>
+                    </CardContent>
+                </Card>
+                    )}
+
+            </Grid>
         </Grid>
+
     );
   }
