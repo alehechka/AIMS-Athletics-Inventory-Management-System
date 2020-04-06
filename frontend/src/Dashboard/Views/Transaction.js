@@ -13,14 +13,27 @@ import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import Checkbox from "@material-ui/core/Checkbox";
 import ListSubheader from "@material-ui/core/ListSubheader";
+import Button from "@material-ui/core/Button";
 
 import {SportsAPI, UsersApi, UsersAPI} from "../../api";
 
 export default function Transaction(props) {
 
     const [checked, setChecked] = React.useState([0]);
+    const [sports, setSports] = React.useState([]);
+    const [sportsFilter, setSportsFilter] = React.useState([]);
+    const [usersMaster, setUsersMaster] = React.useState([]);
+    const [users, setUsers] = React.useState([]);
+    const [teams, setTeams] = React.useState([]);
 
-    const handleToggle = (value) => () => {
+    const handleSportFilter = (event) => {
+        var tempUsers = JSON.parse(JSON.stringify(usersMaster))
+        setSportsFilter(event.target.value);
+        setUsers(tempUsers.filter(user => user.sports.find(sports => sports.name.includes(event.target.value))) );
+
+    };
+
+    const handleToggle = (value, userId) => () => {
       const currentIndex = checked.indexOf(value);
       const newChecked = [...checked];
   
@@ -29,13 +42,11 @@ export default function Transaction(props) {
       } else {
         newChecked.splice(currentIndex, 1);
       }
-  
+      console.log(newChecked);
       setChecked(newChecked);
 
-    }
-    const [sports, setSports] = React.useState([]);
-    const [users, setUsers] = React.useState([]);
-    const [teams, setTeams] = React.useState([]);
+    };
+
 
     React.useEffect(()=>{
         SportsAPI.getSports().then((sports)=> {
@@ -44,6 +55,7 @@ export default function Transaction(props) {
 
         UsersAPI.getUsers(null, null, {isAdmin: true, isEmployee: true, isCoach: true, isAthlete: true}).then( (users) => {
             setUsers(users)
+            setUsersMaster(users)
         });
 
         setTeams([{id: 1, name: "The Ball Boys"}, {id:2, name: "Sportsmen"}]);
@@ -52,22 +64,22 @@ export default function Transaction(props) {
 
     return (
         <Grid item xs = {12} >
+
             <Card variant = "outlined">
                 <CardContent>
                 <Grid container spacing = {3}>
-                    <Grid item xs = {2}>
+                    <Grid item xs = {1}>
                         <Typography>Sports</Typography>
                         <Select
-                        style = {{minWidth: 120}}
-                        labelId="sport-input"
-                        id="demo-simple-select"
-                        >
-                        {sports.map(sport =>
-                            <MenuItem value = {sport.id}>{sport.displayName}</MenuItem>
-                            )}
+                            style = {{minWidth: 60}}
+                            defaultValue = {""}
+                            onChange = {handleSportFilter}>
+                            {sports.map(sport =>
+                                <MenuItem key = {sport.id} value = {sport.name}>{sport.displayName}</MenuItem>
+                                )}
                         </Select>
                     </Grid>
-                    <Grid item xs = {4}>
+                    <Grid item xs = {2}>
                         <Typography>Teams</Typography>
                         <List>
                             {teams.map( (team) => {
@@ -84,7 +96,7 @@ export default function Transaction(props) {
                             })}
                         </List>
                     </Grid>
-                    <Grid item xs = {6}>
+                    <Grid item xs = {3}>
                         <Typography>Athletes</Typography>
                         <List
                             style = {{overflow: 'auto', maxHeight: 250}}>
