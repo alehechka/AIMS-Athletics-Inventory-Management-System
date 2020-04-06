@@ -45,7 +45,7 @@ export default function Transaction(props) {
             setUsers(users)
         });
     
-    });
+    }, []);
 
     return (
         <Grid item xs = {12} >
