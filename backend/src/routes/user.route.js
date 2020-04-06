@@ -16,7 +16,7 @@ const {
   addDisplayNameToSports
 } = require("../models/database");
 const userRouter = express.Router();
-const { updateUserSports } = require("./sport.route");
+const { updateUserSports, getCoachSports } = require("./sport.route");
 
 //POST /api/v#/users
 //Allows an admin to create a new user profile with temporary login credentials
@@ -203,22 +203,7 @@ async function getUsers(user, {
   try {
     let coachSports = [];
     if (user.highestAccess.isCoach) {
-      coachSports = await Sport.findAll({
-        where: {
-          default: false
-        },
-        attributes: ["id"],
-        include: [
-          {
-            model: User,
-            where: {
-              credentialId: user.id
-            }
-          }
-        ]
-      }).map((sport) => {
-        return sport.id;
-      });
+      coachSports = await getCoachSports(user.id);
     }
 
     const offset = page * limit || 0;

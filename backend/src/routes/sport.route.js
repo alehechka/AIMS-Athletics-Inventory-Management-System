@@ -148,4 +148,23 @@ async function updateUserSports(userId, sports) {
   }
 };
 
-module.exports = { sportRouter, updateUserSports };
+async function getCoachSports(credentialId) {
+  return await Sport.findAll({
+    where: {
+      default: false
+    },
+    attributes: ["id"],
+    include: [
+      {
+        model: User,
+        where: {
+          credentialId
+        }
+      }
+    ]
+  }).map((sport) => {
+    return sport.id;
+  });
+}
+
+module.exports = { sportRouter, updateUserSports, getCoachSports };

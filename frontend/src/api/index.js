@@ -4,6 +4,7 @@ import * as SportsAPI from "./sports";
 import * as InventoryAPI from "./inventory";
 import * as EquipmentAPI from "./equipment";
 import * as OrganizationAPI from "./organization";
+import * as TransactionAPI from "./transactions";
 
 const domain = process.env.NODE_ENV === "production" ? "https://aims-backend-blkgoerjhq-uc.a.run.app" : "http://localhost";
 
@@ -25,4 +26,4 @@ function changeFavicon(src) {
   document.head.appendChild(link);
 }
 
-export { apiUrl, CredentialAPI, UsersAPI, SportsAPI, InventoryAPI, EquipmentAPI, OrganizationAPI, changeFavicon };
+export { apiUrl, CredentialAPI, UsersAPI, SportsAPI, InventoryAPI, EquipmentAPI, TransactionAPI, OrganizationAPI, changeFavicon };

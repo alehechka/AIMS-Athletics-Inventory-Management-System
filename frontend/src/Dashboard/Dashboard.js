@@ -39,9 +39,9 @@ class Dashboard extends React.Component {
     const { context } = this.props;
     const { credentials } = context;
     const permissions = {
-      isAdmin: ["Home", "Athletes", "Inventory", "Staff", "Profile", "Admin"],
-      isEmployee: ["Home", "Athletes", "Inventory", "Staff", "Profile"],
-      isCoach: ["Home", "Athletes", "Inventory", "Profile"],
+      isAdmin: ["Home", "Athletes", "Inventory", "Staff", "Profile", "Admin", "Transactions"],
+      isEmployee: ["Home", "Athletes", "Inventory", "Staff", "Profile", "Transactions"],
+      isCoach: ["Home", "Athletes", "Inventory", "Profile", "Transactions"],
       isAthlete: ["Home", "Profile"],
       isNewUser: ["Home", "Profile"]
     };
@@ -78,21 +78,27 @@ class Dashboard extends React.Component {
                 logOutUser={context.actions.logout}
               />
               <Switch>
-                <Route path={`/profile`} component={(props) => <Profile {...props} showMessage={this.props.showMessage} context={context}/>} />
+                <AuthRoute
+                  path={`/profile`}
+                  accessGranted={allowedViews.includes("Profile")}
+                  component={(props) => <Profile {...props} showMessage={this.props.showMessage} context={context} />}
+                />
                 <AuthRoute
                   path={`/athletes`}
                   accessGranted={allowedViews.includes("Athletes")}
                   component={(props) => <Athletes {...props} showMessage={this.props.showMessage} context={context} />}
                 />
                 <AuthRoute
-                  path={`/transaction`}
-                  accessGranted={allowedViews.includes("Admin")}
-                  component={(props) => <Transaction {...props} showMessage={this.props.showMessage} context={context} />}
+                  path={`/transactions`}
+                  accessGranted={allowedViews.includes("Transactions")}
+                  component={(props) => (
+                    <Transaction {...props} showMessage={this.props.showMessage} context={context} />
+                  )}
                 />
                 <AuthRoute
                   path={`/inventory`}
                   accessGranted={allowedViews.includes("Inventory")}
-                  component={(props) => <Inventory {...props} showMessage={this.props.showMessage} context={context}/> }
+                  component={(props) => <Inventory {...props} showMessage={this.props.showMessage} context={context} />}
                 />
                 <AuthRoute
                   path={`/staff`}
@@ -102,9 +108,13 @@ class Dashboard extends React.Component {
                 <AuthRoute
                   path={`/admin`}
                   accessGranted={allowedViews.includes("Admin")}
-                  component={(props) => <Admin {...props} showMessage={this.props.showMessage} context={context}/> }
+                  component={(props) => <Admin {...props} showMessage={this.props.showMessage} context={context} />}
                 />
-                <Route path={`/home`} component={(props) => <Home {...props} showMessage={this.props.showMessage} context={context}/>} />
+                <AuthRoute
+                  path={`/home`}
+                  accessGranted={allowedViews.includes("Home")}
+                  component={(props) => <Home {...props} showMessage={this.props.showMessage} context={context} />}
+                />
                 <Route exact path={pathname}>
                   <Redirect to="/home" />
                 </Route>

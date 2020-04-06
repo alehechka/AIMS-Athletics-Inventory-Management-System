@@ -13,6 +13,7 @@ import DashboardIcon from "@material-ui/icons/Dashboard";
 import ListIcon from "@material-ui/icons/List";
 import PersonIcon from "@material-ui/icons/Person";
 import MenuIcon from "@material-ui/icons/Menu";
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import PowerSettingsNewIcon from "@material-ui/icons/PowerSettingsNew";
 import LockIcon from "@material-ui/icons/Lock";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -107,6 +108,7 @@ function Navbar(props) {
     Home: <DashboardIcon />,
     Athletes: <Icon className="fas fa-swimmer" />,
     Inventory: <ListIcon />,
+    Transactions: <ShoppingCartIcon />,
     Staff: <PersonIcon />,
     Admin: <LockIcon />
   };

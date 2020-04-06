@@ -5,6 +5,7 @@ const Sequelize = require("sequelize");
 const { Equipment, InventorySize, Inventory, SportSize, Sport, User, UserSport } = require("../models/database");
 const auth = require("../middleware/auth");
 const queryParams = require("../middleware/queryParams");
+const { getCoachSports } = require("./sport.route");
 const equipmentRouter = express.Router();
 
 //Get /api/v#/sports
@@ -60,22 +61,7 @@ async function getEquipment(
   try {
     let coachSports = [];
     if (user.highestAccess.isCoach) {
-      coachSports = await Sport.findAll({
-        where: {
-          default: false
-        },
-        attributes: ["id"],
-        include: [
-          {
-            model: User,
-            where: {
-              credentialId: user.id
-            }
-          }
-        ]
-      }).map((sport) => {
-        return sport.id;
-      });
+      coachSports = await getCoachSports(user.id);
     }
 
     const offset = page * limit || 0;
@@ -137,7 +123,7 @@ async function getEquipment(
         }
       ]
     });
-    return sports || sportSizeId
+    return sports || sportSizeId || user.highestAccess.isCoach
       ? equipment.filter((equip) => {
           return equip.inventorySize.inventory;
         })

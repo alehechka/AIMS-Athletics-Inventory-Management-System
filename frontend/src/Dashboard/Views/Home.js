@@ -1,31 +1,80 @@
 import React from "react";
-import { UsersAPI, SportsAPI, CredentialAPI, InventoryAPI, changeFavicon, EquipmentAPI } from "../../api";
+import {
+  UsersAPI,
+  SportsAPI,
+  CredentialAPI,
+  InventoryAPI,
+  changeFavicon,
+  EquipmentAPI,
+  TransactionAPI
+} from "../../api";
 
 export default function Home(props) {
+  const user = {
+    id: 1,
+    firstName: "Adam"
+  }
+  const inventories = {
+    id: 1,
+    name: "T-Shirt",
+    inventorySizes: [
+      {
+        id: 1,
+        size: "XL",
+        price: 20.00,
+        quantity: 10
+      }
+    ]
+  }
+  const selectedInventorySize = {
+    id: 2,
+    size: "M",
+    price: 25.00,
+    quantity: 20
+  }
+  const transactions = [
+    {
+      issuedTo: user,
+      items: [
+        {
+          inventorySize: inventories.inventorySizes[0],
+          amount: 2
+        },
+        {
+          inventorySize: selectedInventorySize,
+          amount: 1
+        }
+      ]
+    }
+  ];
   return (
     <div>
       <h1>Home</h1>
-      <button
-        onClick={() =>
-          UsersAPI.getUsers(null, null, {})
-        }
-      >
-        Get Users
-      </button>
+      <button onClick={() => UsersAPI.getUsers(null, null, {})}>Get Users</button>
       <button onClick={() => UsersAPI.getSingleUser(7)}>Get Single User</button>
       <button onClick={() => UsersAPI.getCurrentUser()}>Get Current</button>
-      <button onClick={() => UsersAPI.createUser("test6@test.com", null, null, {sports:[2, {id:3}]})}>Create User</button>
-      <button onClick={() => UsersAPI.updateCurrentUser({ address: "Admin City", userSizes: [{size: "L", sportSizeId: 2}] })}>Update Current</button>
+      <button onClick={() => UsersAPI.createUser("test6@test.com", null, null, { sports: [2, { id: 3 }] })}>
+        Create User
+      </button>
+      <button
+        onClick={() =>
+          UsersAPI.updateCurrentUser({ address: "Admin City", userSizes: [{ size: "L", sportSizeId: 2 }] })
+        }
+      >
+        Update Current
+      </button>
       <button onClick={() => UsersAPI.updateUser({ id: 3, address: "Athlete Town" })}>Update User</button>
       <br />
       <br />
       <button onClick={() => SportsAPI.getSports()}>Get Sports</button>
       <button onClick={() => SportsAPI.getSport(1)}>Get Sport</button>
       <button onClick={() => SportsAPI.createSport({ name: "Football", gender: "M" })}>Create Sport</button>
-      <button onClick={() => SportsAPI.updateSport({ id: 1, name: "Administration", gender: "M" })}>Update Sport</button>
+      <button onClick={() => SportsAPI.updateSport({ id: 1, name: "Administration", gender: "M" })}>
+        Update Sport
+      </button>
       <br />
       <br />
-      <button onClick={() => SportsAPI.updateUserSports(4, [3, {id:2}])}>Update User Sports</button>
+      <button onClick={() => SportsAPI.updateUserSports(4, [3, { id: 2 }])}>Update User Sports</button>
       <br />
       <br />
       <button onClick={() => CredentialAPI.changePassword("test", "admin")}>Change Password</button>
@@ -63,13 +112,17 @@ export default function Home(props) {
       >
         Update Inventory
       </button>
-      <br/><br/>
-      <button onClick={() => EquipmentAPI.getEquipment({sports:[1, {id: 2}]})}>Get Equipment</button>
-      <button onClick={() => EquipmentAPI.getCurrentEquipment({count:0})}>Get Current Equipment</button>
+      <br />
+      <br />
+      <button onClick={() => EquipmentAPI.getEquipment({ sports: [1, { id: 2 }] })}>Get Equipment</button>
+      <button onClick={() => EquipmentAPI.getCurrentEquipment({ count: 0 })}>Get Current Equipment</button>
+      <br />
+      <br />
+      <button onClick={() => TransactionAPI.getTransactions({})}>Get Transactions</button>
+      <button onClick={() => TransactionAPI.checkOut(transactions, "comment")}>Check out</button>
       <br />
       <br />
       <button onClick={() => changeFavicon("assets/creighton.ico")}>Change Favicon</button>
-
     </div>
   );
 }

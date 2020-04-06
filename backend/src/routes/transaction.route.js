@@ -2,10 +2,29 @@
 
 const express = require("express");
 const Sequelize = require("sequelize");
-const { Transaction, User, Equipment, InventorySize, Inventory } = require("../models/database");
+const { Transaction, User, Equipment, InventorySize, Inventory, SportSize } = require("../models/database");
 const auth = require("../middleware/auth");
 const queryParams = require("../middleware/queryParams");
+const { getCoachSports } = require("./sport.route");
 const transactionRouter = express.Router();
+
+//Get /api/v#/sports
+//Create new sport
+transactionRouter.get(
+  "/",
+  auth(["isAdmin", "isEmployee", "isCoach"]),
+  queryParams([], ["returned", "createdBegin", "createdEnd"]),
+  async (req, res, next) => {
+    try {
+      res.json(
+        await getTransactions(req.user, {
+        })
+      );
+    } catch (err) {
+      next(err);
+    }
+  }
+);
 
 //Get /api/v#/sports
 //Create new sport
@@ -40,8 +59,16 @@ transactionRouter.get(
   }
 );
 
-async function getTransactions(user, { page, limit, issuedBy, issuedTo, returned, createdBegin, createdEnd = new Date() }) {
+async function getTransactions(
+  user,
+  { page, limit, issuedBy, issuedTo, returned, createdBegin, createdEnd = new Date(), sports }
+) {
   try {
+    let coachSports = [];
+    if (user.highestAccess.isCoach) {
+      coachSports = await getCoachSports(user.id);
+    }
+
     const offset = page * limit || 0;
     const pageLimit = limit || 200;
     let transactions = await Transaction.findAll({
@@ -52,8 +79,8 @@ async function getTransactions(user, { page, limit, issuedBy, issuedTo, returned
         issuedBy && { issuedBy },
         issuedTo && { issuedTo },
         returned && { returned },
-        createdBegin && { createdAt: { [Sequelize.Op.gte]: createdBegin }},
-        { createdAt: { [Sequelize.Op.lte]: createdEnd }}
+        createdBegin && { createdAt: { [Sequelize.Op.gte]: createdBegin } },
+        { createdAt: { [Sequelize.Op.lte]: createdEnd } }
       ),
       attributes: {
         exclude: ["equipmentId", "issuedBy", "issuedTo", "organizationId"]
@@ -84,7 +111,15 @@ async function getTransactions(user, { page, limit, issuedBy, issuedTo, returned
                 {
                   model: Inventory,
                   attributes: {
-                    exclude: ["createdAt", "updatedAt", "organizationId"]
+                    exclude: ["createdAt", "updatedAt", "organizationId", "sportSizeId"]
+                  },
+                  include: {
+                    model: SportSize,
+                    attributes: ["id", "sportId"],
+                    where: Sequelize.and(
+                      user.highestAccess.isCoach && Sequelize.or({ sportId: coachSports }),
+                      sports && Sequelize.or({ sportId: sports })
+                    )
                   }
                 }
               ]
@@ -93,7 +128,11 @@ async function getTransactions(user, { page, limit, issuedBy, issuedTo, returned
         }
       ]
     });
-    return transactions;
+    return sports || user.highestAccess.isCoach 
+    ? transactions.filter((transaction) => {
+      return transaction.equipment.inventorySize.inventory;
+    })
+    : transactions;
   } catch (err) {
     throw err;
   }
