@@ -13,20 +13,28 @@ import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import Checkbox from "@material-ui/core/Checkbox";
 import ListSubheader from "@material-ui/core/ListSubheader";
-import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
+import CloseIcon from "@material-ui/icons/Close";
 
-import {SportsAPI, UsersApi, UsersAPI} from "../../api";
+import {SportsAPI, InventoryAPI, UsersAPI} from "../../api";
 
 export default function Transaction(props) {
 
-    const [checked, setChecked] = React.useState([]);
+
+    const [users, setUsers] = React.useState([]);
+    const [usersMaster, setUsersMaster] = React.useState([]);
+    const [usersCheckbox, setUsersCheckbox] = React.useState([]);
     const [checkedUsers, setCheckedUsers] = React.useState([]);
+ 
     const [sports, setSports] = React.useState([]);
     const [sportsFilter, setSportsFilter] = React.useState([]);
-    const [usersMaster, setUsersMaster] = React.useState([]);
-    const [users, setUsers] = React.useState([]);
+
     const [teams, setTeams] = React.useState([]);
 
+    const [inventory, setInventory] = React.useState([]);
+    const [inventoryCheckbox, setInventoryCheckbox] = React.useState([]);
+    const [checkedInventory, setCheckedInventory] = React.useState([]);
+ 
     const handleSportFilter = (event) => {
         var tempUsers = JSON.parse(JSON.stringify(usersMaster))
         setSportsFilter(event.target.value);
@@ -34,26 +42,46 @@ export default function Transaction(props) {
 
     };
 
-    const handleToggle = (value) => () => {
-      const currentIndex = checked.indexOf(value);
-      const newChecked = [...checked];
+    const handleAthleteToggle = (value) => () => {
+      const currentIndex = usersCheckbox.indexOf(value);
+      const newUsersCheckbox = [...usersCheckbox];
       const newCheckedUsers = [...checkedUsers];
       const newCheckedUser = usersMaster.find(user => user.id === value);
 
       console.log(newCheckedUser);
   
       if (currentIndex === -1) {
-        newChecked.push(value);
+        newUsersCheckbox.push(value);
         newCheckedUsers.push(newCheckedUser);
       } else {
-        newChecked.splice(currentIndex, 1);
+        newUsersCheckbox.splice(currentIndex, 1);
         newCheckedUsers.splice(currentIndex,1);
       }
 
-      setChecked(newChecked);
+      setUsersCheckbox(newUsersCheckbox);
       setCheckedUsers(newCheckedUsers);
 
     };
+
+    const handleInventoryToggle = (value) => () => {
+        const currentIndex = inventoryCheckbox.indexOf(value);
+        const newInventoryCheckbox = [...inventoryCheckbox];
+        const newCheckedInventory = [...checkedInventory];
+        const newCheckedInventoryItem = inventory.find(inventory => inventory.id === value);
+
+        if(currentIndex === -1){
+            newInventoryCheckbox.push(value);
+            newCheckedInventory.push(newCheckedInventoryItem);
+        } else {
+            newInventoryCheckbox.splice(currentIndex, 1);
+            newCheckedInventory.splice(currentIndex, 1);
+        }
+
+        setInventoryCheckbox(newInventoryCheckbox);
+        setCheckedInventory(newCheckedInventory);
+
+        console.log(newCheckedInventory);
+    }
 
 
     React.useEffect(()=>{
@@ -67,6 +95,10 @@ export default function Transaction(props) {
         });
 
         setTeams([{id: 1, name: "The Ball Boys"}, {id:2, name: "Sportsmen"}]);
+
+        InventoryAPI.getInventory(null,null, {}).then( (inventory)=> {
+            setInventory(inventory);
+        });
     
     }, []);
 
@@ -74,7 +106,7 @@ export default function Transaction(props) {
         <Grid item xs = {12} >
             <Card variant = "outlined">
                 <CardContent>
-                <Grid container spacing = {3}>
+                <Grid container spacing = {4}>
                     <Grid item xs = {1}>
                         <Typography>Sports</Typography>
                         <Select
@@ -109,14 +141,35 @@ export default function Transaction(props) {
                             style = {{overflow: 'auto', maxHeight: 250}}>
                             {users.map( (user) => {
                                 return (
-                                    <ListItem key = {user.id} dense button onClick={handleToggle(user.id)}>
+                                    <ListItem key = {user.id} dense button onClick={handleAthleteToggle(user.id)}>
                                         <ListItemText 
                                             primary = {user.fullName}
                                             secondary = {user.isActive}/>
                                         <ListItemIcon>
                                         <Checkbox
                                             edge="start"
-                                            checked={checked.indexOf(user.id) !== -1}
+                                            checked={usersCheckbox.indexOf(user.id) !== -1}
+                                        />
+                                        </ListItemIcon>
+                                    </ListItem>
+                                );
+                            })}
+                        </List>
+                    </Grid>
+                    <Grid item xs = {6}>
+                        <Typography>Inventory</Typography>
+                        <List
+                            style = {{overflow: 'auto', maxHeight: 250}}>
+                            {inventory.map( (inventory) => {
+                                return (
+                                    <ListItem key = {inventory.id} dense button onClick={handleInventoryToggle(inventory.id)}>
+                                        <ListItemText 
+                                            primary = {inventory.name}
+                                            secondary = {inventory.description}/>
+                                        <ListItemIcon>
+                                        <Checkbox
+                                            edge="start"
+                                            checked={inventoryCheckbox.indexOf(inventory.id) !== -1}
                                         />
                                         </ListItemIcon>
                                     </ListItem>
@@ -129,9 +182,23 @@ export default function Transaction(props) {
             </Card>
             <Grid item xs = {12}>
                 {checkedUsers.map(user => 
-                <Card variant = "outlined">
+                <Card variant = "outlined" key = {user.id}>
                     <CardContent>
-                        <Typography>{user.fullName}</Typography>
+                        <Grid container spacing ={2}>
+                            <Grid item xs = {2}>
+                                <Typography>{user.fullName}</Typography>
+                            </Grid>
+                            <Grid item xs = {8}>
+                                {user.sports.map(sport => 
+                                    <Typography>{sport.name}</Typography>
+                                    )}
+                            </Grid>
+                            <Grid item xs = {2}>
+                                <IconButton aria-label="delete" onClick ={handleAthleteToggle(user.id)}>
+                                    <CloseIcon />
+                                </IconButton>
+                            </Grid>
+                        </Grid>
                     </CardContent>
                 </Card>
                     )}
