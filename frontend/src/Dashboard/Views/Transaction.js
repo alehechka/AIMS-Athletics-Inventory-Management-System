@@ -35,15 +35,18 @@ export default function Transaction(props) {
     }
     const [sports, setSports] = React.useState([]);
     const [users, setUsers] = React.useState([]);
+    const [teams, setTeams] = React.useState([]);
 
     React.useEffect(()=>{
         SportsAPI.getSports().then((sports)=> {
             setSports(sports);
         });
 
-        UsersAPI.getUsers(null, null, {isAdmin: true, isEmployee: true, isCoach: true,}).then( (users) => {
+        UsersAPI.getUsers(null, null, {isAdmin: true, isEmployee: true, isCoach: true, isAthlete: true}).then( (users) => {
             setUsers(users)
         });
+
+        setTeams([{id: 1, name: "The Ball Boys"}, {id:2, name: "Sportsmen"}]);
     
     }, []);
 
@@ -52,8 +55,8 @@ export default function Transaction(props) {
             <Card variant = "outlined">
                 <CardContent>
                 <Grid container spacing = {3}>
-                    <Grid item xs = {2} style ={{marginTop: 15}}>
-                        <InputLabel id="sport-input">Sport</InputLabel>
+                    <Grid item xs = {2}>
+                        <Typography>Sports</Typography>
                         <Select
                         style = {{minWidth: 120}}
                         labelId="sport-input"
@@ -65,16 +68,12 @@ export default function Transaction(props) {
                         </Select>
                     </Grid>
                     <Grid item xs = {4}>
-                        <List
-                            subheader={
-                            <ListSubheader component="div" id="nested-list-subheader">
-                                List of Teams
-                            </ListSubheader>
-                            }>
-                            {sports.map( (sport) => {
+                        <Typography>Teams</Typography>
+                        <List>
+                            {teams.map( (team) => {
                                 return (
-                                    <ListItem key = {sport.id} dense>
-                                        <ListItemText primary = {sport.displayName}></ListItemText>
+                                    <ListItem key = {team.id} dense>
+                                        <ListItemText primary = {team.name}></ListItemText>
                                         <ListItemIcon>
                                         <Checkbox
                                             edge="start"
@@ -86,12 +85,9 @@ export default function Transaction(props) {
                         </List>
                     </Grid>
                     <Grid item xs = {6}>
+                        <Typography>Athletes</Typography>
                         <List
-                            subheader={
-                            <ListSubheader component="div" id="nested-list-subheader">
-                                List of Athletes
-                            </ListSubheader>
-                            }>
+                            style = {{overflow: 'auto', maxHeight: 250}}>
                             {users.map( (user) => {
                                 return (
                                     <ListItem key = {user.id} dense button onClick={handleToggle(user.id)}>

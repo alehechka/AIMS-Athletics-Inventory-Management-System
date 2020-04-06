@@ -13,7 +13,9 @@
     { "email": "admin@admin.com", "password": "admin", "isAdmin": true, "isApproved": true, "isVerified": true },
     { "email": "employee@employee.com", "password": "employee", "isEmployee": true, "isApproved": true, "isVerified": true },
     { "email": "coach@coach.com", "password": "coach", "isCoach": true, "isApproved": true, "isVerified": true },
-    { "email": "athlete@athlete.com", "password": "athlete", "isAthlete": true, "isApproved": true, "isVerified": true }
+    { "email": "athlete@athlete.com", "password": "athlete", "isAthlete": true, "isApproved": true, "isVerified": true },
+    { "email": "fakeAthlete1@athlete.com", "password": "fakeAthlete1", "isAthlete": true, "isApproved": true, "isVerified": true },
+    { "email": "fakeAthlete2@athlete.com", "password": "fakeAthlete2", "isAthlete": true, "isApproved": true, "isVerified": true }
   ],
   "users": [
     {
@@ -34,6 +36,14 @@
     {
       "firstName": "Ath",
       "lastName": "Athlete"
+    },
+    {
+      "firstName": "Fake",
+      "lastName": "Athlete1"
+    },
+    {
+      "firstName": "Fake",
+      "lastName": "Athlete2"
     }
   ],
   "sports": [
