@@ -14,8 +14,12 @@
     { "email": "employee@employee.com", "password": "employee", "isEmployee": true, "isApproved": true, "isVerified": true },
     { "email": "coach@coach.com", "password": "coach", "isCoach": true, "isApproved": true, "isVerified": true },
     { "email": "athlete@athlete.com", "password": "athlete", "isAthlete": true, "isApproved": true, "isVerified": true },
-    { "email": "fakeAthlete1@athlete.com", "password": "fakeAthlete1", "isAthlete": true, "isApproved": true, "isVerified": true },
-    { "email": "fakeAthlete2@athlete.com", "password": "fakeAthlete2", "isAthlete": true, "isApproved": true, "isVerified": true }
+    { "email": "tomcook@athlete.com", "password": "tomcook", "isAthlete": true, "isApproved": true, "isVerified": true },
+    { "email": "brettbanner@athlete.com", "password": "brettbanner", "isAthlete": true, "isApproved": true, "isVerified": true },
+    { "email": "johndoe@athlete.com", "password": "johndoe", "isAthlete": true, "isApproved": true, "isVerified": true },
+    { "email": "jimperson@athlete.com", "password": "jimperson", "isAthlete": true, "isApproved": true, "isVerified": true },
+    { "email": "hectorday@athlete.com", "password": "hectorday", "isAthlete": true, "isApproved": true, "isVerified": true },
+    { "email": "ricktanner@athlete.com", "password": "ricktanner", "isAthlete": true, "isApproved": true, "isVerified": true }
   ],
   "users": [
     {
@@ -38,12 +42,28 @@
       "lastName": "Athlete"
     },
     {
-      "firstName": "Fake",
-      "lastName": "Athlete1"
+      "firstName": "Tom",
+      "lastName": "Cook"
     },
     {
-      "firstName": "Fake",
-      "lastName": "Athlete2"
+      "firstName": "Brett",
+      "lastName": "Banner"
+    },
+    {
+      "firstName": "John",
+      "lastName": "Doe"
+    },
+    {
+      "firstName": "Jim",
+      "lastName": "Person"
+    },
+    {
+      "firstName": "Hector",
+      "lastName": "Day"
+    },
+    {
+      "firstName": "Rick",
+      "lastName": "Tanner"
     }
   ],
   "sports": [
@@ -65,7 +85,9 @@
   "sport_sizes": [
     { "name": "T-Shirt", "sizes": ["XL", "L", "M", "S"] },
     { "name": "Hat", "sizes": ["XL", "L", "M", "S"] },
-    { "name": "Sweater", "sizes": ["XL", "L", "M", "S"] }
+    { "name": "Sweater", "sizes": ["XL", "L", "M", "S"] },
+    { "name": "Sweatpants", "sizes": ["XL", "L", "M", "S"] },
+    { "name": "Tank Top", "sizes": ["XL", "L", "M", "S"] }
   ],
   "inventories": [
     {
@@ -109,6 +131,36 @@
       {
         "size": "L",
         "price": 49.99,
+        "quantity": 15
+      }],
+      "surplus": false
+    },
+    {
+      "name": "Sweatpants",
+      "description": "Black Sweatpants",
+      "sizes": [{
+        "size": "M",
+        "price": 55.99,
+        "quantity": 20
+      },
+      {
+        "size": "L",
+        "price": 60.99,
+        "quantity": 15
+      }],
+      "surplus": false
+    },
+    {
+      "name": "Tank Top",
+      "description": "Grey Tank Top",
+      "sizes": [{
+        "size": "M",
+        "price": 55.99,
+        "quantity": 20
+      },
+      {
+        "size": "L",
+        "price": 60.99,
         "quantity": 15
       }],
       "surplus": false

@@ -17,6 +17,7 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 
 import {SportsAPI, InventoryAPI, UsersAPI} from "../../api";
+import { UserInfoCard } from "./ProfileComponents/UserInfo";
 
 export default function Transaction(props) {
 
@@ -24,7 +25,6 @@ export default function Transaction(props) {
     const [users, setUsers] = React.useState([]);
     const [usersMaster, setUsersMaster] = React.useState([]);
     const [usersCheckbox, setUsersCheckbox] = React.useState([]);
-    const [checkedUsers, setCheckedUsers] = React.useState([]);
  
     const [sports, setSports] = React.useState([]);
     const [sportsFilter, setSportsFilter] = React.useState([]);
@@ -34,6 +34,8 @@ export default function Transaction(props) {
     const [inventory, setInventory] = React.useState([]);
     const [inventoryCheckbox, setInventoryCheckbox] = React.useState([]);
     const [checkedInventory, setCheckedInventory] = React.useState([]);
+
+    const [transactions, setTransactions] = React.useState([]);
  
     const handleSportFilter = (event) => {
         var tempUsers = JSON.parse(JSON.stringify(usersMaster))
@@ -45,21 +47,23 @@ export default function Transaction(props) {
     const handleAthleteToggle = (value) => () => {
       const currentIndex = usersCheckbox.indexOf(value);
       const newUsersCheckbox = [...usersCheckbox];
-      const newCheckedUsers = [...checkedUsers];
       const newCheckedUser = usersMaster.find(user => user.id === value);
 
-      console.log(newCheckedUser);
+      const newTransactions = [...transactions];
+      let newTransaction = {id : newCheckedUser.id, fullName : newCheckedUser.fullName, inventory:[]};
   
       if (currentIndex === -1) {
         newUsersCheckbox.push(value);
-        newCheckedUsers.push(newCheckedUser);
+        newTransactions.push(newTransaction);
       } else {
         newUsersCheckbox.splice(currentIndex, 1);
-        newCheckedUsers.splice(currentIndex,1);
+        newTransactions.splice(currentIndex,1);
       }
 
       setUsersCheckbox(newUsersCheckbox);
-      setCheckedUsers(newCheckedUsers);
+      setTransactions(newTransactions);
+
+      //console.log(newTransactions);
 
     };
 
@@ -68,6 +72,7 @@ export default function Transaction(props) {
         const newInventoryCheckbox = [...inventoryCheckbox];
         const newCheckedInventory = [...checkedInventory];
         const newCheckedInventoryItem = inventory.find(inventory => inventory.id === value);
+        
 
         if(currentIndex === -1){
             newInventoryCheckbox.push(value);
@@ -77,10 +82,13 @@ export default function Transaction(props) {
             newCheckedInventory.splice(currentIndex, 1);
         }
 
+        console.log(transactions);
+
         setInventoryCheckbox(newInventoryCheckbox);
         setCheckedInventory(newCheckedInventory);
+        setTransactions(transactions.map(transaction => transaction.inventory = {newCheckedInventory}));
+        
 
-        console.log(newCheckedInventory);
     }
 
 
@@ -90,8 +98,8 @@ export default function Transaction(props) {
         });
 
         UsersAPI.getUsers(null, null, {isAdmin: true, isEmployee: true, isCoach: true, isAthlete: true}).then( (users) => {
-            setUsers(users)
-            setUsersMaster(users)
+            setUsers(users);
+            setUsersMaster(users);
         });
 
         setTeams([{id: 1, name: "The Ball Boys"}, {id:2, name: "Sportsmen"}]);
@@ -181,20 +189,18 @@ export default function Transaction(props) {
                 </CardContent>
             </Card>
             <Grid item xs = {12}>
-                {checkedUsers.map(user => 
-                <Card variant = "outlined" key = {user.id}>
+                {transactions.map(transaction => 
+                <Card variant = "outlined" key = {transaction.id}>
                     <CardContent>
                         <Grid container spacing ={2}>
                             <Grid item xs = {2}>
-                                <Typography>{user.fullName}</Typography>
+                                <Typography>{transaction.fullName}</Typography>
                             </Grid>
                             <Grid item xs = {8}>
-                                {user.sports.map(sport => 
-                                    <Typography>{sport.name}</Typography>
-                                    )}
+                                <Typography>Temp</Typography>
                             </Grid>
                             <Grid item xs = {2}>
-                                <IconButton aria-label="delete" onClick ={handleAthleteToggle(user.id)}>
+                                <IconButton aria-label="delete" onClick ={handleAthleteToggle(transaction.id)}>
                                     <CloseIcon />
                                 </IconButton>
                             </Grid>
