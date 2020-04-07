@@ -1,20 +1,13 @@
 import React from "react";
 import MaterialTable from 'material-table';
-import { UsersAPI } from "../../api";
+import { UsersAPI, SportsAPI } from "../../api";
 import FormControl from '@material-ui/core/FormControl';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles({
-  card: {
-    height: "100%",
-  },
-});
+
 /***
  * Contains the logic for admin page.
  * 
@@ -25,24 +18,26 @@ const useStyles = makeStyles({
  * pagesize - updates default pageSize for table
  */
 export default function Admin(props) {
-  const classes = useStyles();
   //material Table hooks
-  const [isLoading, updateLoading] = React.useState(true);
-  const [data, updateData] = React.useState([]);
-  const [columns, updateColumns] = React.useState([]);
-  const [pageSize, updatePageSize] = React.useState(5);
+  const [isRoleLoading, updateRoleLoading] = React.useState(true);
+  const [roleData, updateRoleData] = React.useState([]);
+  const [roleColumns, updateRoleColumns] = React.useState([]);
+  const [rolePageSize, updateRolePageSize] = React.useState(5);
 
+  const [isSportsLoading, updateSportsLoading] = React.useState(true);
+  const [sportsData, updateSportsData] = React.useState([]);
+  const [sportsColumns, updateSportsColumns] = React.useState([]);
+  const [sportsPageSize, updateSportsPageSize] = React.useState(5);
   /**
    * Emulates ComponentDidMount lifecycle function
    * 
    * Queries the backend for credential data and populates the table.
    */
   React.useEffect(()=>{
-    updateLoading(false);
+    const defaultOptions = { editable: 'never', hidden: true, searchable: true };
     UsersAPI.getUsers(null, null, {isAdmin: true, isAthlete: true, isCoach: true, isEmployee: true}).then( (users)=> {
       //lets users search hidden columns
-      const defaultOptions = { editable: 'never', hidden: true, searchable: true };
-      updateColumns([
+      updateRoleColumns([
         {title: 'ID', field: 'id', ...defaultOptions},
         {title: 'Email', field: 'email', editable: 'never', searchable : true},
         {title: 'First Name', field: 'firstName', ...defaultOptions},
@@ -58,7 +53,7 @@ export default function Admin(props) {
           </FormControl>)
         }
       ]);
-      const newData = users.map(user=> {
+      const newRoleData = users.map(user=> {
         return {
           id: user.id,
           email: user.credential.email,
@@ -67,7 +62,20 @@ export default function Admin(props) {
           role: getRole(user.credential),
         };
       });
-      updateData(newData);
+      updateRoleData(newRoleData);
+      updateRoleLoading(false);
+    });
+    SportsAPI.getSports().then((res)=> {
+      updateSportsColumns([
+        {name: 'ID', field: 'id', ...defaultOptions},
+        {title: 'Name', field: 'name'},
+        {title: 'Gender', field: 'gender'},
+        {title: 'Icon', field: 'icon', ...defaultOptions},
+        {title: 'Default', field: 'default', type: 'boolean', editable: 'never'},
+        {title: 'Display Name', field: 'displayName', ...defaultOptions}
+      ]);
+      updateSportsData(res);
+      updateSportsLoading(false);
     });
   }, []);
   /**
@@ -93,11 +101,11 @@ export default function Admin(props) {
         <Grid item xs={6}>
           <MaterialTable
               title="Roles"
-              isLoading= {isLoading}
-              columns={columns}
-              data={data}
-              pageSize = {pageSize}
-              onChangeRowsPerPage = {updatePageSize}
+              isLoading= {isRoleLoading}
+              columns={roleColumns}
+              data={roleData}
+              pageSize = {rolePageSize}
+              onChangeRowsPerPage = {updateRolePageSize}
               options={{
                   search: true,
                   filtering: true,
@@ -115,7 +123,7 @@ export default function Admin(props) {
                       else {
                         setTimeout(() => {
                             if (Math.random() < 0.9){
-                              updateData(data.map(user => newData.id === user.id ? newData : user));                 
+                              updateRoleData(roleData.map(user => newData.id === user.id ? newData : user));                 
                               props.showMessage(`${fullName}'s role successfully changed to ${newData.role}!`);
                               resolve();
                             }
@@ -130,11 +138,62 @@ export default function Admin(props) {
           /> 
         </Grid>
         <Grid item xs={6}>
-          <Card className={classes.card}>
-            <CardContent>
-              <h2>Filler</h2>
-            </CardContent>
-          </Card>
+        <MaterialTable
+              title="Sports"
+              isLoading= {isSportsLoading}
+              columns={sportsColumns}
+              data={sportsData}
+              pageSize = {sportsPageSize}
+              onChangeRowsPerPage = {updateSportsPageSize}
+              options={{
+                  search: true,
+                  filtering: true,
+                  actionsColumnIndex: -1,
+                  tableLayout: "fixed",
+              }}
+              editable={{
+                  onRowAdd: newData =>
+                    new Promise((resolve, reject) => {
+                     if (newData.name.length === 0) {
+                      resolve();
+                      props.showMessage(`Sports Name cannot be empty.`, "warning");
+                     }
+                     else {
+                       newData.displayName = newData.name + ` (${newData.gender})`;
+                       SportsAPI.createSport(newData).then((res) =>{
+                          newData.id = res.id;
+                          updateSportsData(sportsData.concat([newData]));
+                          props.showMessage(`Added entry for ${newData.displayName}`);
+                          resolve();
+                        }).catch(err => {
+                          props.showMessage(`Unable to add entry for ${newData.displayName}`, 'error');
+                          console.log(err);
+                          reject();
+                        });
+                     }
+                   }),
+                  onRowUpdate: (newData, oldData) =>
+                    new Promise((resolve, reject) => {
+                      if (oldData.name === newData.name && oldData.gender === newData.gender) {
+                        resolve();
+                        props.showMessage(`You didn't change anything for ${oldData.displayName}.`, "info");
+                      }
+                      else {
+                        newData.displayName = newData.name + ` (${newData.gender})`;
+                        SportsAPI.updateSport(newData).then((res) =>{
+                          updateSportsData(sportsData.map(sport => newData.id === sport.id ? newData : sport)); 
+                          props.showMessage(`Updated entry for ${newData.displayName}`);
+                          resolve();
+                        }).catch(err => {
+                          props.showMessage(`Unable to update entry for ${newData.displayName}`, 'error');
+                          console.log(err);
+                          reject();
+                        });
+                        
+                      }
+                    }),
+              }}
+          />
         </Grid>
       </Grid>
       </div>
