@@ -15,6 +15,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import ListSubheader from "@material-ui/core/ListSubheader";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
+import Button from "@material-ui/core/Button";
 
 import {SportsAPI, InventoryAPI, UsersAPI} from "../../api";
 import { UserInfoCard } from "./ProfileComponents/UserInfo";
@@ -68,6 +69,7 @@ export default function Transaction(props) {
     };
 
     const handleInventoryToggle = (value) => () => {
+        console.log(transactions);
         const currentIndex = inventoryCheckbox.indexOf(value);
         const newInventoryCheckbox = [...inventoryCheckbox];
         const newCheckedInventory = [...checkedInventory];
@@ -97,6 +99,30 @@ export default function Transaction(props) {
 
         //console.log(transactions);
 
+    }
+
+    const handleTransactionToggle= (transactionId, inventoryId) => () => {
+        var currentTransaction = transactions.find(transaction => transaction.id === transactionId);
+        var indexOfCurrentTransaction = transactions.indexOf(currentTransaction);
+        var itemToFind = currentTransaction.inventory.find(inventory => inventory.id === inventoryId);
+        var itemExistsInTransaction = currentTransaction.inventory.includes(itemToFind);
+
+        if(itemExistsInTransaction)
+        {
+            var indexToRemove = currentTransaction.inventory.indexOf(itemToFind);
+            let temp = transactions;
+            let inventoryDeepCopy = JSON.parse(JSON.stringify(temp[indexOfCurrentTransaction].inventory))
+            inventoryDeepCopy.splice(indexToRemove,1);
+            
+            temp[indexOfCurrentTransaction].inventory = inventoryDeepCopy;
+            //console.log(temp);
+
+            setTransactions(temp);
+        } else {
+
+        }
+
+        //console.log(transactions);
     }
 
 
@@ -202,12 +228,27 @@ export default function Transaction(props) {
                     <CardContent>
                         <Grid container spacing ={2}>
                             <Grid item xs = {2}>
+                                <Typography>Athlete</Typography>
                                 <Typography>{transaction.fullName}</Typography>
                             </Grid>
-                            <Grid item xs = {8}>
-                                {transaction.inventory.map(inventory =>
-                                    <Typography>{inventory.name}</Typography> 
-                                )}
+                            <Grid item xs = {3}>
+                                <Typography>Inventory</Typography>
+                                <List
+                                    style = {{overflow: 'auto', maxHeight: 250}}>
+                                    {transaction.inventory.map(inventory => {
+                                        return (
+                                            <ListItem key = {inventory.id} dense button onClick={handleTransactionToggle(transaction.id, inventory.id)}>
+                                                <ListItemText primary = {inventory.name}></ListItemText>
+                                                <ListItemIcon>
+                                                <Checkbox
+                                                    edge="start"
+                                                    checked= {console.log(transaction), transaction.inventory.includes(inventory)}
+                                                />
+                                                </ListItemIcon>
+                                            </ListItem>
+                                        );
+                                    })}
+                                </List>
                             </Grid>
                             <Grid item xs = {2}>
                                 <IconButton aria-label="delete" onClick ={handleAthleteToggle(transaction.id)}>
@@ -218,7 +259,7 @@ export default function Transaction(props) {
                     </CardContent>
                 </Card>
                     )}
-
+                <Button onClick = {() => console.log(transactions)}>Print Transactions</Button>
             </Grid>
         </Grid>
 
