@@ -20,10 +20,10 @@
     "styled-components": "^5.0.1"
   },
   "scripts": {
-    "start": "set NODE_ENV=development&& react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "prod": "serve -s -l 8080 build",
+    "prod": "serve -s build",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

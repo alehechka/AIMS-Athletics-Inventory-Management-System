@@ -5,7 +5,7 @@
     "main": "src/server.js",
     "scripts": {
         "setup": "npm install && npm update",
-        "start": "set NODE_ENV=development&& nodemon ./src/server.js",
+        "start": "node ./build/main.js",
         "macstart": "export NODE_ENV=development&& nodemon ./src/server.js",
         "dev": "set NODE_ENV=development&& nodemon ./src/server.js",
         "build": "webpack",
