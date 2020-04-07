@@ -34,6 +34,7 @@ import Grid from '@material-ui/core/Grid';
  * @param {*} props props passed down from Staff
  */
 export default function ProfileDialog(props) {
+    const renderType = props.renderType;
     const [dialogOpen, closeDialog] = [props.dialogOpen, props.closeDialog];
     const [inputs, changeInput] = [props.inputs, props.changeInput];
     const [sport, sports, handleSportChange] = [props.sport, props.sports, props.handleSportChange];
@@ -45,7 +46,7 @@ export default function ProfileDialog(props) {
             <DialogTitle>{dialogTitle}</DialogTitle>
             <DialogContent>
                 <Grid container spacing={2}>
-                    <Grid item xs={12} style = {isEditDialog? {"display": "none"}: {}}>
+                    <Grid item xs={12} style = {renderType !== "Staff" || isEditDialog? {"display": "none"}: {}}>
                         <FormControl required component="fieldset">
                             <FormLabel component="legend">Role</FormLabel>
                             <RadioGroup row value={inputs.role} name= "role" onChange={changeInput}>
@@ -181,7 +182,7 @@ export default function ProfileDialog(props) {
                 </Grid>
                 <ExpansionPanel style ={{marginTop: "12px"}}>
                     <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} >
-                        <Typography>Additional Information</Typography>
+                        <Typography>Personal Information</Typography>
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>
                         <Grid container spacing = {2}>

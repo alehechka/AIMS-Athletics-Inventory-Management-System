@@ -1,11 +1,10 @@
 import React from "react";
 import { withSnackbar } from "notistack";
 import Navbar from "./Navbar";
-import Athletes from "./Views/Athletes";
 import Home from "./Views/Home";
 import Inventory from "./Views/Inventory";
 import Profile from "./Views/Profile";
-import Staff from "./Views/Staff";
+import Users from "./Views/Users"
 import Admin from "./Views/Admin";
 import Transaction from "./Views/Transaction";
 import AuthRoute from "../AuthRoute";
@@ -86,7 +85,7 @@ class Dashboard extends React.Component {
                 <AuthRoute
                   path={`/athletes`}
                   accessGranted={allowedViews.includes("Athletes")}
-                  component={(props) => <Athletes {...props} showMessage={this.props.showMessage} context={context} />}
+                  component={(props) => <Users {...props} type={"Athletes"} showMessage={this.props.showMessage} context={context} />}
                 />
                 <AuthRoute
                   path={`/transactions`}
@@ -103,7 +102,7 @@ class Dashboard extends React.Component {
                 <AuthRoute
                   path={`/staff`}
                   accessGranted={allowedViews.includes("Staff")}
-                  component={(props) => <Staff {...props} showMessage={this.props.showMessage} context={context} />}
+                  component={(props) => <Users {...props} type={"Staff"} showMessage={this.props.showMessage} context={context} />}
                 />
                 <AuthRoute
                   path={`/admin`}

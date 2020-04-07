@@ -24,7 +24,8 @@ import Icon from "@material-ui/core/Icon";
  * showMessage Displays a snackbar
  * @param {*} props props passed down from dashboard
  */
-export default function Staff(props) {
+export default function Users(props) {
+    const renderType = props.type;
     //List of default values to fill in the form
     const initialValues = {
         email: "",
@@ -43,11 +44,11 @@ export default function Staff(props) {
         weight: 0,
         lockerNumber: "",
         lockerCode: "",
-        role: "Athlete",
+        role: renderType === "Athletes" ? "Athlete" : "Employee",
         isAdmin: false,
-        isEmployee: false,
+        isEmployee: renderType !== "Athletes",
         isCoach: false,
-        isAthlete: true
+        isAthlete: renderType === "Athletes"
     };
     const deepCopy = (obj) => JSON.parse(JSON.stringify(obj));
 
@@ -72,7 +73,11 @@ export default function Staff(props) {
      * Queries the backend for staff data, sports data and populates the table.
      */
     React.useEffect(()=>{
-        UsersAPI.getUsers(null, null, {isAdmin: true, isEmployee: true, isCoach: true,}).then( (staff)=> {
+        let req = {isAthlete: true};
+        if (renderType === "Staff") {
+            req = {isAdmin: true, isEmployee: true, isCoach: true,};
+        }
+        UsersAPI.getUsers(null, null, req).then( (users)=> {
             updateColumns([
                 {title: 'ID', field: 'id', hidden: true},
                 {title: 'Sport', field: 'sportsJson', hidden: true},
@@ -90,7 +95,7 @@ export default function Staff(props) {
                         .some(val => val.toLowerCase().includes(term.toLowerCase()))
                 },
             ]);
-            const customData = staff.map(user =>({
+            const customData = users.map(user =>({
                 id: user.id,
                 firstName: user.firstName,
                 lastName: user.lastName,
@@ -107,7 +112,7 @@ export default function Staff(props) {
                 return obj
             }, {}));
         });
-    }, []);
+    }, [renderType]);
     /**
      * One function which handles all state changes in add/edit user form
      * Sports select statement is excluded
@@ -200,7 +205,7 @@ export default function Staff(props) {
     return (
     <div style={{ maxWidth: '100%', marginLeft: '10px', marginRight: '10px', marginBottom: '10px' }}>
         <MaterialTable
-            title="Staff"
+            title = {renderType}
             isLoading= {isLoading}
             columns={columns}
             data={data}
@@ -234,7 +239,7 @@ export default function Staff(props) {
                             const rowSportsJson = JSON.parse(rowData.sportsJson);
                             setSport(rowSportsJson.map(sport => sport.displayName));
                             setDialogOpen(true);
-                            setDialogTitle("Edit Staff");
+                            setDialogTitle("Edit " + renderType);
                         });
                     }
                 },
@@ -247,13 +252,14 @@ export default function Staff(props) {
                         setInputs(deepCopy(initialValues));
                         setSport([]);
                         setDialogOpen(true);
-                        setDialogTitle("Add Staff");
+                        setDialogTitle("Add " + renderType);
                     }   
                   },
             ]}
         />
         <ProfileDialog
             {...props}
+            renderType = {renderType}
             dialogOpen = {dialogOpen} 
             closeDialog = {closeDialog}
             dialogTitle = {dialogTitle}
