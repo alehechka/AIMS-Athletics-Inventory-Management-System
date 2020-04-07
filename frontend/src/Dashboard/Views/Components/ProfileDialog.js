@@ -16,12 +16,6 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import OutlinedInput from '@material-ui/core/OutlinedInput';
-import InputLabel from '@material-ui/core/InputLabel';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import IconButton from '@material-ui/core/IconButton';
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import SportsSelect from './SportsSelect';
 
 import Grid from '@material-ui/core/Grid';
@@ -46,20 +40,21 @@ export default function ProfileDialog(props) {
 
     const dialogTitle = props.dialogTitle;
     const isEditDialog = dialogTitle.includes("Edit");
-
-    const [showPassword, setShowPassword] = React.useState(false);
-    const handleClickShowPassword = () => {
-        setShowPassword(!showPassword);
-    };
-    
-    const handleMouseDownPassword = (event) => {
-        event.preventDefault();
-    };
     return(
         <Dialog open={dialogOpen} onClose={closeDialog} disableBackdropClick>
             <DialogTitle>{dialogTitle}</DialogTitle>
             <DialogContent>
                 <Grid container spacing={2}>
+                    <Grid item xs={12} style = {isEditDialog? {"display": "none"}: {}}>
+                        <FormControl required component="fieldset">
+                            <FormLabel component="legend">Role</FormLabel>
+                            <RadioGroup row value={inputs.role} name= "role" onChange={changeInput}>
+                                <FormControlLabel value = "Admin"  label="Admin" control={<Radio />}/>
+                                <FormControlLabel value = "Coach"  label="Coach" control={<Radio />}/>
+                                <FormControlLabel value = "Employee"  label="Employee" control={<Radio />}/>
+                            </RadioGroup>
+                        </FormControl>
+                    </Grid>
                     <Grid item xs={12} style = {isEditDialog? {"display": "none"}: {}}>
                         <TextField
                             variant="outlined"
@@ -89,28 +84,18 @@ export default function ProfileDialog(props) {
                         />  
                     </Grid>
                     <Grid item xs={6} style = {isEditDialog? {"display": "none"}: {}}>
-                         <FormControl required fullWidth variant="outlined">
-                            <InputLabel>Password</InputLabel>
-                            <OutlinedInput
-                                id="password"
-                                label="Password"
-                                name="password"
-                                type={showPassword ? 'text' : 'password'}
-                                value={inputs.password}
-                                onChange={changeInput}
-                                endAdornment={
-                                <InputAdornment position="end">
-                                    <IconButton
-                                    onClick={handleClickShowPassword}
-                                    onMouseDown={handleMouseDownPassword}
-                                    edge="end"
-                                    >
-                                    {showPassword ? <Visibility /> : <VisibilityOff />}
-                                    </IconButton>
-                                </InputAdornment>
-                                }
-                            />
-                        </FormControl>
+                        <TextField
+                            variant="outlined"
+                            type = "password"
+                            required
+                            fullWidth
+                            id="password"
+                            label="Password"
+                            name="password"
+                            autoComplete="password"
+                            value= {inputs.password}
+                            onChange= {changeInput}
+                        /> 
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <TextField

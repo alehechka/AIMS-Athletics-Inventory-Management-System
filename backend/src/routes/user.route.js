@@ -35,7 +35,7 @@ userRouter.post("/", auth(["isAdmin"]), async (req, res, next) => {
     });
     let createdUser = await User.create({
       schoolId: user.schoolId,
-      firstName: user.firstname,
+      firstName: user.firstName,
       lastName: user.lastName,
       address: user.address,
       city: user.city,
@@ -133,7 +133,7 @@ userRouter.put("/current", auth(), async (req, res, next) => {
     if (putUser.userSizes) {
       await updateUserSizes(user.id, putUser.userSizes);
     }
-    user.firstName = putUser.firstname;
+    user.firstName = putUser.firstName;
     user.lastName = putUser.lastName;
     user.address = putUser.address;
     user.city = putUser.city;
@@ -162,14 +162,14 @@ userRouter.put("/", auth(["isAdmin", "isEmployee"]), queryParams(["id"]), async 
       foundUser.schoolId = putUser.schoolId;
     }
     if (putUser.sports) {
-      user.userSports = await updateUserSports(foundUser.id, putUser.sports);
+      foundUser.userSports = await updateUserSports(foundUser.id, putUser.sports);
     }
     if (putUser.userSizes) {
-      user.userSizes = await updateUserSizes(user.id, putUser.userSizes);
+      foundUser.userSizes = await updateUserSizes(foundUser.id, putUser.userSizes);
     }
     foundUser.lockerNumber = putUser.lockerNumber;
     foundUser.lockerCode = putUser.lockerCode;
-    foundUser.firstName = putUser.firstname;
+    foundUser.firstName = putUser.firstName;
     foundUser.lastName = putUser.lastName;
     foundUser.address = putUser.address;
     foundUser.city = putUser.city;

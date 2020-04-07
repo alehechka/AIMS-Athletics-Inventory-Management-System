@@ -42,7 +42,12 @@ export default function Staff(props) {
         height: 0,
         weight: 0,
         lockerNumber: "",
-        lockerCode: ""
+        lockerCode: "",
+        role: "Athlete",
+        isAdmin: false,
+        isEmployee: false,
+        isCoach: false,
+        isAthlete: true
     };
     const deepCopy = (obj) => JSON.parse(JSON.stringify(obj));
 
@@ -113,7 +118,7 @@ export default function Staff(props) {
         const key = event.target.name;
         let value = event.target.value;
         //special handler for radio button
-        if (key === "active") {
+        if (key === "isActive") {
             value = value === "active";
         }
         setInputs({...inputs, [key]: value});
@@ -133,8 +138,7 @@ export default function Staff(props) {
     const closeDialog = (type) => {
         setDialogOpen(false);
         if (type){
-            const sportIds = sport.map(name => sportIdLookup[name].id);
-            
+            const sportIds = sport.filter(name => !sportIdLookup[name].default).map(name => sportIdLookup[name].id);
             const newSportsJson = sport.map(sportName => ({
                 id: sportIdLookup[sportName].id,
                 displayName: sportIdLookup[sportName].displayName,
@@ -166,17 +170,25 @@ export default function Staff(props) {
                     updateData(data.map(row => row.id === updatedUser.id? updatedUser: row));
                     updateLoading(false); 
                     props.showMessage(dialogTitle + " Done");
-                }).catch(err => props.showMessage("Error:" + err));
+                }).catch(err =>{
+                    props.showMessage("Error:" + err, "error");
+                    updateLoading(false);
+                });
             }
             else {
-
-                UsersAPI.createUser(inputs.email, inputs.userName, inputs.password, newUser).then((res)=>{
+                if (inputs.role !== "Athlete") {
+                    inputs["is" + inputs.role] = true;
+                }
+                UsersAPI.createUser(inputs.email, inputs.userName, inputs.password, inputs.isAdmin, inputs.isEmployee, inputs.isCoach, inputs.isAthlete, newUser).then((res)=>{
                     console.log(res);
                     updatedUser.id = res.id;
                     updateData([...data, updatedUser]);
                     updateLoading(false); 
                     props.showMessage(dialogTitle + " Done");
-                }).catch(err =>props.showMessage("Error:" + err));
+                }).catch(err =>{
+                    props.showMessage("Error:" + err, "error");
+                    updateLoading(false);
+                });
                 
             }
         }
