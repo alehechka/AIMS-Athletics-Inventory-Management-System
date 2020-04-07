@@ -82,12 +82,20 @@ export default function Transaction(props) {
             newCheckedInventory.splice(currentIndex, 1);
         }
 
-        console.log(transactions);
+        //console.log(newCheckedInventory);
+
+        let temp = [];
+
+        newCheckedInventory.forEach(inventory => temp.push({id: inventory.id, name: inventory.name}));
+        transactions.forEach(transaction => transaction.inventory = temp)
+
+        //console.log(temp);
 
         setInventoryCheckbox(newInventoryCheckbox);
         setCheckedInventory(newCheckedInventory);
-        setTransactions(transactions.map(transaction => transaction.inventory = {newCheckedInventory}));
-        
+        setTransactions(transactions);
+
+        //console.log(transactions);
 
     }
 
@@ -197,7 +205,9 @@ export default function Transaction(props) {
                                 <Typography>{transaction.fullName}</Typography>
                             </Grid>
                             <Grid item xs = {8}>
-                                <Typography>Temp</Typography>
+                                {transaction.inventory.map(inventory =>
+                                    <Typography>{inventory.name}</Typography> 
+                                )}
                             </Grid>
                             <Grid item xs = {2}>
                                 <IconButton aria-label="delete" onClick ={handleAthleteToggle(transaction.id)}>
