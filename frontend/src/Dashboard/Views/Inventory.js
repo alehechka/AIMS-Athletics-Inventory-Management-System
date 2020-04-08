@@ -1,4 +1,5 @@
 import React, {forwardRef} from "react";
+import {SportsAPI, InventoryAPI, UsersAPI} from "../../api";
 import MaterialTable from 'material-table'
 import {Link} from "react-router-dom";
 import Add from '@material-ui/icons/Add';
@@ -37,8 +38,18 @@ ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
 ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 
-
 export default function Inventory(props) {
+  
+  const [inventory, setInventory] = React.useState([]);
+  
+  React.useEffect(()=>{
+
+        InventoryAPI.getInventory(null,null, {isAdmin: true, isEmployee: true}).then( (inventory)=> {
+            setInventory(inventory);
+        });
+    
+    }, []);
+
   return (
     <div style={{ maxWidth: '100%' }}>
     <MaterialTable
