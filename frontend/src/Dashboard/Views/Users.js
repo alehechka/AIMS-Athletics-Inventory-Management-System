@@ -215,13 +215,20 @@ export default function Users(props) {
             options={{
                 search: true,
                 filtering: true,
-                exportButton: true,
                 actionsColumnIndex: -1,
                 tableLayout: "auto"
             }}
             actions={[
                 {
-                  icon: 'list',
+                    icon: 'account_circle',
+                    tooltip: 'Profile',
+                    onClick: (event, rowData) => {
+                      props.showMessage("Redirecting to Profile page...");
+                      props.history.push(`/profile?userId=${rowData.id}`);
+                    }
+                },
+                {
+                  icon: 'shopping_cart',
                   tooltip: 'Transactions',
                   onClick: (event, rowData) => {
                     props.showMessage("Redirecting to Transactions page...");
