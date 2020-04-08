@@ -13,6 +13,7 @@ import Checkbox from "@material-ui/core/Checkbox";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Button from "@material-ui/core/Button";
+import Box from "@material-ui/core/Box";
 
 import {SportsAPI, InventoryAPI, UsersAPI} from "../../api";
 
@@ -130,6 +131,11 @@ export default function Transaction(props) {
   
     }
 
+    const submit = () => {
+        console.log("submit");
+        window.location.reload(true);
+    }
+
 
     React.useEffect(()=>{
         SportsAPI.getSports().then((sports)=> {
@@ -141,7 +147,7 @@ export default function Transaction(props) {
             setUsersMaster(users);
         });
 
-        setTeams([{id: 1, name: "The Ball Boys"}, {id:2, name: "Sportsmen"}]);
+        //setTeams([{id: 1, name: "The Ball Boys"}, {id:2, name: "Sportsmen"}]);
 
         InventoryAPI.getInventory(null,null, {}).then( (inventory)=> {
             setInventory(inventory);
@@ -157,7 +163,7 @@ export default function Transaction(props) {
                     <Grid item xs = {1}>
                         <Typography>Sports</Typography>
                         <Select
-                            style = {{minWidth: 60}}
+                            style = {{minWidth: 120}}
                             defaultValue = {""}
                             onChange = {handleSportFilter}>
                             {sports.map(sport =>
@@ -266,6 +272,12 @@ export default function Transaction(props) {
                 </Card>
                     )}
                 {/*<Button onClick = {() => console.log(transactions)}>Print Transactions</Button>*/}
+                <Box
+                    display="flex"
+                    marginTop = {5}
+                    justifyContent= 'center'>
+                    <Button variant = "contained" disableElevation onClick ={() => submit()}>Submit</Button>
+                </Box>
             </Grid>
         </Grid>
 
