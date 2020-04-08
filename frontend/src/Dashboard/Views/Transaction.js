@@ -3,22 +3,19 @@ import Grid from "@material-ui/core/Grid";
 import Card from "@material-ui/core/Card";
 import Select from "@material-ui/core/Select"
 import MenuItem from "@material-ui/core/MenuItem"
-import InputLabel from "@material-ui/core/InputLabel"
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import Checkbox from "@material-ui/core/Checkbox";
-import ListSubheader from "@material-ui/core/ListSubheader";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import Button from "@material-ui/core/Button";
 
 import {SportsAPI, InventoryAPI, UsersAPI} from "../../api";
-import { UserInfoCard } from "./ProfileComponents/UserInfo";
+
 
 export default function Transaction(props) {
 
@@ -69,7 +66,7 @@ export default function Transaction(props) {
     };
 
     const handleInventoryToggle = (value) => () => {
-        console.log(transactions);
+        //console.log(transactions);
         const currentIndex = inventoryCheckbox.indexOf(value);
         const newInventoryCheckbox = [...inventoryCheckbox];
         const newCheckedInventory = [...checkedInventory];
@@ -107,22 +104,30 @@ export default function Transaction(props) {
         var itemToFind = currentTransaction.inventory.find(inventory => inventory.id === inventoryId);
         var itemExistsInTransaction = currentTransaction.inventory.includes(itemToFind);
 
+        let newTransactions = transactions;
+
+        var inventoryDeepCopy = JSON.parse(JSON.stringify(newTransactions[indexOfCurrentTransaction].inventory))
+
         if(itemExistsInTransaction)
         {
             var indexToRemove = currentTransaction.inventory.indexOf(itemToFind);
-            let temp = transactions;
-            let inventoryDeepCopy = JSON.parse(JSON.stringify(temp[indexOfCurrentTransaction].inventory))
+            
             inventoryDeepCopy.splice(indexToRemove,1);
             
-            temp[indexOfCurrentTransaction].inventory = inventoryDeepCopy;
-            //console.log(temp);
-
-            setTransactions(temp);
+            newTransactions[indexOfCurrentTransaction].inventory = inventoryDeepCopy;
+            
         } else {
 
+            var itemToAdd = inventory.find(inventory=> inventory.id === inventoryId);
+
+            inventoryDeepCopy.push(itemToAdd);
+
+            newTransactions[indexOfCurrentTransaction].inventory = inventoryDeepCopy;
         }
 
-        //console.log(transactions);
+
+        setTransactions(newTransactions);
+  
     }
 
 
@@ -209,10 +214,10 @@ export default function Transaction(props) {
                                             primary = {inventory.name}
                                             secondary = {inventory.description}/>
                                         <ListItemIcon>
-                                        <Checkbox
+                                        {/*<Checkbox
                                             edge="start"
                                             checked={inventoryCheckbox.indexOf(inventory.id) !== -1}
-                                        />
+                                        />*/}
                                         </ListItemIcon>
                                     </ListItem>
                                 );
@@ -237,12 +242,13 @@ export default function Transaction(props) {
                                     style = {{overflow: 'auto', maxHeight: 250}}>
                                     {transaction.inventory.map(inventory => {
                                         return (
-                                            <ListItem key = {inventory.id} dense button onClick={handleTransactionToggle(transaction.id, inventory.id)}>
+                                            <ListItem key = {inventory.id} dense>
                                                 <ListItemText primary = {inventory.name}></ListItemText>
                                                 <ListItemIcon>
                                                 <Checkbox
                                                     edge="start"
-                                                    checked= {console.log(transaction), transaction.inventory.includes(inventory)}
+                                                    onChange={handleTransactionToggle(transaction.id, inventory.id)}
+                                                    defaultChecked
                                                 />
                                                 </ListItemIcon>
                                             </ListItem>
@@ -259,7 +265,7 @@ export default function Transaction(props) {
                     </CardContent>
                 </Card>
                     )}
-                <Button onClick = {() => console.log(transactions)}>Print Transactions</Button>
+                {/*<Button onClick = {() => console.log(transactions)}>Print Transactions</Button>*/}
             </Grid>
         </Grid>
 
