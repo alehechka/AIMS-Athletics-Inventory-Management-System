@@ -50,7 +50,6 @@ export default function UserTabs(props) {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
   const {
-    name,
     firstName,
     lastName,
     email,
@@ -100,13 +99,14 @@ export default function UserTabs(props) {
         </TabPanel>
         <TabPanel value={value} index={1}>
           <UserPhysicalCard
-            name={name}
+            username={username}
             height={height}
             weight={weight}
             gender={gender}
             sizes={sizes}
           ></UserPhysicalCard>
         </TabPanel>
+        {props.children}
       </Card>
     </div>
   );

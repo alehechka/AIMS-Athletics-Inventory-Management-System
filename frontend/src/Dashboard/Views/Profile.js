@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Grid from "@material-ui/core/Grid";
 import UserTabs from "./ProfileComponents/UserTabs";
 import UserItemCard from "./ProfileComponents/UserItems";
+import Button from "@material-ui/core/Button";
+import FormControl from "@material-ui/core/FormControl";
+import { UsersAPI, EquipmentAPI } from "../../api";
 
 /**
  * This component contains the UI logic for Profile.
@@ -21,116 +24,104 @@ import UserItemCard from "./ProfileComponents/UserItems";
  * closesnackbar - function - closes a snackbar.
  */
 
-// Dummy data to test dynamic functionality
-const dummyUser = {
-  firstName: "Sample",
-  lastName: "Worker",
-  username: "sample_worker",
-  email: "sample_worker@sample.com",
-  role: "Athlete",
-  address: "1234 Sample Way",
-  city: "Omaha",
-  state: "NE",
-  zip: 68114,
-  phone: "(402) 555-5555",
-  gender: "Male",
-  sports: ["hockey", "baseball"],
-  height: 69,
-  weight: 160,
-  lockerNumber: 115,
-  lockerCode: 210315
-};
-
-const dummySizes = {
-  hockey: {
-    head: "M",
-    shirt: "L",
-    pants: 38,
-    socks: "5-12",
-    shoes: 12
-  },
-  baseball: {
-    head: "M",
-    shirt: "L",
-    pants: "36",
-    socks: "5-12",
-    shoes: "11.5"
-  }
-};
-
-const dummyEquipment = [
-  {
-    id: 1,
-    name: "Jersey",
-    size: "L",
-    dueDate: new Date(2020, 11, 17).toDateString(),
-    value: 19995
-  },
-  {
-    id: 2,
-    name: "Padded Pants",
-    size: "38",
-    dueDate: new Date(2020, 11, 17).toDateString(),
-    value: 24998
-  },
-  {
-    id: 3,
-    name: "Socks",
-    size: "5-12",
-    dueDate: new Date(2020, 11, 17).toDateString(),
-    value: 4995
-  },
-  {
-    id: 4,
-    name: "Blades",
-    size: "12",
-    dueDate: new Date(2020, 11, 17).toDateString(),
-    value: 29999
-  },
-  {
-    id: 5,
-    name: "Stick",
-    size: null,
-    dueDate: new Date(2020, 11, 17).toDateString(),
-    value: 14999
-  },
-  {
-    id: 6,
-    name: "Bat",
-    size: null,
-    dueDate: new Date(2020, 11, 17).toDateString(),
-    value: 14999
-  }
-];
 
 export default function Profile(props) {
-  const firstName = useState(dummyUser.firstName);
-  const lastName = useState(dummyUser.lastName);
-  const email = useState(dummyUser.email);
-  const username = useState(dummyUser.username);
-  const address = useState(dummyUser.address);
-  const city = useState(dummyUser.city);
-  const state = useState(dummyUser.state);
-  const zip = useState(dummyUser.zip);
-  const phone = useState(dummyUser.phone);
-  const gender = dummyUser.gender;
-  const height = dummyUser.height;
-  const weight = dummyUser.weight;
-  const name = useState(firstName[0] + " " + lastName[0]);
-  const role = dummyUser.role;
-  const lockerNumber = dummyUser.lockerNumber;
-  const lockerCode = String(dummyUser.lockerCode);
+  const userId = props.location.search;
+  const [user, updateUser] = useState({});
+  const firstName = useState("");
+  const lastName = useState("");
+  const email = useState("");
+  const username = useState(props.context.credentials.username);
+  const address = useState("");
+  const city = useState("");
+  const state = useState("");
+  const zip = useState(null);
+  const phone = useState(null);
+  const gender = useState("");
+  const height = useState(null);
+  const weight = useState(null);
+  const role = useState("");
+  const lockerNumber = useState(null);
+  const lockerCode = useState(null);
+  const [equipment, setEquipment] = useState([]);
+  const sizes = useState([]);
 
+  useEffect(() => {
+    if (userId) {
+      UsersAPI.getSingleUser(userId).then((user) => {
+        updateUser(user);
+      });
+    } else {
+      UsersAPI.getCurrentUser().then((user) => {
+        setUserData(user);
+      });
+      EquipmentAPI.getCurrentEquipment({}).then((eq) => {
+        setEquipment(eq);
+      });
+    }
+  }, []);
+
+  const setUserData = (user) => {
+    updateUser({user});
+    firstName[1](user.firstName);
+    lastName[1](user.lastName);
+    email[1](user.credential.email);
+    address[1](user.address);
+    city[1](user.city);
+    state[1](user.state);
+    zip[1](user.zip);
+    phone[1](user.phone);
+    gender[1](user.gender);
+    height[1](user.height);
+    weight[1](user.weight);
+    lockerNumber[1](user.lockerNumber);
+    lockerCode[1](user.lockerCode);
+    sizes[1](user.userSizes);
+    setEquipment(user.equipment);
+    role[1](getRole(user.credential));
+  };
+
+  /**
+   * converts boolean object to string for representation.
+   * @param {*} user
+   */
+  const getRole = (user) => {
+    let role = "Athlete";
+    if (user.isAdmin) {
+      role = "Admin";
+    } else if (user.isEmployee) {
+      role = "Employee";
+    } else if (user.isCoach) {
+      role = "Coach";
+    } else if (user.isAthlete) {
+      role = "Athlete";
+    }
+    return role;
+  };
   // TODO: handle submit logic
-  // const onSubmit = (event) => {
-  //   return null;
-  // };
+  const onSubmit = (event) => {
+    UsersAPI.updateCurrentUser({
+      ...user,
+      firstName: firstName[0],
+      lastName: lastName[0],
+      address: address[0],
+      city: city[0],
+      state: state[0],
+      zip: zip[0],
+      phone: phone[0],
+      gender: gender[0],
+      height: height[0],
+      weight: weight[0],
+      lockerNumber: lockerNumber[0],
+      lockerCode: lockerCode[0],
+      userSizes: sizes[0]
+    });
+  };
 
   return (
     <Grid container spacing={3}>
       <Grid item xs={6}>
         <UserTabs
-          name={name}
           firstName={firstName}
           lastName={lastName}
           email={email}
@@ -146,11 +137,17 @@ export default function Profile(props) {
           height={height}
           weight={weight}
           gender={gender}
-          sizes={dummySizes}
-        ></UserTabs>
+          sizes={sizes}
+        >
+          <div>
+            <Button variant="contained" type="submit" color="primary" onClick={onSubmit} style={{ float: "right" }}>
+              Update Info
+            </Button>
+          </div>
+        </UserTabs>
       </Grid>
       <Grid item xs={6}>
-        <UserItemCard name={name} equipment={dummyEquipment}></UserItemCard>
+        <UserItemCard username={username} equipment={equipment} />
       </Grid>
     </Grid>
   );

@@ -3,12 +3,9 @@ import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
+import MaterialTable from "material-table";
 
+// Formatter to make any currency exchanges simpler
 const formatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
@@ -16,33 +13,24 @@ const formatter = new Intl.NumberFormat("en-US", {
 });
 
 export default function UserItemCard(props) {
-  const { name, equipment } = props;
+  const { username, equipment } = props;
+
   return (
     <Card variant="outlined">
       <CardContent>
         <Typography variant="h5" gutterBottom>
-          {name}'s Equipment
+          {username}'s Equipment
         </Typography>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Item</TableCell>
-              <TableCell>Size</TableCell>
-              <TableCell>Due Date</TableCell>
-              <TableCell>Value</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {equipment.map((item) => (
-              <TableRow key={item.id}>
-                <TableCell>{item.name}</TableCell>
-                <TableCell>{item.size ?? "None"}</TableCell>
-                <TableCell>{item.dueDate}</TableCell>
-                <TableCell>{formatter.format(item.value / 100)}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+
+        <MaterialTable
+          columns={[
+            { title: "Item", field: "name" },
+            { title: "Size", field: "size" },
+            { title: "Value", field: "value", render: (rowData) => formatter.format(rowData.value / 100) },
+            { title: "Return By", field: "dueDate" }
+          ]}
+          data={equipment}
+        />
       </CardContent>
     </Card>
   );

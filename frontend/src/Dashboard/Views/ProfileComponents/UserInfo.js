@@ -9,8 +9,10 @@ import MenuItem from "@material-ui/core/MenuItem";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import Divider from "@material-ui/core/Divider";
 
+
 function UserInfoCard(props) {
   const {
+    username,
     firstName,
     lastName,
     email,
@@ -23,13 +25,11 @@ function UserInfoCard(props) {
     lockerNumber,
     lockerCode
   } = props;
-  const name = useState(firstName[0] + " " + lastName[0]);
-
   return (
     <Card variant="outlined">
       <CardContent>
         <Typography variant="h5" gutterBottom>
-          {role} Information for {name}
+          {role} Information for {username}
         </Typography>
         <Grid container spacing={1}>
           <Grid item xs={6}>
@@ -65,7 +65,7 @@ function UserInfoCard(props) {
               id="email"
               label="Email Address"
               onChange={(e) => email[1](e.target.value)}
-              value={email[0]}
+              value={email[0] || ""}
             />
           </Grid>
           <Grid item xs={6}>
@@ -77,7 +77,7 @@ function UserInfoCard(props) {
               id="phone"
               label="Phone Number"
               onChange={(e) => phone[1](e.target.value)}
-              value={phone[0]}
+              value={phone[0] || ""}
             />
           </Grid>
         </Grid>
@@ -121,7 +121,7 @@ function UserInfoCard(props) {
               id="zip"
               label="Zip"
               onChange={(e) => zip[1](e.target.value)}
-              value={zip[0]}
+              value={zip[0] || ""}
             />
           </Grid>
           <Grid container spacing={1}>
@@ -132,7 +132,7 @@ function UserInfoCard(props) {
                 fullWidth
                 id="lockerNumber"
                 label="Locker Number"
-                value={lockerNumber}
+                value={lockerNumber[0]}
                 disabled
               ></TextField>
             </Grid>
@@ -143,7 +143,7 @@ function UserInfoCard(props) {
                 fullWidth
                 id="lockerCode"
                 label="Locker Code"
-                value={lockerCode.match(/.{2}/g).join("-")}
+                // value={lockerCode[0].match(/.{2}/g).join("-")}
                 disabled
               ></TextField>
             </Grid>
@@ -156,19 +156,26 @@ function UserInfoCard(props) {
 }
 
 function UserPhysicalCard(props) {
-  const { name, height, weight, gender, sizes } = props;
-  const hockeySizes = sizes.hockey; // Loading dummy data for now
-  const [head, setHead] = useState(hockeySizes.head);
-  const [shirt, /*setShirt*/] = useState(hockeySizes.shirt);
-  const [pants, setPants] = useState(hockeySizes.pants);
-  const [socks, setSocks] = useState(hockeySizes.socks);
-  const [shoes, setShoes] = useState(hockeySizes.shoes);
+  const { username, height, weight, gender, sizes } = props;
+  const hockeySizes = sizes[0]; // Loading dummy data for now
+  const [head, setHead] = useState(hockeySizes ? hockeySizes.head : '');
+  const [shirt, setShirt] = useState(hockeySizes ? hockeySizes.shirt : '');
+  const [pants, setPants] = useState(hockeySizes ? hockeySizes.pants : '');
+  const [socks, setSocks] = useState(hockeySizes ? hockeySizes.socks : '');
+  const [shoes, setShoes] = useState(hockeySizes ? hockeySizes.shoes : '');
+
+  // const updateSizes = (event) =>{
+  //   sizes[1]([{
+  //     ...sizes[0],
+  //     [event.target.name]: event.target.value
+  //   }])
+  // };
 
   return (
     <Card variant="outlined">
       <CardContent>
         <Typography variant="h5" gutterBottom>
-          Physical Information for {name}
+          Physical Information for {username}
         </Typography>
         <Grid container spacing={1}>
           <Grid item xs={3}>
@@ -178,8 +185,8 @@ function UserPhysicalCard(props) {
               fullWidth
               id="height"
               label="Height (inches)"
-              value={height}
-              disabled
+              onChange={(e) => height[1](e.target.value)}
+              value={height[0]}
             />
           </Grid>
           <Grid item xs={3}>
@@ -189,55 +196,57 @@ function UserPhysicalCard(props) {
               fullWidth
               id="weight"
               label="Weight (lbs)"
-              value={weight}
-              disabled
+              onChange={(e) => weight[1](e.target.value)}
+              value={weight[0]}
             />
           </Grid>
           <Grid item xs={3}>
             <TextField
               variant="outlined"
               margin="normal"
+              onChange={(e) => gender[1](e.target.value)}
               fullWidth
               id="gender"
               label="Gender"
-              value={gender}
-              disabled
+              value={gender[0]}
             />
           </Grid>
         </Grid>
         <br />
         <Divider />
         <br />
+        <div>
         <Typography variant="h5" gutterBottom>
-          Size Information for {name}
+          Size Information for {username}
         </Typography>
-        <Select id="head" value={head} onChange={setHead}>
+        <Select id="head" value={head}  onChange={setHead}>
           <MenuItem value={"S"}>Small</MenuItem>
           <MenuItem value={"M"}>Medium</MenuItem>
           <MenuItem value={"L"}>Large</MenuItem>
           <MenuItem value={"XL"}>Extra Large</MenuItem>
         </Select>
         <FormHelperText>Head Size</FormHelperText>
-        <Select id="shirt" value={shirt} onChange={setHead}>
+        <Select id="shirt" value={shirt}  onChange={setHead}>
           <MenuItem value={"S"}>Small</MenuItem>
           <MenuItem value={"M"}>Medium</MenuItem>
           <MenuItem value={"L"}>Large</MenuItem>
           <MenuItem value={"XL"}>Extra Large</MenuItem>
         </Select>
         <FormHelperText>Shirt Size</FormHelperText>
-        <TextField id="pants" value={pants} onChange={setPants}></TextField>
+        <TextField id="pants" value={pants}  onChange={setPants}></TextField>
         <FormHelperText>Pant Size</FormHelperText>
         <Select id="socks" value={socks} onChange={setSocks}>
           <MenuItem value={"5-12"}>5-12</MenuItem>
           <MenuItem value={"13-20"}>13-20</MenuItem>
         </Select>
         <FormHelperText>Sock Size</FormHelperText>
-        <Select id="shoes" value={shoes} onChange={setShoes}>
+        <Select id="shoes" value={shoes}  onChange={setShoes}>
           {[...Array(21).keys()].map((size) => (
             <MenuItem value={size}>{size}</MenuItem>
           ))}
         </Select>
         <FormHelperText>Shoe Size</FormHelperText>
+        </div>
       </CardContent>
     </Card>
   );
