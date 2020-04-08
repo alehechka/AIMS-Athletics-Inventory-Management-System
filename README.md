@@ -6,14 +6,16 @@ Below are the main features this application will support:
 
 ## Features
 
-- [ ] Check in / Check out equipment to athletes, including a mass check in/out feature for game days
-- [ ] Add and edit equipment in inventory system
+- [ ] Check in equipment from users
+- [X] Check out equipment to athletes, including a mass check in/out feature for game days
+- [X] Add and edit equipment in inventory system
 - [ ] Track monetary value of inventory
 - [X] Custom profiles for athletes, coaches, and staff
 - [ ] Generate reports for various purposes (i.e. Students with most issued equpment, etc.).
 - [ ] Supporting mobile application for use while on the road
 - [ ] Record size information for each student athlete
-- [ ] View all active athletes, staff, and in-stock inventory
+- [X] View all active athletes, staff, and in-stock inventory
+- [X] Change roles for users (athlete, staff, employee, admin)
 
 
 
@@ -44,7 +46,7 @@ Visit http://localhost:3000 in browser.
 ```bash
 > cd .\backend
 > npm install 
-> npm start
+> npm run dev
 ```
 
 Visit http://localhost:5000 to get started.
