@@ -24,7 +24,6 @@ async function checkOut(transactions, comment) {
       item.inventorySize = item.inventorySize.id || item.inventorySize;
     }
   }
-  console.log(transactions);
   return await axios
     .post(
       `${apiUrl}/transactions/checkOut`,

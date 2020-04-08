@@ -8,9 +8,115 @@ const queryParams = require("../middleware/queryParams");
 const { getCoachSports } = require("./sport.route");
 const transactionRouter = express.Router();
 
-// POST /api/v#/transactions
+// POST /api/v#/transactions/checkOut
+// Checks out inventory to users included
 transactionRouter.post("/checkOut", auth(["isAdmin", "isEmployee", "isCoach"]), async (req, res, next) => {
-  res.json();
+  let { transactions, comment } = req.body;
+  let createdTransactions = [];
+  try {
+    let issuedBy = await User.findOne({
+      where: {
+        credentialId: req.user.id
+      }
+    });
+    for (let transaction of transactions) {
+      let userEquipment = await Equipment.findAll({
+        where: {
+          userId: transaction.issuedTo
+        }
+      });
+      for (let item of transaction.items) {
+        //Update/create equipment entries
+        let equipment = userEquipment.find((equipment) => equipment.inventorySizeId === item.inventorySize);
+        if (equipment) {
+          equipment.count += item.amount;
+          await equipment.save();
+        } else {
+          equipment = await Equipment.create({
+            count: item.amount,
+            userId: transaction.issuedTo,
+            inventorySizeId: item.inventorySize,
+            organizationId: req.user.organizationId
+          });
+          userEquipment.push(equipment);
+        }
+        //Update inventory size quantity
+        let inventorySize = await InventorySize.findOne({
+          where: {
+            id: item.inventorySize
+          }
+        });
+        inventorySize.quantity -= item.amount;
+        await inventorySize.save();
+        //Create transaction
+        createdTransactions.push(
+          await Transaction.create({
+            amount: item.amount,
+            comment,
+            equipmentId: equipment.id,
+            issuedBy: issuedBy.id,
+            issuedTo: transaction.issuedTo,
+            organizationId: req.user.organizationId
+          })
+        );
+      }
+    }
+    res.json(createdTransactions);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// POST /api/v#/transactions/checkIn
+// Checks in equipment from users included
+transactionRouter.post("/checkIn", auth(["isAdmin", "isEmployee", "isCoach"]), async (req, res, next) => {
+  let { transactions, comment } = req.body;
+  let createdTransactions = [];
+  try {
+    let issuedBy = await User.findOne({
+      where: {
+        credentialId: req.user.id
+      }
+    });
+    for (let transaction of transactions) {
+      let userEquipment = await Equipment.findAll({
+        where: {
+          userId: transaction.issuedTo
+        }
+      });
+      for (let item of transaction.items) {
+        //Update/create equipment entries
+        let equipment = userEquipment.find((equipment) => equipment.id === item.equipment);
+        if (equipment) {
+          equipment.count -= item.amount;
+          await equipment.save();
+          //Update inventory size quantity
+          let inventorySize = await InventorySize.findOne({
+            where: {
+              id: equipment.inventorySizeId
+            }
+          });
+          inventorySize.quantity += item.amount;
+          await inventorySize.save();
+          //Create transaction
+          createdTransactions.push(
+            await Transaction.create({
+              amount: item.amount,
+              comment,
+              returned: true,
+              equipmentId: equipment.id,
+              issuedBy: issuedBy.id,
+              issuedTo: transaction.issuedTo,
+              organizationId: req.user.organizationId
+            })
+          );
+        }
+      }
+    }
+    res.json(createdTransactions);
+  } catch (err) {
+    next(err);
+  }
 });
 
 //Get /api/v#/transactions
@@ -21,10 +127,7 @@ transactionRouter.get(
   queryParams([], ["returned", "createdBegin", "createdEnd"]),
   async (req, res, next) => {
     try {
-      res.json(
-        await getTransactions(req.user, {
-        })
-      );
+      res.json(await getTransactions(req.user, {}));
     } catch (err) {
       next(err);
     }
@@ -133,11 +236,11 @@ async function getTransactions(
         }
       ]
     });
-    return sports || user.highestAccess.isCoach 
-    ? transactions.filter((transaction) => {
-      return transaction.equipment.inventorySize.inventory;
-    })
-    : transactions;
+    return sports || user.highestAccess.isCoach
+      ? transactions.filter((transaction) => {
+          return transaction.equipment.inventorySize.inventory;
+        })
+      : transactions;
   } catch (err) {
     throw err;
   }

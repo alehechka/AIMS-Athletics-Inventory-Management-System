@@ -27,7 +27,7 @@ export default function Home(props) {
     ]
   }
   const selectedInventorySize = {
-    id: 2,
+    id: 3,
     size: "M",
     price: 25.00,
     quantity: 20
@@ -47,13 +47,24 @@ export default function Home(props) {
       ]
     }
   ];
+  const transactions2 = [
+    {
+      issuedTo: user,
+      items: [
+        {
+          equipment: {id: 1},
+          amount: 2
+        },
+      ]
+    }
+  ];
   return (
     <div>
       <h1>Home</h1>
       <button onClick={() => UsersAPI.getUsers(null, null, {withDetails:["UserSize","Equipment"]})}>Get Users</button>
       <button onClick={() => UsersAPI.getSingleUser(7)}>Get Single User</button>
       <button onClick={() => UsersAPI.getCurrentUser()}>Get Current</button>
-      <button onClick={() => UsersAPI.createUser("test8@test.com", null, null, { sports: [2, { id: 3 }], phone: 1234567891 })}>
+      <button onClick={() => UsersAPI.createUser("test8@test.com", null, "password", false, false, false, true, { sports: [2, { id: 3 }], phone: 1234567891 })}>
         Create User
       </button>
       <button
@@ -120,6 +131,7 @@ export default function Home(props) {
       <br />
       <button onClick={() => TransactionAPI.getTransactions({})}>Get Transactions</button>
       <button onClick={() => TransactionAPI.checkOut(transactions, "comment")}>Check out</button>
+      <button onClick={() => TransactionAPI.checkIn(transactions2, "comment")}>Check in</button>
       <br />
       <br />
       <button onClick={() => changeFavicon("assets/creighton.ico")}>Change Favicon</button>

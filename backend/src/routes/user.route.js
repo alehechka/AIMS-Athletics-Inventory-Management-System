@@ -264,6 +264,11 @@ async function getUsers(user, {
         {
           model: Equipment,
           attributes: userId || credentialId || withDetails.includes("Equipment") ? ["id", "count"] : [],
+          where: withDetails.includes("Equipment") && { 
+            count: { 
+              [Sequelize.Op.gte]: 1
+            } 
+          },
           include: [
             {
               model: InventorySize,
