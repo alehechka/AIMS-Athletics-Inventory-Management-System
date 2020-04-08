@@ -17,16 +17,16 @@ async function getSport(id) {
 }
 
 //Allows an admin to create a sport
-async function createSport({ name, gender }) {
-  return await axios.post(`${apiUrl}/sports`, { name, gender }, { withCredentials: true }).then((res) => {
+async function createSport({ name, gender, icon }) {
+  return await axios.post(`${apiUrl}/sports`, { name, gender, icon }, { withCredentials: true }).then((res) => {
     return res.data;
   });
 }
 
 //Allows an admin to update a sport
-async function updateSport({ id, name, gender }) {
+async function updateSport({ id, name, gender, icon }) {
   return await axios
-    .put(`${apiUrl}/sports`, { name, gender }, { params: { id }, withCredentials: true })
+    .put(`${apiUrl}/sports`, { name, gender, icon }, { params: { id }, withCredentials: true })
     .then((res) => {
       return res.data;
     });

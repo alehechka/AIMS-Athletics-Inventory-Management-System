@@ -13,7 +13,10 @@ const {
   SportSize,
   Status,
   hashPassword,
-  addDisplayNameToSports
+  addDisplayNameToSports,
+  Equipment,
+  InventorySize,
+  Inventory
 } = require("../models/database");
 const userRouter = express.Router();
 const { updateUserSports, getCoachSports } = require("./sport.route");
@@ -82,7 +85,7 @@ userRouter.post("/", auth(["isAdmin"]), async (req, res, next) => {
 userRouter.get(
   "/",
   auth(["isAdmin", "isEmployee", "isCoach"]),
-  queryParams([], ["page", "limit", "id", "gender", "sports[]", "isAdmin", "isEmployee", "isCoach", "isAthlete"]),
+  queryParams([], ["page", "limit", "id", "gender", "sports[]", "isAdmin", "isEmployee", "isCoach", "isAthlete", "withDetails[]"]),
   async (req, res, next) => {
     try {
       res.json(await getUsers(req.user, {
@@ -95,6 +98,7 @@ userRouter.get(
         isEmployee: req.query.isEmployee,
         isCoach: req.query.isCoach,
         isAthlete: req.query.isAthlete,
+        withDetails: req.query["withDetails[]"]
       }));
     } catch (err) {
       next(err);
@@ -198,7 +202,8 @@ async function getUsers(user, {
   isAdmin,
   isEmployee,
   isCoach,
-  isAthlete
+  isAthlete,
+  withDetails = []
 }) {
   try {
     let coachSports = [];
@@ -238,7 +243,7 @@ async function getUsers(user, {
         },
         {
           model: UserSize,
-          attributes: userId || credentialId ? ["id", "sportSizeId", "size"] : []
+          attributes: userId || credentialId || withDetails.includes("UserSize") ? ["id", "sportSizeId", "size"] : []
         },
         {
           model: Credential,
@@ -255,6 +260,22 @@ async function getUsers(user, {
         },
         {
           model: Status
+        },
+        {
+          model: Equipment,
+          attributes: userId || credentialId || withDetails.includes("Equipment") ? ["id", "count"] : [],
+          include: [
+            {
+              model: InventorySize,
+              attributes: ["id", "size", "price"],
+              include: [
+                {
+                  model: Inventory,
+                  attributes: ["id", "name", "description", "surplus", "taxable", "expendable"]
+                }
+              ]
+            }
+          ]
         }
       ]
     });

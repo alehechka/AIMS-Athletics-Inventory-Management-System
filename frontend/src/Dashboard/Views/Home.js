@@ -50,7 +50,7 @@ export default function Home(props) {
   return (
     <div>
       <h1>Home</h1>
-      <button onClick={() => UsersAPI.getUsers(null, null, {})}>Get Users</button>
+      <button onClick={() => UsersAPI.getUsers(null, null, {withDetails:["UserSize","Equipment"]})}>Get Users</button>
       <button onClick={() => UsersAPI.getSingleUser(7)}>Get Single User</button>
       <button onClick={() => UsersAPI.getCurrentUser()}>Get Current</button>
       <button onClick={() => UsersAPI.createUser("test6@test.com", null, null, { sports: [2, { id: 3 }] })}>

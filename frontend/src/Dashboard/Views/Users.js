@@ -94,6 +94,7 @@ export default function Users(props) {
                         .map(val => val.displayName)
                         .some(val => val.toLowerCase().includes(term.toLowerCase()))
                 },
+                {title: '', cellStyle: {width:"100%"}},
             ]);
             const customData = users.map(user =>({
                 id: user.id,
@@ -203,7 +204,7 @@ export default function Users(props) {
         }    
     };
     return (
-    <div style={{ maxWidth: '100%', marginLeft: '10px', marginRight: '10px', marginBottom: '10px' }}>
+    <div style={{ maxWidth: '75%', marginLeft: '10px', marginRight: '10px', marginBottom: '10px' }}>
         <MaterialTable
             title = {renderType}
             isLoading= {isLoading}
@@ -216,15 +217,15 @@ export default function Users(props) {
                 filtering: true,
                 exportButton: true,
                 actionsColumnIndex: -1,
-                tableLayout: "fixed"
+                tableLayout: "auto"
             }}
             actions={[
                 {
                   icon: 'list',
                   tooltip: 'Transactions',
                   onClick: (event, rowData) => {
-                    props.showMessage("Redirecting to Profile Page");
-                    props.history.push(`/profile?id=${rowData.id}`);
+                    props.showMessage("Redirecting to Transactions page...");
+                    props.history.push(`/transactions?userId=${rowData.id}`);
                   }
                 },
                 {

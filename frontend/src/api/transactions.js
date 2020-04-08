@@ -41,6 +41,28 @@ async function checkOut(transactions, comment) {
     });
 }
 
-async function checkIn(comment, transactions) {}
+async function checkIn(transactions, comment) {
+  for (let tran of transactions) {
+    tran.issuedTo = tran.issuedTo.id || tran.issuedTo;
+    for (let item of tran.items) {
+      item.equipment = item.equipment.id || item.equipment;
+    }
+  }
+  return await axios
+  .post(
+    `${apiUrl}/transactions`,
+    {
+      comment,
+      transactions,
+      returned: true
+    },
+    {
+      withCredentials: true
+    }
+  )
+  .then((res) => {
+    return res.data;
+  })
+}
 
 export { getTransactions, checkOut, checkIn };

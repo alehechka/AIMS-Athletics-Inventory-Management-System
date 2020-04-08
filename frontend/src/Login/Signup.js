@@ -7,7 +7,7 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
-import ListItemIcon from '@material-ui/core/ListItemIcon';
+// import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Link from "@material-ui/core/Link";
 import { Link as RouterLink } from "react-router-dom";
@@ -16,7 +16,7 @@ import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import { withSnackbar } from "notistack";
 import { OrganizationAPI } from "../api";
-import OrganizationIcon from "../Logo/OrganizationIcon";
+// import OrganizationIcon from "../Logo/OrganizationIcon";
 
 /**
  * This Component contains the sign up page along with sign up logic.
