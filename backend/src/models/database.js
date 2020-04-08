@@ -99,7 +99,7 @@ const User = db.define(
     city: { type: Sequelize.STRING, allowNull: true },
     state: { type: Sequelize.STRING, allowNull: true },
     zip: { type: Sequelize.INTEGER, min: 10000, max: 99999, allowNull: true },
-    phone: { type: Sequelize.INTEGER, allowNull: true },
+    phone: { type: Sequelize.STRING, allowNull: true },
     lockerNumber: { type: Sequelize.INTEGER, allowNull: true },
     lockerCode: { type: Sequelize.INTEGER, allowNull: true },
     gender: { type: Sequelize.STRING(1), allowNull: true },

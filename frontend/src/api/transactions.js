@@ -27,7 +27,7 @@ async function checkOut(transactions, comment) {
   console.log(transactions);
   return await axios
     .post(
-      `${apiUrl}/transactions`,
+      `${apiUrl}/transactions/checkOut`,
       {
         comment,
         transactions
@@ -50,11 +50,10 @@ async function checkIn(transactions, comment) {
   }
   return await axios
   .post(
-    `${apiUrl}/transactions`,
+    `${apiUrl}/transactions/checkIn`,
     {
       comment,
       transactions,
-      returned: true
     },
     {
       withCredentials: true

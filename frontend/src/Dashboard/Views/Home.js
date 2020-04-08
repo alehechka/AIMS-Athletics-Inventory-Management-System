@@ -53,7 +53,7 @@ export default function Home(props) {
       <button onClick={() => UsersAPI.getUsers(null, null, {withDetails:["UserSize","Equipment"]})}>Get Users</button>
       <button onClick={() => UsersAPI.getSingleUser(7)}>Get Single User</button>
       <button onClick={() => UsersAPI.getCurrentUser()}>Get Current</button>
-      <button onClick={() => UsersAPI.createUser("test6@test.com", null, null, { sports: [2, { id: 3 }] })}>
+      <button onClick={() => UsersAPI.createUser("test8@test.com", null, null, { sports: [2, { id: 3 }], phone: 1234567891 })}>
         Create User
       </button>
       <button

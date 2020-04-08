@@ -8,8 +8,13 @@ const queryParams = require("../middleware/queryParams");
 const { getCoachSports } = require("./sport.route");
 const transactionRouter = express.Router();
 
-//Get /api/v#/sports
-//Create new sport
+// POST /api/v#/transactions
+transactionRouter.post("/checkOut", auth(["isAdmin", "isEmployee", "isCoach"]), async (req, res, next) => {
+  res.json();
+});
+
+//Get /api/v#/transactions
+//Get list of transactions
 transactionRouter.get(
   "/",
   auth(["isAdmin", "isEmployee", "isCoach"]),
@@ -26,8 +31,8 @@ transactionRouter.get(
   }
 );
 
-//Get /api/v#/sports
-//Create new sport
+//Get /api/v#/transactions
+//Get current user's transactions
 transactionRouter.get(
   "/current",
   auth(),
