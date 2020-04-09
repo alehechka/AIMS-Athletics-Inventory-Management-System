@@ -26,13 +26,13 @@ import { UsersAPI } from "../../api";
 
 export default function Profile(props) {
   const parser = new URLSearchParams(props.location.search);
-  const userId = parser.get("id");
+  const userId = parser.get("userId");
   const [user, updateUser] = useState({});
   const [equipment, setEquipment] = useState([]);
   const firstName = useState("");
   const lastName = useState("");
   const email = useState("");
-  const username = useState(props.context.credentials.username);
+  const username = useState("");
   const address = useState("");
   const city = useState("");
   const state = useState("");
@@ -47,9 +47,11 @@ export default function Profile(props) {
   const sizes = useState([]);
 
   useEffect(() => {
+    setUserData({});
     if (userId) {
       UsersAPI.getSingleUser(userId).then((user) => {
-        updateUser(user);
+        setUserData(user);
+        setEquipment(user.equipment);
       });
     } else {
       UsersAPI.getCurrentUser().then((user) => {
@@ -57,13 +59,14 @@ export default function Profile(props) {
         setEquipment(user.equipment);
       });
     }
-  }, []);
+  }, [props.location.search]);
 
   const setUserData = (user) => {
     updateUser({ user });
     firstName[1](user.firstName);
     lastName[1](user.lastName);
-    email[1](user.credential.email);
+    email[1](user?.credential?.email);
+    username[1](user?.credential?.username);
     address[1](user.address);
     city[1](user.city);
     state[1](user.state);
@@ -76,51 +79,66 @@ export default function Profile(props) {
     lockerCode[1](user.lockerCode);
     sizes[1](user.userSizes);
     setEquipment(user.equipment);
-    role[1](getRole(user.credential));
-  };
-
-  /**
-   * converts boolean object to string for representation.
-   * @param {*} user
-   */
-  const getRole = (user) => {
-    let role = "Athlete";
-    if (user.isAdmin) {
-      role = "Admin";
-    } else if (user.isEmployee) {
-      role = "Employee";
-    } else if (user.isCoach) {
-      role = "Coach";
-    } else if (user.isAthlete) {
-      role = "Athlete";
-    }
-    return role;
+    role[1](props.context.actions.getRole(user.credential));
   };
 
   const onSubmit = (event) => {
-    UsersAPI.updateCurrentUser({
-      ...user,
-      firstName: firstName[0],
-      lastName: lastName[0],
-      address: address[0],
-      city: city[0],
-      state: state[0],
-      zip: zip[0],
-      phone: phone[0],
-      gender: gender[0],
-      height: height[0],
-      weight: weight[0],
-      lockerNumber: lockerNumber[0],
-      lockerCode: lockerCode[0],
-      userSizes: sizes[0]
-    });
-    props.showMessage("Information Successfully Updated!");
+    props.showMessage("Updating user...");
+    if (userId) {
+      UsersAPI.updateUser({
+        id: userId,
+        ...user,
+        firstName: firstName[0],
+        lastName: lastName[0],
+        address: address[0],
+        city: city[0],
+        state: state[0],
+        zip: zip[0],
+        phone: phone[0],
+        gender: gender[0],
+        height: height[0],
+        weight: weight[0],
+        lockerNumber: lockerNumber[0],
+        lockerCode: lockerCode[0],
+        userSizes: sizes[0]
+      }).then(res => {
+        setUserData(res);
+        setEquipment(res.equipment);
+        props.showMessage("Information Successfully Updated!");
+      }).catch(err => {
+        props.showMessage("Information failed to save.", "error");
+      })
+    } else {
+      UsersAPI.updateCurrentUser({
+        ...user,
+        firstName: firstName[0],
+        lastName: lastName[0],
+        address: address[0],
+        city: city[0],
+        state: state[0],
+        zip: zip[0],
+        phone: phone[0],
+        gender: gender[0],
+        height: height[0],
+        weight: weight[0],
+        lockerNumber: lockerNumber[0],
+        lockerCode: lockerCode[0],
+        userSizes: sizes[0]
+      }).then(res => {
+        setUserData(res);
+        setEquipment(res.equipment);
+        props.showMessage("Information Successfully Updated!");
+      }).catch(err => {
+        props.showMessage("Information failed to save.", "error");
+      });
+    }
   };
 
   return (
     <Grid container spacing={3}>
       <Grid item xs={6}>
         <UserTabs
+          credentials={props.context.credentials}
           firstName={firstName}
           lastName={lastName}
           email={email}

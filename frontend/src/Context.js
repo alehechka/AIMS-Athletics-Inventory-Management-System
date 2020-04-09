@@ -36,7 +36,8 @@ export class Provider extends Component {
       actions: {
         signup: this.signup,
         login: this.login,
-        logout: this.logout
+        logout: this.logout,
+        getRole: this.getRole
       }
     };
     return <Context.Provider value={value}>{this.props.children}</Context.Provider>;
@@ -63,7 +64,26 @@ export class Provider extends Component {
     });
   };
 
+  /**
+   * converts boolean object to string for representation.
+   * @param {*} user
+   */
+  getRole = (credentials) => {
+    let role = "Athlete";
+    if (credentials?.isAdmin) {
+      role = "Admin";
+    } else if (credentials?.isEmployee) {
+      role = "Employee";
+    } else if (credentials?.isCoach) {
+      role = "Coach";
+    } else if (credentials?.isAthlete) {
+      role = "Athlete";
+    }
+    return role;
+  };
+
   setCredentials = (credentials, authorized) => {
+    console.log("setting creds")
     this.setState({
       authorized,
       credentials: {
@@ -73,6 +93,7 @@ export class Provider extends Component {
         isEmployee: credentials?.isEmployee,
         isCoach: credentials?.isCoach,
         isAthlete: credentials?.isAthlete,
+        role: this.getRole(credentials)
       },
       organization: credentials?.organization
     });

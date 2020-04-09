@@ -83,6 +83,7 @@ export default function UserTabs(props) {
         </AppBar>
         <TabPanel value={value} index={0}>
           <UserInfoCard
+            credentials={props.credentials}
             firstName={firstName}
             lastName={lastName}
             email={email}

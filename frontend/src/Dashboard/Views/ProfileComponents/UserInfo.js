@@ -122,6 +122,7 @@ function UserInfoCard(props) {
             <TextField
               variant="outlined"
               margin="normal"
+              type = "number"
               fullWidth
               id="zip"
               label="Zip"
@@ -138,7 +139,8 @@ function UserInfoCard(props) {
                 id="lockerNumber"
                 label="Locker Number"
                 value={lockerNumber[0]}
-                disabled
+                onChange={(e) => lockerNumber[1](e.target.value)}
+                disabled={!(props.credentials.isAdmin || props.credentials.isEmployee)}
               ></TextField>
             </Grid>
             <Grid item xs={6}>
@@ -148,8 +150,9 @@ function UserInfoCard(props) {
                 fullWidth
                 id="lockerCode"
                 label="Locker Code"
-                // value={lockerCode[0].match(/.{2}/g).join("-")}
-                disabled
+                value={lockerCode[0]/*.match(/.{2}/g).join("-")*/}
+                onChange={(e) => lockerCode[1](e.target.value)}
+                disabled={!(props.credentials.isAdmin || props.credentials.isEmployee)}
               ></TextField>
             </Grid>
           </Grid>

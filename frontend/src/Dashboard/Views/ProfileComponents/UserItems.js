@@ -29,7 +29,7 @@ export default function UserItemCard(props) {
             { title: "Count", field: "count" },
             { title: "Value", field: "value", render: (rowData) => formatter.format(rowData.value) }
           ]}
-          data={equipment.map((item) => {
+          data={equipment?.map((item) => {
             return {
               name: item.inventorySize.inventory.description,
               size: item.inventorySize.size,

@@ -59,7 +59,7 @@ export default function Admin(props) {
           email: user.credential.email,
           firstName: user.firstName,
           lastName: user.lastName,
-          role: getRole(user.credential),
+          role: props.context.actions.getRole(user.credential),
         };
       });
       updateRoleData(newRoleData);
@@ -78,23 +78,6 @@ export default function Admin(props) {
       updateSportsLoading(false);
     });
   }, []);
-  /**
-   * converts boolean object to string for representation.
-   * @param {*} user 
-   */
-  const getRole = (user) =>{
-    let role = "athlete";
-    if (user.isAdmin) {
-      role = "Admin";
-    } else if (user.isEmployee) {
-      role = "Employee";
-    } else if (user.isCoach) {
-      role = "Coach";
-    } else if (user.isAthlete) {
-      role = "Athlete";
-    }
-    return role;
-  };
   return (
     <div style={{ maxWidth: '100%', marginLeft: '10px', marginRight: '10px', marginBottom: '10px' }}>
       <Grid container spacing={3}>
