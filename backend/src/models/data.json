@@ -38,351 +38,365 @@
             "isVerified": true
         },
         {
-            "email": "arthurmauney@athlete.com",
-            "password": "arthurmauneypw",
+            "email": "employee@employee.com",
+            "password": "employee",
+            "isEmployee": true,
+            "isApproved": true,
+            "isVerified": true
+        },
+        {
+            "email": "coach@coach.com",
+            "password": "coach",
+            "isCoach": true,
+            "isApproved": true,
+            "isVerified": true
+        },
+        {
+            "email": "timothyjacobs@athlete.com",
+            "password": "timothyjacobspw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "patriciareed@athlete.com",
-            "password": "patriciareedpw",
+            "email": "selmanason@athlete.com",
+            "password": "selmanasonpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "jeffreyfernandez@athlete.com",
-            "password": "jeffreyfernandezpw",
+            "email": "phillipsmith@athlete.com",
+            "password": "phillipsmithpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "marymosby@athlete.com",
-            "password": "marymosbypw",
+            "email": "ruthlee@athlete.com",
+            "password": "ruthleepw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "thomasoshields@athlete.com",
-            "password": "thomasoshieldspw",
+            "email": "andrewwatts@athlete.com",
+            "password": "andrewwattspw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "barbaraspencer@athlete.com",
-            "password": "barbaraspencerpw",
+            "email": "elizabethgordon@athlete.com",
+            "password": "elizabethgordonpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "nicholasanderson@athlete.com",
-            "password": "nicholasandersonpw",
+            "email": "ernestfoster@athlete.com",
+            "password": "ernestfosterpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "cynthiakingsley@athlete.com",
-            "password": "cynthiakingsleypw",
+            "email": "marygranger@athlete.com",
+            "password": "marygrangerpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "lewisgibson@athlete.com",
-            "password": "lewisgibsonpw",
+            "email": "michaelmuniz@athlete.com",
+            "password": "michaelmunizpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "mattiehill@athlete.com",
-            "password": "mattiehillpw",
+            "email": "jessicagatlin@athlete.com",
+            "password": "jessicagatlinpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "larrywagner@athlete.com",
-            "password": "larrywagnerpw",
+            "email": "markling@athlete.com",
+            "password": "marklingpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "nancyskidgel@athlete.com",
-            "password": "nancyskidgelpw",
+            "email": "mayhunt@athlete.com",
+            "password": "mayhuntpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "jasonscranton@athlete.com",
-            "password": "jasonscrantonpw",
+            "email": "lutherstrawn@athlete.com",
+            "password": "lutherstrawnpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "jennifersaucedo@athlete.com",
-            "password": "jennifersaucedopw",
+            "email": "marywilliamson@athlete.com",
+            "password": "marywilliamsonpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "normanrome@athlete.com",
-            "password": "normanromepw",
+            "email": "kevindavis@athlete.com",
+            "password": "kevindavispw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "mildredsimmons@athlete.com",
-            "password": "mildredsimmonspw",
+            "email": "francesdetamore@athlete.com",
+            "password": "francesdetamorepw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "nathanwilborn@athlete.com",
-            "password": "nathanwilbornpw",
+            "email": "philipjohnson@athlete.com",
+            "password": "philipjohnsonpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "jillsibert@athlete.com",
-            "password": "jillsibertpw",
+            "email": "nohemigardner@athlete.com",
+            "password": "nohemigardnerpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "seanramirez@athlete.com",
-            "password": "seanramirezpw",
+            "email": "josephheisserer@athlete.com",
+            "password": "josephheissererpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "sarahthomas@athlete.com",
-            "password": "sarahthomaspw",
+            "email": "evelynmencia@athlete.com",
+            "password": "evelynmenciapw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "jamesstall@athlete.com",
-            "password": "jamesstallpw",
+            "email": "benjamingarner@athlete.com",
+            "password": "benjamingarnerpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "evelynlee@athlete.com",
-            "password": "evelynleepw",
+            "email": "christinesnipes@athlete.com",
+            "password": "christinesnipespw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "domingoselkirk@athlete.com",
-            "password": "domingoselkirkpw",
+            "email": "michaelsimpson@athlete.com",
+            "password": "michaelsimpsonpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "theresacurtis@athlete.com",
-            "password": "theresacurtispw",
+            "email": "judithtucker@athlete.com",
+            "password": "judithtuckerpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "lloydperry@athlete.com",
-            "password": "lloydperrypw",
+            "email": "miguelsmith@athlete.com",
+            "password": "miguelsmithpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "lorihuntsberger@athlete.com",
-            "password": "lorihuntsbergerpw",
+            "email": "lesliegentry@athlete.com",
+            "password": "lesliegentrypw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "markgarza@athlete.com",
-            "password": "markgarzapw",
+            "email": "markpenn@athlete.com",
+            "password": "markpennpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "jessicasnyder@athlete.com",
-            "password": "jessicasnyderpw",
+            "email": "marybreitbart@athlete.com",
+            "password": "marybreitbartpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "cletuseikenberry@athlete.com",
-            "password": "cletuseikenberrypw",
+            "email": "scottypinnock@athlete.com",
+            "password": "scottypinnockpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "hilaryarroyo@athlete.com",
-            "password": "hilaryarroyopw",
+            "email": "christinasaechao@athlete.com",
+            "password": "christinasaechaopw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "ronaldpatton@athlete.com",
-            "password": "ronaldpattonpw",
+            "email": "garybrandon@athlete.com",
+            "password": "garybrandonpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "theresawillis@athlete.com",
-            "password": "theresawillispw",
+            "email": "normalamar@athlete.com",
+            "password": "normalamarpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "walterlautenschlage@athlete.com",
-            "password": "walterlautenschlagepw",
+            "email": "palmerrapp@athlete.com",
+            "password": "palmerrapppw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "bettygreen@athlete.com",
-            "password": "bettygreenpw",
+            "email": "yvonnefletcher@athlete.com",
+            "password": "yvonnefletcherpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "russellhaire@athlete.com",
-            "password": "russellhairepw",
+            "email": "johnnysam@athlete.com",
+            "password": "johnnysampw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "amandabishop@athlete.com",
-            "password": "amandabishoppw",
+            "email": "jeanolivares@athlete.com",
+            "password": "jeanolivarespw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "charleshaack@athlete.com",
-            "password": "charleshaackpw",
+            "email": "henryligon@athlete.com",
+            "password": "henryligonpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "tishanorris@athlete.com",
-            "password": "tishanorrispw",
+            "email": "beckyjeffers@athlete.com",
+            "password": "beckyjefferspw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "billyforce@athlete.com",
-            "password": "billyforcepw",
+            "email": "danielsewell@athlete.com",
+            "password": "danielsewellpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "margaretporter@athlete.com",
-            "password": "margaretporterpw",
+            "email": "sandraclark@athlete.com",
+            "password": "sandraclarkpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "raywilson@athlete.com",
-            "password": "raywilsonpw",
+            "email": "larrygutierrez@athlete.com",
+            "password": "larrygutierrezpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "valeriequinn@athlete.com",
-            "password": "valeriequinnpw",
+            "email": "viviennesullivan@athlete.com",
+            "password": "viviennesullivanpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "mikephillips@athlete.com",
-            "password": "mikephillipspw",
+            "email": "ulyssesamundsen@athlete.com",
+            "password": "ulyssesamundsenpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "kayemitchell@athlete.com",
-            "password": "kayemitchellpw",
+            "email": "judithprohaska@athlete.com",
+            "password": "judithprohaskapw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "davidvillarreal@athlete.com",
-            "password": "davidvillarrealpw",
+            "email": "curtismiller@athlete.com",
+            "password": "curtismillerpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "stephaniehill@athlete.com",
-            "password": "stephaniehillpw",
+            "email": "johannacase@athlete.com",
+            "password": "johannacasepw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "corywebb@athlete.com",
-            "password": "corywebbpw",
+            "email": "dennisdickson@athlete.com",
+            "password": "dennisdicksonpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "doloressutton@athlete.com",
-            "password": "doloressuttonpw",
+            "email": "kristinfletcher@athlete.com",
+            "password": "kristinfletcherpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "waynebejarano@athlete.com",
-            "password": "waynebejaranopw",
+            "email": "johnellis@athlete.com",
+            "password": "johnellispw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
         },
         {
-            "email": "janicehunsberger@athlete.com",
-            "password": "janicehunsbergerpw",
+            "email": "carolynrobinson@athlete.com",
+            "password": "carolynrobinsonpw",
             "isAthlete": true,
             "isApproved": true,
             "isVerified": true
@@ -394,204 +408,212 @@
             "lastName": "Administrator"
         },
         {
-            "firstName": "Arthur",
-            "lastName": "Mauney"
+            "firstName": "Emp",
+            "lastName": "Employee"
         },
         {
-            "firstName": "Patricia",
-            "lastName": "Reed"
+            "firstName": "Coach",
+            "lastName": "Smith"
         },
         {
-            "firstName": "Jeffrey",
-            "lastName": "Fernandez"
+            "firstName": "Timothy",
+            "lastName": "Jacobs"
         },
         {
-            "firstName": "Mary",
-            "lastName": "Mosby"
+            "firstName": "Selma",
+            "lastName": "Nason"
         },
         {
-            "firstName": "Thomas",
-            "lastName": "Oshields"
+            "firstName": "Phillip",
+            "lastName": "Smith"
         },
         {
-            "firstName": "Barbara",
-            "lastName": "Spencer"
-        },
-        {
-            "firstName": "Nicholas",
-            "lastName": "Anderson"
-        },
-        {
-            "firstName": "Cynthia",
-            "lastName": "Kingsley"
-        },
-        {
-            "firstName": "Lewis",
-            "lastName": "Gibson"
-        },
-        {
-            "firstName": "Mattie",
-            "lastName": "Hill"
-        },
-        {
-            "firstName": "Larry",
-            "lastName": "Wagner"
-        },
-        {
-            "firstName": "Nancy",
-            "lastName": "Skidgel"
-        },
-        {
-            "firstName": "Jason",
-            "lastName": "Scranton"
-        },
-        {
-            "firstName": "Jennifer",
-            "lastName": "Saucedo"
-        },
-        {
-            "firstName": "Norman",
-            "lastName": "Rome"
-        },
-        {
-            "firstName": "Mildred",
-            "lastName": "Simmons"
-        },
-        {
-            "firstName": "Nathan",
-            "lastName": "Wilborn"
-        },
-        {
-            "firstName": "Jill",
-            "lastName": "Sibert"
-        },
-        {
-            "firstName": "Sean",
-            "lastName": "Ramirez"
-        },
-        {
-            "firstName": "Sarah",
-            "lastName": "Thomas"
-        },
-        {
-            "firstName": "James",
-            "lastName": "Stall"
-        },
-        {
-            "firstName": "Evelyn",
+            "firstName": "Ruth",
             "lastName": "Lee"
         },
         {
-            "firstName": "Domingo",
-            "lastName": "Selkirk"
+            "firstName": "Andrew",
+            "lastName": "Watts"
         },
         {
-            "firstName": "Theresa",
-            "lastName": "Curtis"
+            "firstName": "Elizabeth",
+            "lastName": "Gordon"
         },
         {
-            "firstName": "Lloyd",
-            "lastName": "Perry"
+            "firstName": "Ernest",
+            "lastName": "Foster"
         },
         {
-            "firstName": "Lori",
-            "lastName": "Huntsberger"
+            "firstName": "Mary",
+            "lastName": "Granger"
         },
         {
-            "firstName": "Mark",
-            "lastName": "Garza"
+            "firstName": "Michael",
+            "lastName": "Muniz"
         },
         {
             "firstName": "Jessica",
-            "lastName": "Snyder"
+            "lastName": "Gatlin"
         },
         {
-            "firstName": "Cletus",
-            "lastName": "Eikenberry"
+            "firstName": "Mark",
+            "lastName": "Ling"
         },
         {
-            "firstName": "Hilary",
-            "lastName": "Arroyo"
+            "firstName": "May",
+            "lastName": "Hunt"
         },
         {
-            "firstName": "Ronald",
-            "lastName": "Patton"
+            "firstName": "Luther",
+            "lastName": "Strawn"
         },
         {
-            "firstName": "Theresa",
-            "lastName": "Willis"
+            "firstName": "Mary",
+            "lastName": "Williamson"
         },
         {
-            "firstName": "Walter",
-            "lastName": "Lautenschlage"
+            "firstName": "Kevin",
+            "lastName": "Davis"
         },
         {
-            "firstName": "Betty",
-            "lastName": "Green"
+            "firstName": "Frances",
+            "lastName": "Detamore"
         },
         {
-            "firstName": "Russell",
-            "lastName": "Haire"
+            "firstName": "Philip",
+            "lastName": "Johnson"
         },
         {
-            "firstName": "Amanda",
-            "lastName": "Bishop"
+            "firstName": "Nohemi",
+            "lastName": "Gardner"
         },
         {
-            "firstName": "Charles",
-            "lastName": "Haack"
+            "firstName": "Joseph",
+            "lastName": "Heisserer"
         },
         {
-            "firstName": "Tisha",
-            "lastName": "Norris"
+            "firstName": "Evelyn",
+            "lastName": "Mencia"
         },
         {
-            "firstName": "Billy",
-            "lastName": "Force"
+            "firstName": "Benjamin",
+            "lastName": "Garner"
         },
         {
-            "firstName": "Margaret",
-            "lastName": "Porter"
+            "firstName": "Christine",
+            "lastName": "Snipes"
         },
         {
-            "firstName": "Ray",
-            "lastName": "Wilson"
+            "firstName": "Michael",
+            "lastName": "Simpson"
         },
         {
-            "firstName": "Valerie",
-            "lastName": "Quinn"
+            "firstName": "Judith",
+            "lastName": "Tucker"
         },
         {
-            "firstName": "Mike",
-            "lastName": "Phillips"
+            "firstName": "Miguel",
+            "lastName": "Smith"
         },
         {
-            "firstName": "Kaye",
-            "lastName": "Mitchell"
+            "firstName": "Leslie",
+            "lastName": "Gentry"
         },
         {
-            "firstName": "David",
-            "lastName": "Villarreal"
+            "firstName": "Mark",
+            "lastName": "Penn"
         },
         {
-            "firstName": "Stephanie",
-            "lastName": "Hill"
+            "firstName": "Mary",
+            "lastName": "Breitbart"
         },
         {
-            "firstName": "Cory",
-            "lastName": "Webb"
+            "firstName": "Scotty",
+            "lastName": "Pinnock"
         },
         {
-            "firstName": "Dolores",
-            "lastName": "Sutton"
+            "firstName": "Christina",
+            "lastName": "Saechao"
         },
         {
-            "firstName": "Wayne",
-            "lastName": "Bejarano"
+            "firstName": "Gary",
+            "lastName": "Brandon"
         },
         {
-            "firstName": "Janice",
-            "lastName": "Hunsberger"
+            "firstName": "Norma",
+            "lastName": "Lamar"
+        },
+        {
+            "firstName": "Palmer",
+            "lastName": "Rapp"
+        },
+        {
+            "firstName": "Yvonne",
+            "lastName": "Fletcher"
+        },
+        {
+            "firstName": "Johnny",
+            "lastName": "Sam"
+        },
+        {
+            "firstName": "Jean",
+            "lastName": "Olivares"
+        },
+        {
+            "firstName": "Henry",
+            "lastName": "Ligon"
+        },
+        {
+            "firstName": "Becky",
+            "lastName": "Jeffers"
+        },
+        {
+            "firstName": "Daniel",
+            "lastName": "Sewell"
+        },
+        {
+            "firstName": "Sandra",
+            "lastName": "Clark"
+        },
+        {
+            "firstName": "Larry",
+            "lastName": "Gutierrez"
+        },
+        {
+            "firstName": "Vivienne",
+            "lastName": "Sullivan"
+        },
+        {
+            "firstName": "Ulysses",
+            "lastName": "Amundsen"
+        },
+        {
+            "firstName": "Judith",
+            "lastName": "Prohaska"
+        },
+        {
+            "firstName": "Curtis",
+            "lastName": "Miller"
+        },
+        {
+            "firstName": "Johanna",
+            "lastName": "Case"
+        },
+        {
+            "firstName": "Dennis",
+            "lastName": "Dickson"
+        },
+        {
+            "firstName": "Kristin",
+            "lastName": "Fletcher"
+        },
+        {
+            "firstName": "John",
+            "lastName": "Ellis"
+        },
+        {
+            "firstName": "Carolyn",
+            "lastName": "Robinson"
         }
     ],
     "sports": [
@@ -620,7 +642,7 @@
     ],
     "sport_sizes": [
         {
-            "name": "Sweatpants (Cream)",
+            "name": "Tank Top (Brown)",
             "sizes": [
                 "XL",
                 "L",
@@ -629,7 +651,7 @@
             ]
         },
         {
-            "name": "Gloves (Salmon)",
+            "name": "Gym Shorts (Gold)",
             "sizes": [
                 "XL",
                 "L",
@@ -638,7 +660,7 @@
             ]
         },
         {
-            "name": "Hat (Violet)",
+            "name": "Balaclava (Blue)",
             "sizes": [
                 "XL",
                 "L",
@@ -647,97 +669,7 @@
             ]
         },
         {
-            "name": "Half-Zip Jacket (Cyan)",
-            "sizes": [
-                "XL",
-                "L",
-                "M",
-                "S"
-            ]
-        },
-        {
-            "name": "Long Sleeve T-Shirt (Cream)",
-            "sizes": [
-                "XL",
-                "L",
-                "M",
-                "S"
-            ]
-        },
-        {
-            "name": "Coat (Silver)",
-            "sizes": [
-                "XL",
-                "L",
-                "M",
-                "S"
-            ]
-        },
-        {
-            "name": "T-Shirt (Brown)",
-            "sizes": [
-                "XL",
-                "L",
-                "M",
-                "S"
-            ]
-        },
-        {
-            "name": "Sleeveless Top (Blue)",
-            "sizes": [
-                "XL",
-                "L",
-                "M",
-                "S"
-            ]
-        },
-        {
-            "name": "Balaclava (Red)",
-            "sizes": [
-                "XL",
-                "L",
-                "M",
-                "S"
-            ]
-        },
-        {
-            "name": "Compression Shorts (White)",
-            "sizes": [
-                "XL",
-                "L",
-                "M",
-                "S"
-            ]
-        },
-        {
-            "name": "Sweatband (Grey)",
-            "sizes": [
-                "XL",
-                "L",
-                "M",
-                "S"
-            ]
-        },
-        {
-            "name": "Long Sleeve T-Shirt (Teal)",
-            "sizes": [
-                "XL",
-                "L",
-                "M",
-                "S"
-            ]
-        },
-        {
-            "name": "Overcoat (Green)",
-            "sizes": [
-                "XL",
-                "L",
-                "M",
-                "S"
-            ]
-        },
-        {
-            "name": "Hat (Teal)",
+            "name": "Long Socks (Cream)",
             "sizes": [
                 "XL",
                 "L",
@@ -755,7 +687,7 @@
             ]
         },
         {
-            "name": "Sweater (Pink)",
+            "name": "Sweatpants (Cyan)",
             "sizes": [
                 "XL",
                 "L",
@@ -764,7 +696,7 @@
             ]
         },
         {
-            "name": "Long Sleeve T-Shirt (Tan)",
+            "name": "T-Shirt (Cream)",
             "sizes": [
                 "XL",
                 "L",
@@ -773,7 +705,7 @@
             ]
         },
         {
-            "name": "Sleeveless Top (Pink)",
+            "name": "Gym Shorts (Cream)",
             "sizes": [
                 "XL",
                 "L",
@@ -782,7 +714,7 @@
             ]
         },
         {
-            "name": "Pants (Navy)",
+            "name": "Sweatpants (Cyan)",
             "sizes": [
                 "XL",
                 "L",
@@ -791,7 +723,7 @@
             ]
         },
         {
-            "name": "Shorts (Green)",
+            "name": "Gym Shorts (Navy)",
             "sizes": [
                 "XL",
                 "L",
@@ -800,7 +732,7 @@
             ]
         },
         {
-            "name": "Vest (Grey)",
+            "name": "Socks (Tan)",
             "sizes": [
                 "XL",
                 "L",
@@ -809,7 +741,7 @@
             ]
         },
         {
-            "name": "Pants (Purple)",
+            "name": "Hat (Purple)",
             "sizes": [
                 "XL",
                 "L",
@@ -818,7 +750,7 @@
             ]
         },
         {
-            "name": "Overcoat (Tan)",
+            "name": "Gym Shorts (White)",
             "sizes": [
                 "XL",
                 "L",
@@ -827,7 +759,7 @@
             ]
         },
         {
-            "name": "Gym Shorts (Pink)",
+            "name": "Long Socks (Black)",
             "sizes": [
                 "XL",
                 "L",
@@ -836,7 +768,97 @@
             ]
         },
         {
-            "name": "Long Socks (Cream)",
+            "name": "Pants (Silver)",
+            "sizes": [
+                "XL",
+                "L",
+                "M",
+                "S"
+            ]
+        },
+        {
+            "name": "Hoodie (Cream)",
+            "sizes": [
+                "XL",
+                "L",
+                "M",
+                "S"
+            ]
+        },
+        {
+            "name": "Headband (Tan)",
+            "sizes": [
+                "XL",
+                "L",
+                "M",
+                "S"
+            ]
+        },
+        {
+            "name": "Beanie (Purple)",
+            "sizes": [
+                "XL",
+                "L",
+                "M",
+                "S"
+            ]
+        },
+        {
+            "name": "Gym Shorts (Purple)",
+            "sizes": [
+                "XL",
+                "L",
+                "M",
+                "S"
+            ]
+        },
+        {
+            "name": "Compression Shorts (Grey)",
+            "sizes": [
+                "XL",
+                "L",
+                "M",
+                "S"
+            ]
+        },
+        {
+            "name": "Shorts (Cyan)",
+            "sizes": [
+                "XL",
+                "L",
+                "M",
+                "S"
+            ]
+        },
+        {
+            "name": "Hoodie (Grey)",
+            "sizes": [
+                "XL",
+                "L",
+                "M",
+                "S"
+            ]
+        },
+        {
+            "name": "Coat (Teal)",
+            "sizes": [
+                "XL",
+                "L",
+                "M",
+                "S"
+            ]
+        },
+        {
+            "name": "Headband (Blue)",
+            "sizes": [
+                "XL",
+                "L",
+                "M",
+                "S"
+            ]
+        },
+        {
+            "name": "Beanie (Brown)",
             "sizes": [
                 "XL",
                 "L",
@@ -847,649 +869,82 @@
     ],
     "inventories": [
         {
-            "name": "Sweatpants (Cream)",
-            "description": "Cream Sweatpants",
+            "name": "Tank Top (Brown)",
+            "description": "Brown Tank Top",
             "sizes": [
                 {
                     "size": "XL",
-                    "price": 82.11,
-                    "quantity": 49
-                },
-                {
-                    "size": "L",
-                    "price": 81.11,
-                    "quantity": 15
-                },
-                {
-                    "size": "M",
-                    "price": 80.11,
-                    "quantity": 7
-                },
-                {
-                    "size": "S",
-                    "price": 79.11,
-                    "quantity": 19
-                }
-            ],
-            "surplus": false
-        },
-        {
-            "name": "Gloves (Salmon)",
-            "description": "Salmon Gloves",
-            "sizes": [
-                {
-                    "size": "XL",
-                    "price": 43.61,
-                    "quantity": 13
-                },
-                {
-                    "size": "L",
-                    "price": 42.61,
-                    "quantity": 80
-                },
-                {
-                    "size": "M",
-                    "price": 41.61,
-                    "quantity": 11
-                },
-                {
-                    "size": "S",
-                    "price": 40.61,
-                    "quantity": 15
-                }
-            ],
-            "surplus": false
-        },
-        {
-            "name": "Hat (Violet)",
-            "description": "Violet Hat",
-            "sizes": [
-                {
-                    "size": "XL",
-                    "price": 72.29,
-                    "quantity": 70
-                },
-                {
-                    "size": "L",
-                    "price": 71.29,
-                    "quantity": 98
-                },
-                {
-                    "size": "M",
-                    "price": 70.29,
-                    "quantity": 31
-                },
-                {
-                    "size": "S",
-                    "price": 69.29,
-                    "quantity": 20
-                }
-            ],
-            "surplus": false
-        },
-        {
-            "name": "Half-Zip Jacket (Cyan)",
-            "description": "Cyan Half-Zip Jacket",
-            "sizes": [
-                {
-                    "size": "XL",
-                    "price": 45.21,
-                    "quantity": 10
-                },
-                {
-                    "size": "L",
-                    "price": 44.21,
-                    "quantity": 9
-                },
-                {
-                    "size": "M",
-                    "price": 43.21,
-                    "quantity": 52
-                },
-                {
-                    "size": "S",
-                    "price": 42.21,
-                    "quantity": 52
-                }
-            ],
-            "surplus": false
-        },
-        {
-            "name": "Long Sleeve T-Shirt (Cream)",
-            "description": "Cream Long Sleeve T-Shirt",
-            "sizes": [
-                {
-                    "size": "XL",
-                    "price": 85.56,
-                    "quantity": 7
-                },
-                {
-                    "size": "L",
-                    "price": 84.56,
-                    "quantity": 7
-                },
-                {
-                    "size": "M",
-                    "price": 83.56,
-                    "quantity": 18
-                },
-                {
-                    "size": "S",
-                    "price": 82.56,
-                    "quantity": 52
-                }
-            ],
-            "surplus": false
-        },
-        {
-            "name": "Coat (Silver)",
-            "description": "Silver Coat",
-            "sizes": [
-                {
-                    "size": "XL",
-                    "price": 63.99,
-                    "quantity": 21
-                },
-                {
-                    "size": "L",
-                    "price": 62.99,
-                    "quantity": 58
-                },
-                {
-                    "size": "M",
-                    "price": 61.99,
-                    "quantity": 70
-                },
-                {
-                    "size": "S",
-                    "price": 60.99,
-                    "quantity": 9
-                }
-            ],
-            "surplus": false
-        },
-        {
-            "name": "T-Shirt (Brown)",
-            "description": "Brown T-Shirt",
-            "sizes": [
-                {
-                    "size": "XL",
-                    "price": 75.56,
-                    "quantity": 71
-                },
-                {
-                    "size": "L",
-                    "price": 74.56,
-                    "quantity": 72
-                },
-                {
-                    "size": "M",
-                    "price": 73.56,
-                    "quantity": 54
-                },
-                {
-                    "size": "S",
-                    "price": 72.56,
-                    "quantity": 23
-                }
-            ],
-            "surplus": false
-        },
-        {
-            "name": "Sleeveless Top (Blue)",
-            "description": "Blue Sleeveless Top",
-            "sizes": [
-                {
-                    "size": "XL",
-                    "price": 93.81,
+                    "price": 82.39,
                     "quantity": 29
                 },
                 {
                     "size": "L",
-                    "price": 92.81,
-                    "quantity": 86
-                },
-                {
-                    "size": "M",
-                    "price": 91.81,
-                    "quantity": 27
-                },
-                {
-                    "size": "S",
-                    "price": 90.81,
-                    "quantity": 50
-                }
-            ],
-            "surplus": false
-        },
-        {
-            "name": "Balaclava (Red)",
-            "description": "Red Balaclava",
-            "sizes": [
-                {
-                    "size": "XL",
-                    "price": 62.41,
-                    "quantity": 68
-                },
-                {
-                    "size": "L",
-                    "price": 61.41,
-                    "quantity": 13
-                },
-                {
-                    "size": "M",
-                    "price": 60.41,
-                    "quantity": 65
-                },
-                {
-                    "size": "S",
-                    "price": 59.41,
-                    "quantity": 36
-                }
-            ],
-            "surplus": false
-        },
-        {
-            "name": "Compression Shorts (White)",
-            "description": "White Compression Shorts",
-            "sizes": [
-                {
-                    "size": "XL",
-                    "price": 81.1,
-                    "quantity": 66
-                },
-                {
-                    "size": "L",
-                    "price": 80.1,
-                    "quantity": 76
-                },
-                {
-                    "size": "M",
-                    "price": 79.1,
-                    "quantity": 70
-                },
-                {
-                    "size": "S",
-                    "price": 78.1,
-                    "quantity": 53
-                }
-            ],
-            "surplus": false
-        },
-        {
-            "name": "Sweatband (Grey)",
-            "description": "Grey Sweatband",
-            "sizes": [
-                {
-                    "size": "XL",
-                    "price": 71.63,
-                    "quantity": 49
-                },
-                {
-                    "size": "L",
-                    "price": 70.63,
-                    "quantity": 70
-                },
-                {
-                    "size": "M",
-                    "price": 69.63,
-                    "quantity": 5
-                },
-                {
-                    "size": "S",
-                    "price": 68.63,
-                    "quantity": 25
-                }
-            ],
-            "surplus": false
-        },
-        {
-            "name": "Long Sleeve T-Shirt (Teal)",
-            "description": "Teal Long Sleeve T-Shirt",
-            "sizes": [
-                {
-                    "size": "XL",
-                    "price": 64.46,
-                    "quantity": 42
-                },
-                {
-                    "size": "L",
-                    "price": 63.46,
-                    "quantity": 3
-                },
-                {
-                    "size": "M",
-                    "price": 62.46,
-                    "quantity": 52
-                },
-                {
-                    "size": "S",
-                    "price": 61.46,
-                    "quantity": 62
-                }
-            ],
-            "surplus": false
-        },
-        {
-            "name": "Overcoat (Green)",
-            "description": "Green Overcoat",
-            "sizes": [
-                {
-                    "size": "XL",
-                    "price": 83.49,
-                    "quantity": 79
-                },
-                {
-                    "size": "L",
-                    "price": 82.49,
-                    "quantity": 18
-                },
-                {
-                    "size": "M",
-                    "price": 81.49,
-                    "quantity": 56
-                },
-                {
-                    "size": "S",
-                    "price": 80.49,
-                    "quantity": 42
-                }
-            ],
-            "surplus": false
-        },
-        {
-            "name": "Hat (Teal)",
-            "description": "Teal Hat",
-            "sizes": [
-                {
-                    "size": "XL",
-                    "price": 34.14,
-                    "quantity": 50
-                },
-                {
-                    "size": "L",
-                    "price": 33.14,
-                    "quantity": 80
-                },
-                {
-                    "size": "M",
-                    "price": 32.14,
-                    "quantity": 65
-                },
-                {
-                    "size": "S",
-                    "price": 31.14,
-                    "quantity": 72
-                }
-            ],
-            "surplus": false
-        },
-        {
-            "name": "Sweatband (Yellow)",
-            "description": "Yellow Sweatband",
-            "sizes": [
-                {
-                    "size": "XL",
-                    "price": 43.58,
-                    "quantity": 50
-                },
-                {
-                    "size": "L",
-                    "price": 42.58,
-                    "quantity": 36
-                },
-                {
-                    "size": "M",
-                    "price": 41.58,
-                    "quantity": 80
-                },
-                {
-                    "size": "S",
-                    "price": 40.58,
-                    "quantity": 44
-                }
-            ],
-            "surplus": false
-        },
-        {
-            "name": "Sweater (Pink)",
-            "description": "Pink Sweater",
-            "sizes": [
-                {
-                    "size": "XL",
-                    "price": 35.71,
-                    "quantity": 57
-                },
-                {
-                    "size": "L",
-                    "price": 34.71,
-                    "quantity": 97
-                },
-                {
-                    "size": "M",
-                    "price": 33.71,
-                    "quantity": 45
-                },
-                {
-                    "size": "S",
-                    "price": 32.71,
-                    "quantity": 4
-                }
-            ],
-            "surplus": false
-        },
-        {
-            "name": "Long Sleeve T-Shirt (Tan)",
-            "description": "Tan Long Sleeve T-Shirt",
-            "sizes": [
-                {
-                    "size": "XL",
-                    "price": 68.01,
-                    "quantity": 10
-                },
-                {
-                    "size": "L",
-                    "price": 67.01,
-                    "quantity": 29
-                },
-                {
-                    "size": "M",
-                    "price": 66.01,
-                    "quantity": 22
-                },
-                {
-                    "size": "S",
-                    "price": 65.01,
-                    "quantity": 39
-                }
-            ],
-            "surplus": false
-        },
-        {
-            "name": "Sleeveless Top (Pink)",
-            "description": "Pink Sleeveless Top",
-            "sizes": [
-                {
-                    "size": "XL",
-                    "price": 6.49,
+                    "price": 81.39,
                     "quantity": 87
                 },
                 {
-                    "size": "L",
-                    "price": 5.49,
-                    "quantity": 20
-                },
-                {
                     "size": "M",
-                    "price": 4.49,
-                    "quantity": 67
-                },
-                {
-                    "size": "S",
-                    "price": 3.49,
-                    "quantity": 72
-                }
-            ],
-            "surplus": false
-        },
-        {
-            "name": "Pants (Navy)",
-            "description": "Navy Pants",
-            "sizes": [
-                {
-                    "size": "XL",
-                    "price": 69.27,
-                    "quantity": 73
-                },
-                {
-                    "size": "L",
-                    "price": 68.27,
-                    "quantity": 41
-                },
-                {
-                    "size": "M",
-                    "price": 67.27,
-                    "quantity": 3
-                },
-                {
-                    "size": "S",
-                    "price": 66.27,
-                    "quantity": 98
-                }
-            ],
-            "surplus": false
-        },
-        {
-            "name": "Shorts (Green)",
-            "description": "Green Shorts",
-            "sizes": [
-                {
-                    "size": "XL",
-                    "price": 41.81,
+                    "price": 80.39,
                     "quantity": 86
                 },
                 {
-                    "size": "L",
-                    "price": 40.81,
-                    "quantity": 8
-                },
-                {
-                    "size": "M",
-                    "price": 39.81,
-                    "quantity": 50
-                },
-                {
                     "size": "S",
-                    "price": 38.81,
-                    "quantity": 90
+                    "price": 79.39,
+                    "quantity": 37
                 }
             ],
             "surplus": false
         },
         {
-            "name": "Vest (Grey)",
-            "description": "Grey Vest",
+            "name": "Gym Shorts (Gold)",
+            "description": "Gold Gym Shorts",
             "sizes": [
                 {
                     "size": "XL",
-                    "price": 55.6,
-                    "quantity": 13
+                    "price": 66.17,
+                    "quantity": 36
                 },
                 {
                     "size": "L",
-                    "price": 54.6,
-                    "quantity": 31
+                    "price": 65.17,
+                    "quantity": 40
                 },
                 {
                     "size": "M",
-                    "price": 53.6,
-                    "quantity": 65
+                    "price": 64.17,
+                    "quantity": 38
                 },
                 {
                     "size": "S",
-                    "price": 52.6,
-                    "quantity": 3
+                    "price": 63.17,
+                    "quantity": 29
                 }
             ],
             "surplus": false
         },
         {
-            "name": "Pants (Purple)",
-            "description": "Purple Pants",
+            "name": "Balaclava (Blue)",
+            "description": "Blue Balaclava",
             "sizes": [
                 {
                     "size": "XL",
-                    "price": 48.6,
-                    "quantity": 41
+                    "price": 40.8,
+                    "quantity": 19
                 },
                 {
                     "size": "L",
-                    "price": 47.6,
-                    "quantity": 26
+                    "price": 39.8,
+                    "quantity": 94
                 },
                 {
                     "size": "M",
-                    "price": 46.6,
-                    "quantity": 31
+                    "price": 38.8,
+                    "quantity": 37
                 },
                 {
                     "size": "S",
-                    "price": 45.6,
-                    "quantity": 27
-                }
-            ],
-            "surplus": false
-        },
-        {
-            "name": "Overcoat (Tan)",
-            "description": "Tan Overcoat",
-            "sizes": [
-                {
-                    "size": "XL",
-                    "price": 10.48,
-                    "quantity": 47
-                },
-                {
-                    "size": "L",
-                    "price": 9.48,
-                    "quantity": 77
-                },
-                {
-                    "size": "M",
-                    "price": 8.48,
-                    "quantity": 47
-                },
-                {
-                    "size": "S",
-                    "price": 7.48,
-                    "quantity": 34
-                }
-            ],
-            "surplus": false
-        },
-        {
-            "name": "Gym Shorts (Pink)",
-            "description": "Pink Gym Shorts",
-            "sizes": [
-                {
-                    "size": "XL",
-                    "price": 69.88,
-                    "quantity": 67
-                },
-                {
-                    "size": "L",
-                    "price": 68.88,
-                    "quantity": 16
-                },
-                {
-                    "size": "M",
-                    "price": 67.88,
-                    "quantity": 16
-                },
-                {
-                    "size": "S",
-                    "price": 66.88,
-                    "quantity": 33
+                    "price": 37.8,
+                    "quantity": 74
                 }
             ],
             "surplus": false
@@ -1500,23 +955,590 @@
             "sizes": [
                 {
                     "size": "XL",
-                    "price": 59.65,
-                    "quantity": 52
+                    "price": 24.87,
+                    "quantity": 56
                 },
                 {
                     "size": "L",
-                    "price": 58.65,
-                    "quantity": 58
+                    "price": 23.87,
+                    "quantity": 34
                 },
                 {
                     "size": "M",
-                    "price": 57.65,
+                    "price": 22.87,
+                    "quantity": 58
+                },
+                {
+                    "size": "S",
+                    "price": 21.87,
+                    "quantity": 51
+                }
+            ],
+            "surplus": false
+        },
+        {
+            "name": "Sweatband (Yellow)",
+            "description": "Yellow Sweatband",
+            "sizes": [
+                {
+                    "size": "XL",
+                    "price": 6.94,
+                    "quantity": 69
+                },
+                {
+                    "size": "L",
+                    "price": 5.94,
+                    "quantity": 70
+                },
+                {
+                    "size": "M",
+                    "price": 4.94,
+                    "quantity": 32
+                },
+                {
+                    "size": "S",
+                    "price": 3.94,
+                    "quantity": 94
+                }
+            ],
+            "surplus": false
+        },
+        {
+            "name": "Sweatpants (Cyan)",
+            "description": "Cyan Sweatpants",
+            "sizes": [
+                {
+                    "size": "XL",
+                    "price": 7.44,
+                    "quantity": 48
+                },
+                {
+                    "size": "L",
+                    "price": 6.44,
+                    "quantity": 87
+                },
+                {
+                    "size": "M",
+                    "price": 5.44,
+                    "quantity": 56
+                },
+                {
+                    "size": "S",
+                    "price": 4.44,
+                    "quantity": 32
+                }
+            ],
+            "surplus": false
+        },
+        {
+            "name": "T-Shirt (Cream)",
+            "description": "Cream T-Shirt",
+            "sizes": [
+                {
+                    "size": "XL",
+                    "price": 67.07,
+                    "quantity": 96
+                },
+                {
+                    "size": "L",
+                    "price": 66.07,
+                    "quantity": 31
+                },
+                {
+                    "size": "M",
+                    "price": 65.07,
+                    "quantity": 14
+                },
+                {
+                    "size": "S",
+                    "price": 64.07,
+                    "quantity": 98
+                }
+            ],
+            "surplus": false
+        },
+        {
+            "name": "Gym Shorts (Cream)",
+            "description": "Cream Gym Shorts",
+            "sizes": [
+                {
+                    "size": "XL",
+                    "price": 75.86,
+                    "quantity": 28
+                },
+                {
+                    "size": "L",
+                    "price": 74.86,
+                    "quantity": 23
+                },
+                {
+                    "size": "M",
+                    "price": 73.86,
+                    "quantity": 80
+                },
+                {
+                    "size": "S",
+                    "price": 72.86,
+                    "quantity": 94
+                }
+            ],
+            "surplus": false
+        },
+        {
+            "name": "Sweatpants (Cyan)",
+            "description": "Cyan Sweatpants",
+            "sizes": [
+                {
+                    "size": "XL",
+                    "price": 83.38,
+                    "quantity": 41
+                },
+                {
+                    "size": "L",
+                    "price": 82.38,
+                    "quantity": 13
+                },
+                {
+                    "size": "M",
+                    "price": 81.38,
+                    "quantity": 8
+                },
+                {
+                    "size": "S",
+                    "price": 80.38,
+                    "quantity": 1
+                }
+            ],
+            "surplus": false
+        },
+        {
+            "name": "Gym Shorts (Navy)",
+            "description": "Navy Gym Shorts",
+            "sizes": [
+                {
+                    "size": "XL",
+                    "price": 30.25,
+                    "quantity": 48
+                },
+                {
+                    "size": "L",
+                    "price": 29.25,
+                    "quantity": 6
+                },
+                {
+                    "size": "M",
+                    "price": 28.25,
+                    "quantity": 95
+                },
+                {
+                    "size": "S",
+                    "price": 27.25,
+                    "quantity": 63
+                }
+            ],
+            "surplus": false
+        },
+        {
+            "name": "Socks (Tan)",
+            "description": "Tan Socks",
+            "sizes": [
+                {
+                    "size": "XL",
+                    "price": 44.86,
+                    "quantity": 19
+                },
+                {
+                    "size": "L",
+                    "price": 43.86,
+                    "quantity": 47
+                },
+                {
+                    "size": "M",
+                    "price": 42.86,
                     "quantity": 28
                 },
                 {
                     "size": "S",
-                    "price": 56.65,
-                    "quantity": 77
+                    "price": 41.86,
+                    "quantity": 10
+                }
+            ],
+            "surplus": false
+        },
+        {
+            "name": "Hat (Purple)",
+            "description": "Purple Hat",
+            "sizes": [
+                {
+                    "size": "XL",
+                    "price": 57.5,
+                    "quantity": 22
+                },
+                {
+                    "size": "L",
+                    "price": 56.5,
+                    "quantity": 53
+                },
+                {
+                    "size": "M",
+                    "price": 55.5,
+                    "quantity": 33
+                },
+                {
+                    "size": "S",
+                    "price": 54.5,
+                    "quantity": 81
+                }
+            ],
+            "surplus": false
+        },
+        {
+            "name": "Gym Shorts (White)",
+            "description": "White Gym Shorts",
+            "sizes": [
+                {
+                    "size": "XL",
+                    "price": 50.86,
+                    "quantity": 14
+                },
+                {
+                    "size": "L",
+                    "price": 49.86,
+                    "quantity": 35
+                },
+                {
+                    "size": "M",
+                    "price": 48.86,
+                    "quantity": 81
+                },
+                {
+                    "size": "S",
+                    "price": 47.86,
+                    "quantity": 66
+                }
+            ],
+            "surplus": false
+        },
+        {
+            "name": "Long Socks (Black)",
+            "description": "Black Long Socks",
+            "sizes": [
+                {
+                    "size": "XL",
+                    "price": 42.15,
+                    "quantity": 86
+                },
+                {
+                    "size": "L",
+                    "price": 41.15,
+                    "quantity": 1
+                },
+                {
+                    "size": "M",
+                    "price": 40.15,
+                    "quantity": 9
+                },
+                {
+                    "size": "S",
+                    "price": 39.15,
+                    "quantity": 4
+                }
+            ],
+            "surplus": false
+        },
+        {
+            "name": "Pants (Silver)",
+            "description": "Silver Pants",
+            "sizes": [
+                {
+                    "size": "XL",
+                    "price": 55.97,
+                    "quantity": 44
+                },
+                {
+                    "size": "L",
+                    "price": 54.97,
+                    "quantity": 64
+                },
+                {
+                    "size": "M",
+                    "price": 53.97,
+                    "quantity": 96
+                },
+                {
+                    "size": "S",
+                    "price": 52.97,
+                    "quantity": 96
+                }
+            ],
+            "surplus": false
+        },
+        {
+            "name": "Hoodie (Cream)",
+            "description": "Cream Hoodie",
+            "sizes": [
+                {
+                    "size": "XL",
+                    "price": 71.8,
+                    "quantity": 26
+                },
+                {
+                    "size": "L",
+                    "price": 70.8,
+                    "quantity": 3
+                },
+                {
+                    "size": "M",
+                    "price": 69.8,
+                    "quantity": 59
+                },
+                {
+                    "size": "S",
+                    "price": 68.8,
+                    "quantity": 43
+                }
+            ],
+            "surplus": false
+        },
+        {
+            "name": "Headband (Tan)",
+            "description": "Tan Headband",
+            "sizes": [
+                {
+                    "size": "XL",
+                    "price": 44.23,
+                    "quantity": 81
+                },
+                {
+                    "size": "L",
+                    "price": 43.23,
+                    "quantity": 94
+                },
+                {
+                    "size": "M",
+                    "price": 42.23,
+                    "quantity": 97
+                },
+                {
+                    "size": "S",
+                    "price": 41.23,
+                    "quantity": 47
+                }
+            ],
+            "surplus": false
+        },
+        {
+            "name": "Beanie (Purple)",
+            "description": "Purple Beanie",
+            "sizes": [
+                {
+                    "size": "XL",
+                    "price": 63.55,
+                    "quantity": 11
+                },
+                {
+                    "size": "L",
+                    "price": 62.55,
+                    "quantity": 45
+                },
+                {
+                    "size": "M",
+                    "price": 61.55,
+                    "quantity": 27
+                },
+                {
+                    "size": "S",
+                    "price": 60.55,
+                    "quantity": 94
+                }
+            ],
+            "surplus": false
+        },
+        {
+            "name": "Gym Shorts (Purple)",
+            "description": "Purple Gym Shorts",
+            "sizes": [
+                {
+                    "size": "XL",
+                    "price": 50.0,
+                    "quantity": 2
+                },
+                {
+                    "size": "L",
+                    "price": 49.0,
+                    "quantity": 54
+                },
+                {
+                    "size": "M",
+                    "price": 48.0,
+                    "quantity": 29
+                },
+                {
+                    "size": "S",
+                    "price": 47.0,
+                    "quantity": 13
+                }
+            ],
+            "surplus": false
+        },
+        {
+            "name": "Compression Shorts (Grey)",
+            "description": "Grey Compression Shorts",
+            "sizes": [
+                {
+                    "size": "XL",
+                    "price": 90.37,
+                    "quantity": 42
+                },
+                {
+                    "size": "L",
+                    "price": 89.37,
+                    "quantity": 12
+                },
+                {
+                    "size": "M",
+                    "price": 88.37,
+                    "quantity": 73
+                },
+                {
+                    "size": "S",
+                    "price": 87.37,
+                    "quantity": 53
+                }
+            ],
+            "surplus": false
+        },
+        {
+            "name": "Shorts (Cyan)",
+            "description": "Cyan Shorts",
+            "sizes": [
+                {
+                    "size": "XL",
+                    "price": 14.68,
+                    "quantity": 57
+                },
+                {
+                    "size": "L",
+                    "price": 13.68,
+                    "quantity": 3
+                },
+                {
+                    "size": "M",
+                    "price": 12.68,
+                    "quantity": 72
+                },
+                {
+                    "size": "S",
+                    "price": 11.68,
+                    "quantity": 24
+                }
+            ],
+            "surplus": false
+        },
+        {
+            "name": "Hoodie (Grey)",
+            "description": "Grey Hoodie",
+            "sizes": [
+                {
+                    "size": "XL",
+                    "price": 71.63,
+                    "quantity": 71
+                },
+                {
+                    "size": "L",
+                    "price": 70.63,
+                    "quantity": 82
+                },
+                {
+                    "size": "M",
+                    "price": 69.63,
+                    "quantity": 16
+                },
+                {
+                    "size": "S",
+                    "price": 68.63,
+                    "quantity": 41
+                }
+            ],
+            "surplus": false
+        },
+        {
+            "name": "Coat (Teal)",
+            "description": "Teal Coat",
+            "sizes": [
+                {
+                    "size": "XL",
+                    "price": 28.59,
+                    "quantity": 67
+                },
+                {
+                    "size": "L",
+                    "price": 27.59,
+                    "quantity": 88
+                },
+                {
+                    "size": "M",
+                    "price": 26.59,
+                    "quantity": 75
+                },
+                {
+                    "size": "S",
+                    "price": 25.59,
+                    "quantity": 61
+                }
+            ],
+            "surplus": false
+        },
+        {
+            "name": "Headband (Blue)",
+            "description": "Blue Headband",
+            "sizes": [
+                {
+                    "size": "XL",
+                    "price": 18.66,
+                    "quantity": 2
+                },
+                {
+                    "size": "L",
+                    "price": 17.66,
+                    "quantity": 83
+                },
+                {
+                    "size": "M",
+                    "price": 16.66,
+                    "quantity": 81
+                },
+                {
+                    "size": "S",
+                    "price": 15.66,
+                    "quantity": 1
+                }
+            ],
+            "surplus": false
+        },
+        {
+            "name": "Beanie (Brown)",
+            "description": "Brown Beanie",
+            "sizes": [
+                {
+                    "size": "XL",
+                    "price": 62.25,
+                    "quantity": 89
+                },
+                {
+                    "size": "L",
+                    "price": 61.25,
+                    "quantity": 21
+                },
+                {
+                    "size": "M",
+                    "price": 60.25,
+                    "quantity": 49
+                },
+                {
+                    "size": "S",
+                    "price": 59.25,
+                    "quantity": 62
                 }
             ],
             "surplus": false

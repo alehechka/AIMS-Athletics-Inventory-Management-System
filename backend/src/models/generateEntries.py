@@ -55,6 +55,12 @@ def main():
     cred_list.append({ "email": "admin@admin.com", "password": "admin", "isAdmin": True, "isApproved": True, "isVerified": True })
     user_list.append({ "firstName": "Admin", "lastName": "Administrator"})
 
+    cred_list.append({ "email": "employee@employee.com", "password": "employee", "isEmployee": True, "isApproved": True, "isVerified": True })
+    user_list.append({"firstName": "Emp", "lastName": "Employee"})
+
+    cred_list.append({ "email": "coach@coach.com", "password": "coach", "isCoach": True, "isApproved": True, "isVerified": True })
+    user_list.append({ "firstName": "Coach", "lastName": "Smith"})
+
     for x in range(0, user_number):
         if x % 2 == 0:
             gender = "M"
