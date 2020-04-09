@@ -26,10 +26,17 @@ export default function UserItemCard(props) {
           columns={[
             { title: "Item", field: "name" },
             { title: "Size", field: "size" },
-            { title: "Value", field: "value", render: (rowData) => formatter.format(rowData.value / 100) },
-            { title: "Return By", field: "dueDate" }
+            { title: "Count", field: "count" },
+            { title: "Value", field: "value", render: (rowData) => formatter.format(rowData.value) }
           ]}
-          data={equipment}
+          data={equipment.map((item) => {
+            return {
+              name: item.inventorySize.inventory.description,
+              size: item.inventorySize.size,
+              count: item.count,
+              value: item.inventorySize.price
+            };
+          })}
         />
       </CardContent>
     </Card>

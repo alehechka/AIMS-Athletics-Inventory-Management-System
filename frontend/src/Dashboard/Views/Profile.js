@@ -4,7 +4,7 @@ import UserTabs from "./ProfileComponents/UserTabs";
 import UserItemCard from "./ProfileComponents/UserItems";
 import Button from "@material-ui/core/Button";
 import FormControl from "@material-ui/core/FormControl";
-import { UsersAPI, EquipmentAPI } from "../../api";
+import { UsersAPI } from "../../api";
 
 /**
  * This component contains the UI logic for Profile.
@@ -24,10 +24,11 @@ import { UsersAPI, EquipmentAPI } from "../../api";
  * closesnackbar - function - closes a snackbar.
  */
 
-
 export default function Profile(props) {
-  const userId = props.location.search;
+  const parser = new URLSearchParams(props.location.search);
+  const userId = parser.get("id");
   const [user, updateUser] = useState({});
+  const [equipment, setEquipment] = useState([]);
   const firstName = useState("");
   const lastName = useState("");
   const email = useState("");
@@ -43,7 +44,6 @@ export default function Profile(props) {
   const role = useState("");
   const lockerNumber = useState(null);
   const lockerCode = useState(null);
-  const [equipment, setEquipment] = useState([]);
   const sizes = useState([]);
 
   useEffect(() => {
@@ -54,15 +54,13 @@ export default function Profile(props) {
     } else {
       UsersAPI.getCurrentUser().then((user) => {
         setUserData(user);
-      });
-      EquipmentAPI.getCurrentEquipment({}).then((eq) => {
-        setEquipment(eq);
+        setEquipment(user.equipment);
       });
     }
   }, []);
 
   const setUserData = (user) => {
-    updateUser({user});
+    updateUser({ user });
     firstName[1](user.firstName);
     lastName[1](user.lastName);
     email[1](user.credential.email);
@@ -98,7 +96,7 @@ export default function Profile(props) {
     }
     return role;
   };
-  // TODO: handle submit logic
+
   const onSubmit = (event) => {
     UsersAPI.updateCurrentUser({
       ...user,
@@ -116,6 +114,7 @@ export default function Profile(props) {
       lockerCode: lockerCode[0],
       userSizes: sizes[0]
     });
+    props.showMessage("Information Successfully Updated!");
   };
 
   return (

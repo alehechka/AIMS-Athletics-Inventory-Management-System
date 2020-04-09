@@ -8,7 +8,12 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import Divider from "@material-ui/core/Divider";
-
+import FormControl from "@material-ui/core/FormControl";
+import Radio from "@material-ui/core/Radio";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import FormLabel from "@material-ui/core/FormLabel";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import OutlinedInput from "@material-ui/core/OutlinedInput";
 
 function UserInfoCard(props) {
   const {
@@ -158,11 +163,11 @@ function UserInfoCard(props) {
 function UserPhysicalCard(props) {
   const { username, height, weight, gender, sizes } = props;
   const hockeySizes = sizes[0]; // Loading dummy data for now
-  const [head, setHead] = useState(hockeySizes ? hockeySizes.head : '');
-  const [shirt, setShirt] = useState(hockeySizes ? hockeySizes.shirt : '');
-  const [pants, setPants] = useState(hockeySizes ? hockeySizes.pants : '');
-  const [socks, setSocks] = useState(hockeySizes ? hockeySizes.socks : '');
-  const [shoes, setShoes] = useState(hockeySizes ? hockeySizes.shoes : '');
+  const [head, setHead] = useState(hockeySizes ? hockeySizes.head : "");
+  const [shirt, setShirt] = useState(hockeySizes ? hockeySizes.shirt : "");
+  const [pants, setPants] = useState(hockeySizes ? hockeySizes.pants : "");
+  const [socks, setSocks] = useState(hockeySizes ? hockeySizes.socks : "");
+  const [shoes, setShoes] = useState(hockeySizes ? hockeySizes.shoes : "");
 
   // const updateSizes = (event) =>{
   //   sizes[1]([{
@@ -201,51 +206,49 @@ function UserPhysicalCard(props) {
             />
           </Grid>
           <Grid item xs={3}>
-            <TextField
-              variant="outlined"
-              margin="normal"
-              onChange={(e) => gender[1](e.target.value)}
-              fullWidth
-              id="gender"
-              label="Gender"
-              value={gender[0]}
-            />
+            <FormControl required component="fieldset">
+              <FormLabel component="legend">Gender</FormLabel>
+              <RadioGroup row value={gender[0]} name="role" onChange={(e) => gender[1](e.target.value)}>
+                <FormControlLabel value="M" label="Male" control={<Radio />} />
+                <FormControlLabel value="F" label="Female" control={<Radio />} />
+              </RadioGroup>
+            </FormControl>
           </Grid>
         </Grid>
         <br />
         <Divider />
         <br />
         <div>
-        <Typography variant="h5" gutterBottom>
-          Size Information for {username}
-        </Typography>
-        <Select id="head" value={head}  onChange={setHead}>
-          <MenuItem value={"S"}>Small</MenuItem>
-          <MenuItem value={"M"}>Medium</MenuItem>
-          <MenuItem value={"L"}>Large</MenuItem>
-          <MenuItem value={"XL"}>Extra Large</MenuItem>
-        </Select>
-        <FormHelperText>Head Size</FormHelperText>
-        <Select id="shirt" value={shirt}  onChange={setHead}>
-          <MenuItem value={"S"}>Small</MenuItem>
-          <MenuItem value={"M"}>Medium</MenuItem>
-          <MenuItem value={"L"}>Large</MenuItem>
-          <MenuItem value={"XL"}>Extra Large</MenuItem>
-        </Select>
-        <FormHelperText>Shirt Size</FormHelperText>
-        <TextField id="pants" value={pants}  onChange={setPants}></TextField>
-        <FormHelperText>Pant Size</FormHelperText>
-        <Select id="socks" value={socks} onChange={setSocks}>
-          <MenuItem value={"5-12"}>5-12</MenuItem>
-          <MenuItem value={"13-20"}>13-20</MenuItem>
-        </Select>
-        <FormHelperText>Sock Size</FormHelperText>
-        <Select id="shoes" value={shoes}  onChange={setShoes}>
-          {[...Array(21).keys()].map((size) => (
-            <MenuItem value={size}>{size}</MenuItem>
-          ))}
-        </Select>
-        <FormHelperText>Shoe Size</FormHelperText>
+          <Typography variant="h5" gutterBottom>
+            Size Information for {username}
+          </Typography>
+          <Select id="head" value={head} onChange={setHead}>
+            <MenuItem value={"S"}>Small</MenuItem>
+            <MenuItem value={"M"}>Medium</MenuItem>
+            <MenuItem value={"L"}>Large</MenuItem>
+            <MenuItem value={"XL"}>Extra Large</MenuItem>
+          </Select>
+          <FormHelperText>Head Size</FormHelperText>
+          <Select id="shirt" value={shirt} onChange={setHead}>
+            <MenuItem value={"S"}>Small</MenuItem>
+            <MenuItem value={"M"}>Medium</MenuItem>
+            <MenuItem value={"L"}>Large</MenuItem>
+            <MenuItem value={"XL"}>Extra Large</MenuItem>
+          </Select>
+          <FormHelperText>Shirt Size</FormHelperText>
+          <TextField id="pants" value={pants} onChange={setPants}></TextField>
+          <FormHelperText>Pant Size</FormHelperText>
+          <Select id="socks" value={socks} onChange={setSocks}>
+            <MenuItem value={"5-12"}>5-12</MenuItem>
+            <MenuItem value={"13-20"}>13-20</MenuItem>
+          </Select>
+          <FormHelperText>Sock Size</FormHelperText>
+          <Select id="shoes" value={shoes} onChange={setShoes}>
+            {[...Array(21).keys()].map((size) => (
+              <MenuItem value={size}>{size}</MenuItem>
+            ))}
+          </Select>
+          <FormHelperText>Shoe Size</FormHelperText>
         </div>
       </CardContent>
     </Card>
