@@ -13,7 +13,6 @@ import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormLabel from "@material-ui/core/FormLabel";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import OutlinedInput from "@material-ui/core/OutlinedInput";
 
 function UserInfoCard(props) {
   const {
@@ -232,7 +231,7 @@ function UserPhysicalCard(props) {
             <MenuItem value={"XL"}>Extra Large</MenuItem>
           </Select>
           <FormHelperText>Head Size</FormHelperText>
-          <Select id="shirt" value={shirt} onChange={setHead}>
+          <Select id="shirt" value={shirt} onChange={setShirt}>
             <MenuItem value={"S"}>Small</MenuItem>
             <MenuItem value={"M"}>Medium</MenuItem>
             <MenuItem value={"L"}>Large</MenuItem>

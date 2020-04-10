@@ -1,5 +1,5 @@
 import React, {forwardRef} from "react";
-import {SportsAPI, InventoryAPI, UsersAPI} from "../../api";
+import {InventoryAPI} from "../../api";
 import MaterialTable from 'material-table'
 import {Link} from "react-router-dom";
 import Add from '@material-ui/icons/Add';
@@ -44,11 +44,12 @@ export default function Inventory(props) {
   
   React.useEffect(()=>{
 
-        InventoryAPI.getInventory(null,null, {isAdmin: true, isEmployee: true}).then( (inventory)=> {
+        InventoryAPI.getInventory(null,null, {}).then( (inventory)=> {
             setInventory(inventory);
         });
+        console.log(inventory)
     
-    }, []);
+    }, [inventory]);
 
   return (
     <div style={{ maxWidth: '100%' }}>

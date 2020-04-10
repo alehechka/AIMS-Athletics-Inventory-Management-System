@@ -633,11 +633,13 @@
         },
         {
             "name": "Soccer",
-            "gender": "M"
+            "gender": "M",
+            "icon": "sports_soccer"
         },
         {
             "name": "Softball",
-            "gender": "F"
+            "gender": "F",
+            "icon": "sports_baseball"
         }
     ],
     "sport_sizes": [

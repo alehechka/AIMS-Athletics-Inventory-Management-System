@@ -126,7 +126,7 @@ const create = async () => {
             });
             await db.Transaction.create({
               amount: index,
-              return: index % 2,
+              return: false,
               equipmentId: eq.id,
               issuedBy: users[index].id,
               issuedTo: users[index].id,

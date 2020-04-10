@@ -83,7 +83,6 @@ export class Provider extends Component {
   };
 
   setCredentials = (credentials, authorized) => {
-    console.log("setting creds")
     this.setState({
       authorized,
       credentials: {

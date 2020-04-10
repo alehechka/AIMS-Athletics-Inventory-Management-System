@@ -13,18 +13,19 @@ const formatter = new Intl.NumberFormat("en-US", {
 });
 
 export default function UserItemCard(props) {
-  const { username, equipment } = props;
+  const { firstName, equipment } = props;
 
   return (
     <Card variant="outlined">
       <CardContent>
         <Typography variant="h5" gutterBottom>
-          {username}'s Equipment
+          {firstName}'s Equipment
         </Typography>
 
         <MaterialTable
+          title = {""}
           columns={[
-            { title: "Item", field: "name" },
+            { title: "Item", field: "name", cellStyle: {width:"100%"} },
             { title: "Size", field: "size" },
             { title: "Count", field: "count" },
             { title: "Value", field: "value", render: (rowData) => formatter.format(rowData.value) }

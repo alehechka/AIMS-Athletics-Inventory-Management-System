@@ -92,9 +92,9 @@ export default function Users(props) {
                     customFilterAndSearch: (term, rowData) => 
                         rowData.sports
                         .map(val => val.displayName)
-                        .some(val => val.toLowerCase().includes(term.toLowerCase()))
-                },
-                {title: '', cellStyle: {width:"100%"}},
+                        .some(val => val.toLowerCase().includes(term.toLowerCase())),
+                    cellStyle: {width:"100%"}
+                }
             ]);
             const customData = users.map(user =>({
                 id: user.id,
@@ -204,7 +204,7 @@ export default function Users(props) {
         }    
     };
     return (
-    <div style={{ maxWidth: '75%', marginLeft: '10px', marginRight: '10px', marginBottom: '10px' }}>
+    <div style={{ maxWidth: '100%', marginLeft: '10px', marginRight: '10px', marginBottom: '10px' }}>
         <MaterialTable
             title = {renderType}
             isLoading= {isLoading}

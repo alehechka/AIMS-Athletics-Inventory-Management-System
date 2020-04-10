@@ -3,7 +3,6 @@ import Grid from "@material-ui/core/Grid";
 import UserTabs from "./ProfileComponents/UserTabs";
 import UserItemCard from "./ProfileComponents/UserItems";
 import Button from "@material-ui/core/Button";
-import FormControl from "@material-ui/core/FormControl";
 import { UsersAPI } from "../../api";
 
 /**
@@ -37,13 +36,13 @@ export default function Profile(props) {
   const city = useState("");
   const state = useState("");
   const zip = useState(null);
-  const phone = useState(null);
+  const phone = useState("");
   const gender = useState("");
   const height = useState(null);
   const weight = useState(null);
   const role = useState("");
-  const lockerNumber = useState(null);
-  const lockerCode = useState(null);
+  const lockerNumber = useState("");
+  const lockerCode = useState("");
   const sizes = useState([]);
 
   useEffect(() => {
@@ -59,7 +58,8 @@ export default function Profile(props) {
         setEquipment(user.equipment);
       });
     }
-  }, [props.location.search]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [props.location.search, userId]);
 
   const setUserData = (user) => {
     updateUser({ user });
@@ -101,13 +101,15 @@ export default function Profile(props) {
         lockerNumber: lockerNumber[0],
         lockerCode: lockerCode[0],
         userSizes: sizes[0]
-      }).then(res => {
-        setUserData(res);
-        setEquipment(res.equipment);
-        props.showMessage("Information Successfully Updated!");
-      }).catch(err => {
-        props.showMessage("Information failed to save.", "error");
       })
+        .then((res) => {
+          setUserData(res);
+          setEquipment(res.equipment);
+          props.showMessage("Information Successfully Updated!");
+        })
+        .catch((err) => {
+          props.showMessage("Information failed to save.", "error");
+        });
     } else {
       UsersAPI.updateCurrentUser({
         ...user,
@@ -124,48 +126,52 @@ export default function Profile(props) {
         lockerNumber: lockerNumber[0],
         lockerCode: lockerCode[0],
         userSizes: sizes[0]
-      }).then(res => {
-        setUserData(res);
-        setEquipment(res.equipment);
-        props.showMessage("Information Successfully Updated!");
-      }).catch(err => {
-        props.showMessage("Information failed to save.", "error");
-      });
+      })
+        .then((res) => {
+          setUserData(res);
+          setEquipment(res.equipment);
+          props.showMessage("Information Successfully Updated!");
+        })
+        .catch((err) => {
+          props.showMessage("Information failed to save.", "error");
+        });
     }
   };
 
   return (
-    <Grid container spacing={3}>
-      <Grid item xs={6}>
-        <UserTabs
-          credentials={props.context.credentials}
-          firstName={firstName}
-          lastName={lastName}
-          email={email}
-          username={username}
-          address={address}
-          city={city}
-          state={state}
-          zip={zip}
-          phone={phone}
-          role={role}
-          lockerNumber={lockerNumber}
-          lockerCode={lockerCode}
-          height={height}
-          weight={weight}
-          gender={gender}
-          sizes={sizes}
-        >
-          <div>
-            <Button variant="contained" type="submit" color="primary" onClick={onSubmit} style={{ float: "right" }}>
-              Update Info
-            </Button>
-          </div>
-        </UserTabs>
+    <div style={{ maxWidth: "100%", marginLeft: "10px", marginRight: "10px", marginBottom: "10px" }}>
+      <Grid container spacing={3}>
+        <Grid item xs="auto">
+          <UserTabs
+            credentials={props.context.credentials}
+            firstName={firstName}
+            lastName={lastName}
+            email={email}
+            username={username}
+            address={address}
+            city={city}
+            state={state}
+            zip={zip}
+            phone={phone}
+            role={role}
+            lockerNumber={lockerNumber}
+            lockerCode={lockerCode}
+            height={height}
+            weight={weight}
+            gender={gender}
+            sizes={sizes}
+          >
+            <div>
+              <Button variant="contained" type="submit" color="primary" onClick={onSubmit} style={{ float: "right" }}>
+                Update Info
+              </Button>
+            </div>
+          </UserTabs>
+        </Grid>
+        <Grid item xs="auto">
+          <UserItemCard firstName={firstName} equipment={equipment} />
+        </Grid>
       </Grid>
-      <Grid item xs={6}>
-        <UserItemCard username={username} equipment={equipment} />
-      </Grid>
-    </Grid>
+    </div>
   );
 }

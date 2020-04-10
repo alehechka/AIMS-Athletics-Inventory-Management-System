@@ -21,8 +21,8 @@ SPORTS = [
     {"name": "Administration", "icon": "people"},
     {"name": "Baseball", "gender": "M", "icon": "sports_baseball"},
     {"name": "Volleyball", "gender": "F", "icon": "sports_volleyball"},
-    {"name": "Soccer", "gender": "M"},
-    {"name": "Softball", "gender": "F"}
+    {"name": "Soccer", "gender": "M", "icon": "sports_soccer"},
+    {"name": "Softball", "gender": "F", "icon": "sports_baseball"}
 ]
 
 #POOLS FOR SIZES AND EQUIPMENT

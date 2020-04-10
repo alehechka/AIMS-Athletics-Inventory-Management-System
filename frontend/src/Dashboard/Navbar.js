@@ -13,10 +13,11 @@ import DashboardIcon from "@material-ui/icons/Dashboard";
 import ListIcon from "@material-ui/icons/List";
 import PersonIcon from "@material-ui/icons/Person";
 import MenuIcon from "@material-ui/icons/Menu";
-import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import PowerSettingsNewIcon from "@material-ui/icons/PowerSettingsNew";
 import LockIcon from "@material-ui/icons/Lock";
 import Tooltip from "@material-ui/core/Tooltip";
+import Hidden from "@material-ui/core/Hidden";
 import Drawer from "@material-ui/core/Drawer";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
@@ -134,6 +135,7 @@ function Navbar(props) {
   React.useEffect(() => {
     loadCSS("https://use.fontawesome.com/releases/v5.12.0/css/all.css", document.querySelector("#font-awesome-css"));
   }, []);
+
   return (
     <div className={classes.root}>
       <AppBar position="fixed" className={classes.appBar}>
@@ -151,7 +153,7 @@ function Navbar(props) {
             {organization?.shortName ? organization?.shortName : organization?.name} AIMS
           </Typography>
           <div>
-            Welcome, {username}
+            <Hidden xsDown>Welcome, {username}</Hidden>
             <Badge badgeContent={props.noOfItemsCheckedOut} color="error">
               <Tooltip title="Profile">
                 <Link to="/profile" style={{ color: organization?.secondaryColor || "#FFF" }}>
@@ -169,35 +171,37 @@ function Navbar(props) {
           </div>
         </Toolbar>
       </AppBar>
-      <Drawer
-        variant="permanent"
-        className={clsx(classes.drawer, {
-          [classes.drawerOpen]: menuOpen,
-          [classes.drawerClose]: !menuOpen
-        })}
-        classes={{
-          paper: clsx({
+      <Hidden xsDown={!menuOpen}>
+        <Drawer
+          variant="permanent"
+          className={clsx(classes.drawer, {
             [classes.drawerOpen]: menuOpen,
             [classes.drawerClose]: !menuOpen
-          })
-        }}
-      >
-        <div className={classes.toolbar}></div>
-        <List>
-          {Object.entries(menuItems)
-            .filter(([key, value]) => allowedViews.includes(key))
-            .map(([key, value]) => (
-              <StyledLink to={`/${key.toLowerCase()}`} key={key + Math.random()}>
-                <Tooltip title={key} key={key + Math.random()} placement="right">
-                  <ListItem button key={key + Math.random()}>
-                    <ListItemIcon>{value}</ListItemIcon>
-                    <ListItemText primary={key} />
-                  </ListItem>
-                </Tooltip>
-              </StyledLink>
-            ))}
-        </List>
-      </Drawer>
+          })}
+          classes={{
+            paper: clsx({
+              [classes.drawerOpen]: menuOpen,
+              [classes.drawerClose]: !menuOpen
+            })
+          }}
+        >
+          <div className={classes.toolbar}></div>
+          <List>
+            {Object.entries(menuItems)
+              .filter(([key, value]) => allowedViews.includes(key))
+              .map(([key, value]) => (
+                <StyledLink to={`/${key.toLowerCase()}`} key={key + Math.random()}>
+                  <Tooltip title={key} key={key + Math.random()} placement="right">
+                    <ListItem button key={key + Math.random()}>
+                      <ListItemIcon>{value}</ListItemIcon>
+                      <ListItemText primary={key} />
+                    </ListItem>
+                  </Tooltip>
+                </StyledLink>
+              ))}
+          </List>
+        </Drawer>
+      </Hidden>
       <Dialog open={dialogOpen} onClose={handleDialogClose}>
         <DialogTitle id="alert-dialog-title">{"Are you sure you want to log out?"}</DialogTitle>
         <DialogContent>

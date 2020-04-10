@@ -28,6 +28,9 @@ export default function Admin(props) {
   const [sportsData, updateSportsData] = React.useState([]);
   const [sportsColumns, updateSportsColumns] = React.useState([]);
   const [sportsPageSize, updateSportsPageSize] = React.useState(5);
+
+  const { getRole } = props.context.actions;
+
   /**
    * Emulates ComponentDidMount lifecycle function
    * 
@@ -59,7 +62,7 @@ export default function Admin(props) {
           email: user.credential.email,
           firstName: user.firstName,
           lastName: user.lastName,
-          role: props.context.actions.getRole(user.credential),
+          role: getRole(user.credential),
         };
       });
       updateRoleData(newRoleData);
@@ -77,7 +80,7 @@ export default function Admin(props) {
       updateSportsData(res);
       updateSportsLoading(false);
     });
-  }, []);
+  }, [getRole]);
   return (
     <div style={{ maxWidth: '100%', marginLeft: '10px', marginRight: '10px', marginBottom: '10px' }}>
       <Grid container spacing={3}>
