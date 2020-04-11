@@ -9,16 +9,8 @@ import Chip from "@material-ui/core/Chip";
 import Icon from "@material-ui/core/Icon";
 import StepButton from "@material-ui/core/StepButton";
 import Grid from "@material-ui/core/Grid";
-import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-import ListItemText from "@material-ui/core/ListItemText";
-import Checkbox from "@material-ui/core/Checkbox";
-import { InventoryAPI, UsersAPI } from "../../../api";
+import CheckOutCard from "./CheckOutCard";
+import { InventoryAPI, UsersAPI, TransactionAPI } from "../../../api";
 
 export default function CheckOut(props) {
   const parser = new URLSearchParams(props.location.search);
@@ -34,9 +26,37 @@ export default function CheckOut(props) {
   const [inventoryData, updateInventoryData] = React.useState([]);
   const [isInventoryLoading, updateInventoryLoading] = React.useState(true);
 
-  const [transactionSelected, setTransactionSelected] = React.useState([]);
-  const [transactionColumns, updateTransactionColumns] = React.useState([]);
-  const [transactionData, updateTransactionData] = React.useState([]);
+  const [transactions, setTransactions] = React.useState([]);
+
+  function updateTransactions() {
+    setTransactions(
+      usersSelected.map((user) => {
+        return {
+          user,
+          items: inventorySelected.map((item) => {
+            return {
+              ...item,
+              checked: true,
+              amount: 1,
+              inventorySize: item.inventorySizes.filter((inventorySize) => {
+                return (
+                  user.userSizes.filter((userSize) => userSize.sportSizeId === item.sportSize)[0]?.size ===
+                  inventorySize.size
+                );
+              })[0]?.id
+            };
+          })
+        };
+      })
+    );
+  }
+
+  function updateSingleTransaction(tranIndex, itemIndex, key, value) {
+    setTransactions((prev) => {
+      prev[tranIndex].items[itemIndex][key] = value;
+      return [...prev];
+    });
+  }
 
   React.useEffect(() => {
     if (props.context.authorized) {
@@ -93,6 +113,7 @@ export default function CheckOut(props) {
           { title: "inventorySizes", field: "inventorySizes", hidden: true },
           { title: "Name", field: "name" },
           { title: "Description", field: "description", cellStyle: { width: "100%" } },
+          { title: "sportSize", field: "sportSize", hidden: true },
           {
             title: "Sport",
             field: "sports",
@@ -111,6 +132,7 @@ export default function CheckOut(props) {
             inventorySizes: inventory.inventorySizes,
             name: inventory.name,
             description: inventory.description,
+            sportSize: inventory.sportSize.id,
             sports: [inventory.sportSize.sport],
             quantity: inventory.totalQuantity,
             tableData: { checked: inventory.id === inventoryId }
@@ -126,6 +148,10 @@ export default function CheckOut(props) {
       });
     }
   }, [props.context.authorized, inventoryId, userId]);
+
+  React.useEffect(() => {
+    updateTransactions();
+  }, [usersSelected, inventorySelected]);
 
   function getSteps() {
     return ["Select Users", "Select Inventory", "Edit Transactions"];
@@ -144,7 +170,9 @@ export default function CheckOut(props) {
             columns={userColumns}
             data={userData}
             options={{ selection: true, filtering: true, tableLayout: "auto" }}
-            onSelectionChange={(rows) => setUsersSelected(rows)}
+            onSelectionChange={(rows) => {
+              setUsersSelected(rows);
+            }}
           />
         );
       case 1:
@@ -158,17 +186,23 @@ export default function CheckOut(props) {
             columns={inventoryColumns}
             data={inventoryData}
             options={{ selection: true, filtering: true, tableLayout: "auto" }}
-            onSelectionChange={(rows) => setInventorySelected(rows)}
+            onSelectionChange={(rows) => {
+              setInventorySelected(rows);
+            }}
           />
         );
       case 2:
-        if (props.location.pathname !== props.match.path + "/checkOut") {
-          props.history.push(props.match.path + "/checkOut?" + parser.toString());
+        if (props.location.pathname !== props.match.path + "/transactions") {
+          props.history.push(props.match.path + "/transactions?" + parser.toString());
         }
-        const transactions = usersSelected.map((user) => {
-          return { user, items: inventorySelected.map(item => { return {...item, checked: true}}) };
-        });
-        return transactions.map((transaction, index) => <TransactionCard key={index} {...transaction} />);
+        return transactions.map((transaction, index) => (
+          <CheckOutCard
+            key={index}
+            tranIndex={index}
+            {...transaction}
+            updateSingleTransaction={updateSingleTransaction}
+          />
+        ));
       default:
         return <Typography>Test</Typography>;
     }
@@ -178,7 +212,7 @@ export default function CheckOut(props) {
   let step = 0;
   if (props.location.pathname.includes("/inventory")) {
     step = 1;
-  } else if (props.location.pathname.includes("/checkOut")) {
+  } else if (props.location.pathname.includes("/transactions")) {
     step = 2;
   }
   const [activeStep, setActiveStep] = React.useState(step);
@@ -199,7 +233,10 @@ export default function CheckOut(props) {
   const handleReset = () => {
     setActiveStep(0);
   };
-  //
+  
+  const handleSubmit = () => {
+    TransactionAPI.checkOut(transactions);
+  }
 
   return (
     <div style={{ maxWidth: "100%", marginLeft: "10px", marginRight: "10px", marginBottom: "10px" }}>
@@ -231,45 +268,19 @@ export default function CheckOut(props) {
               </Button>
             </Grid>
             <Grid item>
-              <Button variant="contained" color="primary" onClick={handleNext}>
-                {activeStep === steps.length - 1 ? "Submit" : "Next"}
-              </Button>
+              {activeStep === steps.length - 1 ? (
+                <Button variant="contained" color="secondary" onClick={handleSubmit}>
+                  Submit
+                </Button>
+              ) : (
+                <Button variant="contained" color="primary" onClick={handleNext}>
+                  Next
+                </Button>
+              )}
             </Grid>
           </Grid>
         </div>
       )}
     </div>
-  );
-}
-
-function TransactionCard({ user, items, key }) {
-  console.log(user, items);
-  return (
-    <Card style={{ marginBottom: "5px" }} variant="outlined">
-      <CardContent>
-        <Typography component="h3" variant="h6">
-          {user?.firstName} {user?.lastName}
-        </Typography>
-        <List>
-          {items.map((item, index) => (
-            <ListItem key={index}>
-              <ListItemText primary={item.name} />
-              <ListItemSecondaryAction>
-                <Checkbox
-                  edge="start"
-                  checked={item.checked}
-                  tabIndex={-1}
-                  disableRipple
-                  // inputProps={{ "aria-labelledby": labelId }}
-                />
-              </ListItemSecondaryAction>
-            </ListItem>
-          ))}
-        </List>
-      </CardContent>
-      <CardActions>
-        <Button>button</Button>
-      </CardActions>
-    </Card>
   );
 }

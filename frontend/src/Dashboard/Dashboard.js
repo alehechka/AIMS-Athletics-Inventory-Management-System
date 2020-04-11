@@ -39,9 +39,9 @@ class Dashboard extends React.Component {
     const { context } = this.props;
     const { credentials } = context;
     const permissions = {
-      isAdmin: ["Home", "Athletes", "Inventory", "Staff", "Profile", "Admin", "CheckOut", "CheckIn"],
-      isEmployee: ["Home", "Athletes", "Inventory", "Staff", "Profile", "CheckOut", "CheckIn"],
-      isCoach: ["Home", "Athletes", "Inventory", "Profile", "CheckOut", "CheckIn"],
+      isAdmin: ["Home", "Athletes", "Inventory", "Staff", "Profile", "Admin", "Check Out", "Check In"],
+      isEmployee: ["Home", "Athletes", "Inventory", "Staff", "Profile", "Check Out", "Check In"],
+      isCoach: ["Home", "Athletes", "Inventory", "Profile", "Check Out", "Check In"],
       isAthlete: ["Home", "Profile"],
       isNewUser: ["Home", "Profile"]
     };
@@ -90,14 +90,14 @@ class Dashboard extends React.Component {
                 />
                 <AuthRoute
                   path={`/checkout`}
-                  accessGranted={allowedViews.includes("CheckOut")}
+                  accessGranted={allowedViews.includes("Check Out")}
                   component={(props) => (
                     <CheckOut {...props} showMessage={this.props.showMessage} context={context} />
                   )}
                 />
                 <AuthRoute
                   path={`/checkin`}
-                  accessGranted={allowedViews.includes("CheckIn")}
+                  accessGranted={allowedViews.includes("Check In")}
                   component={(props) => (
                     <CheckIn {...props} showMessage={this.props.showMessage} context={context} />
                   )}

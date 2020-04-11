@@ -18,15 +18,19 @@ async function getTransactions({ issuedBy, issuedTo, returned, createdBegin, cre
 }
 
 async function checkOut(transactions, comment) {
-  for (let tran of transactions) {
-    tran.issuedTo = tran.issuedTo.id || tran.issuedTo;
-    tran.items = tran.items.filter(item => item.checked).map(item => {
-      return {
-        ...item,
-        inventorySize: item.inventorySize.id || item.inventorySize
-      }
-    })
-  }
+  transactions = transactions.map((tran) => {
+    return {
+      issuedTo: tran.user.id || tran.user,
+      items: tran.items
+        .filter((item) => item.checked)
+        .map((item) => {
+          return {
+            amount: item.amount,
+            inventorySize: item.inventorySize?.id || item.inventorySize
+          };
+        })
+    };
+  });
   return await axios
     .post(
       `${apiUrl}/transactions/checkOut`,
@@ -51,19 +55,19 @@ async function checkIn(transactions, comment) {
     }
   }
   return await axios
-  .post(
-    `${apiUrl}/transactions/checkIn`,
-    {
-      comment,
-      transactions,
-    },
-    {
-      withCredentials: true
-    }
-  )
-  .then((res) => {
-    return res.data;
-  })
+    .post(
+      `${apiUrl}/transactions/checkIn`,
+      {
+        comment,
+        transactions
+      },
+      {
+        withCredentials: true
+      }
+    )
+    .then((res) => {
+      return res.data;
+    });
 }
 
 export { getTransactions, checkOut, checkIn };

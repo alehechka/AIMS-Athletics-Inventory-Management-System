@@ -110,8 +110,8 @@ function Navbar(props) {
     Home: <DashboardIcon />,
     Athletes: <Icon className="fas fa-swimmer" />,
     Inventory: <ListIcon />,
-    CheckOut: <ShoppingCartIcon />,
-    CheckIn: <RemoveShoppingCartIcon />,
+    "Check Out": <ShoppingCartIcon />,
+    "Check In": <RemoveShoppingCartIcon />,
     Staff: <PersonIcon />,
     Admin: <LockIcon />
   };
@@ -192,7 +192,7 @@ function Navbar(props) {
             {Object.entries(menuItems)
               .filter(([key, value]) => allowedViews.includes(key))
               .map(([key, value]) => (
-                <StyledLink to={`/${key.toLowerCase()}`} key={key + Math.random()}>
+                <StyledLink to={`/${key.replace(" ", "").toLowerCase()}`} key={key + Math.random()}>
                   <Tooltip title={key} key={key + Math.random()} placement="right">
                     <ListItem button key={key + Math.random()}>
                       <ListItemIcon>{value}</ListItemIcon>
