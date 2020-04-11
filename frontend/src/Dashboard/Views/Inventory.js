@@ -1,81 +1,276 @@
-import React, {forwardRef} from "react";
-import {InventoryAPI} from "../../api";
-import MaterialTable from 'material-table'
-import {Link} from "react-router-dom";
-import Add from '@material-ui/icons/Add';
-import ArrowUpward from '@material-ui/icons/ArrowUpward';
-import Check from '@material-ui/icons/Check';
-import ChevronLeft from '@material-ui/icons/ChevronLeft';
-import ChevronRight from '@material-ui/icons/ChevronRight';
-import Clear from '@material-ui/icons/Clear';
-import DeleteOutline from '@material-ui/icons/DeleteOutline';
-import Edit from '@material-ui/icons/Edit';
-import FilterList from '@material-ui/icons/FilterList';
-import FirstPage from '@material-ui/icons/FirstPage';
-import LastPage from '@material-ui/icons/LastPage';
-import Remove from '@material-ui/icons/Remove';
-import SaveAlt from '@material-ui/icons/SaveAlt';
-import Search from '@material-ui/icons/Search';
-import ViewColumn from '@material-ui/icons/ViewColumn';
+import React from 'react';
+import MaterialTable from 'material-table';
+import Chip from '@material-ui/core/Chip';
+import ProfileDialog from './Components/ProfileDialog'
+import {SportsAPI, InventoryAPI, UsersAPI} from "../../api";
+import Icon from "@material-ui/core/Icon";
 
-const tableIcons = {
-Add: forwardRef((props, ref) => <Add {...props} ref={ref} />),
-Check: forwardRef((props, ref) => <Check {...props} ref={ref} />),
-Clear: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-Delete: forwardRef((props, ref) => <DeleteOutline {...props} ref={ref} />),
-DetailPanel: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-Edit: forwardRef((props, ref) => <Edit {...props} ref={ref} />),
-Export: forwardRef((props, ref) => <SaveAlt {...props} ref={ref} />),
-Filter: forwardRef((props, ref) => <FilterList {...props} ref={ref} />),
-FirstPage: forwardRef((props, ref) => <FirstPage {...props} ref={ref} />),
-LastPage: forwardRef((props, ref) => <LastPage {...props} ref={ref} />),
-NextPage: forwardRef((props, ref) => <ChevronRight {...props} ref={ref} />),
-PreviousPage: forwardRef((props, ref) => <ChevronLeft {...props} ref={ref} />),
-ResetSearch: forwardRef((props, ref) => <Clear {...props} ref={ref} />),
-Search: forwardRef((props, ref) => <Search {...props} ref={ref} />),
-SortArrow: forwardRef((props, ref) => <ArrowUpward {...props} ref={ref} />),
-ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
-ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
-};
-
+/**
+ * Contains the material table which lets the user edit staff entries.
+ * 
+ * Hooks:
+ * Loading - displays a loading icon when backend is queried/modified.
+ * data - contains table data
+ * columns - contains column information [unchanged for now]
+ * pagesize - updates default pageSize for table
+ * dialogOpen - contains the state of dialog box
+ * dialogTitle - contains the title for dialog box
+ * inputs - Object containing all form data to be modified
+ * sport - list of sports selected in form
+ * sports - object containing all sports available
+ * sportIdLookup - Lookup for Sport Objects
+ * 
+ * Props:
+ * showMessage Displays a snackbar
+ * @param {*} props props passed down from dashboard
+ */
 export default function Inventory(props) {
-  
-  const [inventory, setInventory] = React.useState([]);
-  
-  React.useEffect(()=>{
+    const renderType = props.type;
+    //List of default values to fill in the form
+    const initialValues = {
+        email: "",
+        username: "",
+        password: "",
+        schoolId: props.context.organization.shortName,
+        firstName: "",
+        lastName: "",
+        address: "",
+        city: "",
+        state: "",
+        zip: 0,
+        phone: 0,
+        gender: "F",
+        height: 0,
+        weight: 0,
+        lockerNumber: "",
+        lockerCode: "",
+        role: renderType === "Athletes" ? "Athlete" : "Employee",
+        isAdmin: false,
+        isEmployee: renderType !== "Athletes",
+        isCoach: false,
+        isAthlete: renderType === "Athletes"
+    };
+    const deepCopy = (obj) => JSON.parse(JSON.stringify(obj));
 
-        InventoryAPI.getInventory(null,null, {}).then( (inventory)=> {
-            setInventory(inventory);
+    //material Table hooks
+    const [isLoading, updateLoading] = React.useState(true);
+    const [data, updateData] = React.useState([]);
+    const [columns, updateColumns] = React.useState([]);
+    const [pageSize, updatePageSize] = React.useState(5);
+
+    //Dialog hooks
+    const [dialogOpen, setDialogOpen] = React.useState(false);
+    const [dialogTitle, setDialogTitle] = React.useState("Add");
+    //Form Hooks
+    const [inputs, setInputs] = React.useState(deepCopy(initialValues));
+    const [sport, setSport] = React.useState([]);
+    const [sports, setSports] = React.useState([]);
+    const [sportIdLookup, setSportIdLookup]= React.useState({});
+
+	const [inventory, setInventory] = React.useState([]);
+
+    /**
+     * Emulates ComponentDidMount lifecycle function
+     * 
+     * Queries the backend for staff data, sports data and populates the table.
+     */
+    React.useEffect(()=>{
+        let req = {isAthlete: true};
+        if (renderType === "Staff") {
+            req = {isAdmin: true, isEmployee: true, isCoach: true,};
+        }
+        InventoryAPI.getInventory(null, null, req).then( (inventory)=> {
+            updateColumns([
+                {title: 'Item ID', field: 'id'},
+                {title: 'Name', field: 'name'},
+				{title: 'Description', field: 'description'},
+				{title: 'Barcode', field: 'barcode'},
+                {title: 'Price', field: 'price'},
+                {title: 'Quantity', field: 'quantity'},
+                {title: '', cellStyle: {width:"100%"}},
+            ]);
+            const customData = inventory.map(inventories =>({
+                id: inventories.id,
+                name: inventories.name,
+				description: inventories.description,
+				barcode: inventories.barcode,
+                price: inventories.price,
+                //sportsJson: JSON.stringify(inventories.sports),
+                quantity: inventories.quantity
+            }));
+            updateData(customData);
+            updateLoading(false);
         });
-        console.log(inventory)
-    
-    }, [inventory]);
-
-  return (
-    <div style={{ maxWidth: '100%' }}>
-    <MaterialTable
-      icons={tableIcons}
-      options= {{exportButton: true,
-                exportFileName: "AIMS_inventory_report"}}
-      actions={[
-        {
-          icon: Add,
-          tooltip: 'Add to Inventory',
-          isFreeAction: true,
-          onClick: (event) => alert("Add an item to inventory")
-        }]}
-        columns={[
-        { title: 'ID', field: 'id' , type: 'numeric'},
-        { title: 'Sport', field: 'sport' },
-        { title: 'Name', field: 'name'},
-        { title: 'Barcode', field: 'barcode' , type: 'numeric'},
-        { title: 'Price', field: 'price', type:'numeric' },
-        { title: 'Quantity', field: 'quantity', type: 'numeric' }
-      ]}
-      data={[{ id : 357, sport: "Basketball", name: "Black Adidas Hoodie", barcode: 123456, price: 59, quantity: 60 }]}
-      title="Inventory"
-    />
-	<Link to="/addinventory" className="btn btn-primary">add page</Link>
-  </div>
-  );
+        SportsAPI.getSports().then((sports)=> {
+            setSports(sports.map(sport => sport.displayName));
+            setSportIdLookup(sports.reduce((obj, sport) => {
+                obj[sport.displayName] = sport
+                return obj
+            }, {}));
+        });
+    }, [renderType]);
+    /**
+     * One function which handles all state changes in add/edit user form
+     * Sports select statement is excluded
+     * 
+     * @param {} event executed when a input is changed
+     */
+    const changeInput = (event) =>{
+        const key = event.target.name;
+        let value = event.target.value;
+        //special handler for radio button
+        if (key === "isActive") {
+            value = value === "active";
+        }
+        setInputs({...inputs, [key]: value});
+    };
+    /**
+     * handles changes in sports select input
+     * @param {*} event 
+     */
+    const handleSportChange = (event) => {
+        setSport(event.target.value);
+    };
+    /**
+     * Closes Dialog Box and sends the updated data to the backend
+     * 
+     * @param {*} type true if user clicked on confirm else false
+     */
+    const closeDialog = (type) => {
+        setDialogOpen(false);
+        if (type){
+            const sportIds = sport.filter(name => !sportIdLookup[name].default).map(name => sportIdLookup[name].id);
+            const newSportsJson = sport.map(sportName => ({
+                id: sportIdLookup[sportName].id,
+                displayName: sportIdLookup[sportName].displayName,
+                gender: sportIdLookup[sportName].gender,
+                icon: sportIdLookup[sportName].icon,
+            }));
+            const updatedUser = {
+                firstName: inputs.firstName,
+                lastName: inputs.lastName,
+                sportsJson: JSON.stringify(newSportsJson),
+                sports: newSportsJson
+            };
+            console.log("Updated SportIds:" + sportIds);
+            const newUser = deepCopy(inputs);
+            Object.keys(newUser).map(key => {
+                if (newUser[key] === "") {
+                    delete newUser[key];
+                }
+                return null;
+            });
+            newUser.schoolId = props.context.organization.id;
+            newUser.sports = sportIds;
+            if (dialogTitle.includes("Edit")) { 
+                updatedUser.id = inputs.id;
+                newUser.id = inputs.id;
+                UsersAPI.updateUser(newUser).then((res)=>{
+                    console.log(res);
+                    updatedUser.id = res.id;
+                    updateData(data.map(row => row.id === updatedUser.id? updatedUser: row));
+                    updateLoading(false); 
+                    props.showMessage(dialogTitle + " Done");
+                }).catch(err =>{
+                    props.showMessage("Error:" + err, "error");
+                    updateLoading(false);
+                });
+            }
+            else {
+                if (inputs.role !== "Athlete") {
+                    inputs["is" + inputs.role] = true;
+                }
+                UsersAPI.createUser(inputs.email, inputs.userName, inputs.password, inputs.isAdmin, inputs.isEmployee, inputs.isCoach, inputs.isAthlete, newUser).then((res)=>{
+                    console.log(res);
+                    updatedUser.id = res.id;
+                    updateData([...data, updatedUser]);
+                    updateLoading(false); 
+                    props.showMessage(dialogTitle + " Done");
+                }).catch(err =>{
+                    props.showMessage("Error:" + err, "error");
+                    updateLoading(false);
+                });
+                
+            }
+        }
+        else {
+            props.showMessage(dialogTitle + " Canceled", "info");
+            updateLoading(false);
+        }    
+    };
+    return (
+    <div style={{ maxWidth: '100%', marginLeft: '10px', marginRight: '10px', marginBottom: '10px' }}>
+        <MaterialTable
+            title = {renderType}
+            isLoading= {isLoading}
+            columns={columns}
+            data={data}
+            pageSize = {pageSize}
+            onChangeRowsPerPage = {updatePageSize}
+            options={{
+                search: true,
+                filtering: true,
+                actionsColumnIndex: -1,
+                tableLayout: "auto"
+            }}
+            actions={[
+                /*{
+                    icon: 'account_circle',
+                    tooltip: 'Profile',
+                    onClick: (event, rowData) => {
+                      props.showMessage("Redirecting to Profile page...");
+                      props.history.push(`/profile?userId=${rowData.id}`);
+                    }
+                },
+                {
+                  icon: 'shopping_cart',
+                  tooltip: 'Transactions',
+                  onClick: (event, rowData) => {
+                    props.showMessage("Redirecting to Transactions page...");
+                    props.history.push(`/transactions?userId=${rowData.id}`);
+                  }
+                },*/
+                {
+                    icon: 'create',
+                    tooltip: 'Edit',
+                    onClick: (event, rowData) => {
+                        UsersAPI.getSingleUser(rowData.id).then((data)=>{
+                            updateLoading(true);
+                            //Remove all Null entries in json
+                            Object.keys(data).map(key => {data[key] = data[key] ? data[key]: ""; return null;});
+                            setInputs(deepCopy(data));
+                            const rowSportsJson = JSON.parse(rowData.sportsJson);
+                            setSport(rowSportsJson.map(sport => sport.displayName));
+                            setDialogOpen(true);
+                            setDialogTitle("Edit " + renderType);
+                        });
+                    }
+                },
+                {
+                    icon: 'add',
+                    tooltip: 'Add',
+                    isFreeAction: true,
+                    onClick: (event, rowData) => {
+                        updateLoading(true);
+                        setInputs(deepCopy(initialValues));
+                        setSport([]);
+                        setDialogOpen(true);
+                        setDialogTitle("Add " + renderType);
+                    }   
+                  },
+            ]}
+        />
+        <ProfileDialog
+            {...props}
+            renderType = {renderType}
+            dialogOpen = {dialogOpen} 
+            closeDialog = {closeDialog}
+            dialogTitle = {dialogTitle}
+            inputs = {inputs}
+            changeInput = {changeInput}
+            sport = {sport}
+            sports = {sports}
+            handleSportChange = {handleSportChange}
+        />
+    </div>);
 }
