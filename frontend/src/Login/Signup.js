@@ -59,7 +59,6 @@ class Signup extends React.Component {
 
   async componentDidMount() {
     this.setState({ organizations: await OrganizationAPI.getOrganizations() });
-    console.log(this.state.organizations);
   }
 
   /**
@@ -138,7 +137,6 @@ class Signup extends React.Component {
     this.setState(Object.assign(this.state, { password2Valid }));
 
     const { context } = this.props;
-    //const { from } = this.props.location.state || { from : { pathname: '/'}};
 
     const formValid =
       this.state.usernameValid &&
@@ -147,8 +145,6 @@ class Signup extends React.Component {
       this.state.password2Valid &&
       organization;
     if (formValid) {
-      //TODO logic
-      console.log("submit", organization)
       await context.actions
         .signup(email, username, password, organization)
         .then((res) => {

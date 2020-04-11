@@ -6,7 +6,8 @@ import Inventory from "./Views/Inventory";
 import Profile from "./Views/Profile";
 import Users from "./Views/Users"
 import Admin from "./Views/Admin";
-import Transaction from "./Views/Transaction";
+import CheckOut from "./Views/Transactions/CheckOut";
+import CheckIn from "./Views/Transactions/CheckIn";
 import AuthRoute from "../AuthRoute";
 
 import { BrowserRouter as Router, Switch, Route, withRouter, Redirect } from "react-router-dom";
@@ -38,9 +39,9 @@ class Dashboard extends React.Component {
     const { context } = this.props;
     const { credentials } = context;
     const permissions = {
-      isAdmin: ["Home", "Athletes", "Inventory", "Staff", "Profile", "Admin", "Transactions"],
-      isEmployee: ["Home", "Athletes", "Inventory", "Staff", "Profile", "Transactions"],
-      isCoach: ["Home", "Athletes", "Inventory", "Profile", "Transactions"],
+      isAdmin: ["Home", "Athletes", "Inventory", "Staff", "Profile", "Admin", "CheckOut", "CheckIn"],
+      isEmployee: ["Home", "Athletes", "Inventory", "Staff", "Profile", "CheckOut", "CheckIn"],
+      isCoach: ["Home", "Athletes", "Inventory", "Profile", "CheckOut", "CheckIn"],
       isAthlete: ["Home", "Profile"],
       isNewUser: ["Home", "Profile"]
     };
@@ -88,10 +89,17 @@ class Dashboard extends React.Component {
                   component={(props) => <Users {...props} type={"Athletes"} showMessage={this.props.showMessage} context={context} />}
                 />
                 <AuthRoute
-                  path={`/transactions`}
-                  accessGranted={allowedViews.includes("Transactions")}
+                  path={`/checkout`}
+                  accessGranted={allowedViews.includes("CheckOut")}
                   component={(props) => (
-                    <Transaction {...props} showMessage={this.props.showMessage} context={context} />
+                    <CheckOut {...props} showMessage={this.props.showMessage} context={context} />
+                  )}
+                />
+                <AuthRoute
+                  path={`/checkin`}
+                  accessGranted={allowedViews.includes("CheckIn")}
+                  component={(props) => (
+                    <CheckIn {...props} showMessage={this.props.showMessage} context={context} />
                   )}
                 />
                 <AuthRoute

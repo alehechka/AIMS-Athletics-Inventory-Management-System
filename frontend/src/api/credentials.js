@@ -36,7 +36,6 @@ async function getCredentials() {
  * @return credential object from backend to be used as authorization in the app state
  */
 async function signup(email, username, password, organization, remember) {
-  console.log("axios", organization)
   return await axios
     .post(
       `${apiUrl}/credentials/signup`,

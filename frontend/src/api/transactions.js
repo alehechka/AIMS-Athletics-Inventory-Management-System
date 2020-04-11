@@ -20,9 +20,12 @@ async function getTransactions({ issuedBy, issuedTo, returned, createdBegin, cre
 async function checkOut(transactions, comment) {
   for (let tran of transactions) {
     tran.issuedTo = tran.issuedTo.id || tran.issuedTo;
-    for (let item of tran.items) {
-      item.inventorySize = item.inventorySize.id || item.inventorySize;
-    }
+    tran.items = tran.items.filter(item => item.checked).map(item => {
+      return {
+        ...item,
+        inventorySize: item.inventorySize.id || item.inventorySize
+      }
+    })
   }
   return await axios
     .post(

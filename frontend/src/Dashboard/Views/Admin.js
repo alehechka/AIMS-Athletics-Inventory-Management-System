@@ -153,7 +153,6 @@ export default function Admin(props) {
                           resolve();
                         }).catch(err => {
                           props.showMessage(`Unable to add entry for ${newData.displayName}`, 'error');
-                          console.log(err);
                           reject();
                         });
                      }
@@ -172,7 +171,6 @@ export default function Admin(props) {
                           resolve();
                         }).catch(err => {
                           props.showMessage(`Unable to update entry for ${newData.displayName}`, 'error');
-                          console.log(err);
                           reject();
                         });
                         

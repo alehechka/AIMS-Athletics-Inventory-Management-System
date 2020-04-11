@@ -157,7 +157,6 @@ export default function Users(props) {
                 sportsJson: JSON.stringify(newSportsJson),
                 sports: newSportsJson
             };
-            console.log("Updated SportIds:" + sportIds);
             const newUser = deepCopy(inputs);
             Object.keys(newUser).map(key => {
                 if (newUser[key] === "") {
@@ -171,7 +170,6 @@ export default function Users(props) {
                 updatedUser.id = inputs.id;
                 newUser.id = inputs.id;
                 UsersAPI.updateUser(newUser).then((res)=>{
-                    console.log(res);
                     updatedUser.id = res.id;
                     updateData(data.map(row => row.id === updatedUser.id? updatedUser: row));
                     updateLoading(false); 
@@ -186,7 +184,6 @@ export default function Users(props) {
                     inputs["is" + inputs.role] = true;
                 }
                 UsersAPI.createUser(inputs.email, inputs.userName, inputs.password, inputs.isAdmin, inputs.isEmployee, inputs.isCoach, inputs.isAthlete, newUser).then((res)=>{
-                    console.log(res);
                     updatedUser.id = res.id;
                     updateData([...data, updatedUser]);
                     updateLoading(false); 

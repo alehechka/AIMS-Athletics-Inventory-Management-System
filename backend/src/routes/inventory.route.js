@@ -3,7 +3,7 @@
 const express = require("express");
 const Sequelize = require("sequelize");
 const queryParams = require("../middleware/queryParams");
-const { Inventory, InventorySize, SportSize, Sport } = require("../models/database");
+const { Inventory, InventorySize, SportSize, Sport, addDisplayNameToSports } = require("../models/database");
 const auth = require("../middleware/auth");
 const inventoryRouter = express.Router();
 
@@ -34,6 +34,10 @@ inventoryRouter.get(
         },
         include: [
           {
+            model: InventorySize,
+            attributes: { exclude: req.query.id ? ["createdAt", "updatedAt", "inventoryId"] : ["createdAt", "updatedAt", "inventoryId", "barcode"] }
+          },
+          {
             model: SportSize,
             where: Sequelize.and(
               req.query.sportSizeId ? { id: req.query.sportSizeId } : null,
@@ -51,13 +55,12 @@ inventoryRouter.get(
                 attributes: { exclude: ["organizationId"] }
               }
             ]
-          },
-          {
-            model: InventorySize,
-            attributes: req.query.id ? ["id", "size", "barcode", "price", "quantity"] : []
           }
         ]
       });
+      for(let inventory of inventories) {
+        inventory.sportSize.sport = await addDisplayNameToSports(inventory.sportSize.sport);
+      }
       res.json(req.query.id && inventories.length ? inventories[0] : inventories);
     } catch (err) {
       next(err);

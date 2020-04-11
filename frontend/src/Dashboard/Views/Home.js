@@ -37,10 +37,12 @@ export default function Home(props) {
       issuedTo: user,
       items: [
         {
+          checked:true,
           inventorySize: inventories.inventorySizes[0],
           amount: 2
         },
         {
+          checked:true,
           inventorySize: selectedInventorySize,
           amount: 1
         }
