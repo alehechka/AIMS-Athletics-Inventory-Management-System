@@ -16,6 +16,7 @@ import MenuIcon from "@material-ui/icons/Menu";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import RemoveShoppingCartIcon from '@material-ui/icons/RemoveShoppingCart';
 import PowerSettingsNewIcon from "@material-ui/icons/PowerSettingsNew";
+import OutdoorGrillIcon from "@material-ui/icons/OutdoorGrill";
 import LockIcon from "@material-ui/icons/Lock";
 import Tooltip from "@material-ui/core/Tooltip";
 import Hidden from "@material-ui/core/Hidden";
@@ -111,7 +112,7 @@ function Navbar(props) {
     Athletes: <Icon className="fas fa-swimmer" />,
     Inventory: <ListIcon />,
     "Check Out": <ShoppingCartIcon />,
-    "Check In": <RemoveShoppingCartIcon />,
+    "Check In": <OutdoorGrillIcon />,
     Staff: <PersonIcon />,
     Admin: <LockIcon />
   };
