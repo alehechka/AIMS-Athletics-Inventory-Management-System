@@ -147,10 +147,12 @@ export default function CheckOut(props) {
         updateInventoryLoading(false);
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.context.authorized, inventoryId, userId]);
 
   React.useEffect(() => {
     updateTransactions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [usersSelected, inventorySelected]);
 
   function getSteps() {

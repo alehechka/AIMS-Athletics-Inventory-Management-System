@@ -2,7 +2,7 @@
 
 const express = require("express");
 const Sequelize = require("sequelize");
-const { Sport, UserSport, User } = require("../models/database");
+const { Sport, SportSize, UserSport, User } = require("../models/database");
 const auth = require("../middleware/auth");
 const queryParams = require("../middleware/queryParams");
 const sportRouter = express.Router();
@@ -32,7 +32,15 @@ sportRouter.get("/", auth(), queryParams([], ["id"]), async (req, res, next) => 
       where: Sequelize.and({ organizationId: req.user.organizationId }, req.query.id ? { id: req.query.id } : null),
       attributes: {
         exclude: ["organizationId"]
-      }
+      },
+      include: [
+        {
+          model: SportSize,
+          attributes: {
+            exclude: ["sportId"]
+          }
+        }
+      ]
     });
     res.json(req.query.id && sports.length ? sports[0] : sports);
   } catch (err) {

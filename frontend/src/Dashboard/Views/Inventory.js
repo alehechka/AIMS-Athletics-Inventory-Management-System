@@ -1,8 +1,7 @@
 import React from 'react';
 import MaterialTable from 'material-table';
 import Chip from '@material-ui/core/Chip';
-import ProfileDialog from './Components/ProfileDialog'
-import {SportsAPI, InventoryAPI, UsersAPI} from "../../api";
+import {SportsAPI, InventoryAPI} from "../../api";
 import Icon from "@material-ui/core/Icon";
 
 /**
@@ -25,32 +24,6 @@ import Icon from "@material-ui/core/Icon";
  * @param {*} props props passed down from dashboard
  */
 export default function Inventory(props) {
-    const renderType = props.type;
-    //List of default values to fill in the form
-    const initialValues = {
-        email: "",
-        username: "",
-        password: "",
-        schoolId: props.context.organization.shortName,
-        firstName: "",
-        lastName: "",
-        address: "",
-        city: "",
-        state: "",
-        zip: 0,
-        phone: 0,
-        gender: "F",
-        height: 0,
-        weight: 0,
-        lockerNumber: "",
-        lockerCode: "",
-        role: renderType === "Athletes" ? "Athlete" : "Employee",
-        isAdmin: false,
-        isEmployee: renderType !== "Athletes",
-        isCoach: false,
-        isAthlete: renderType === "Athletes"
-    };
-    const deepCopy = (obj) => JSON.parse(JSON.stringify(obj));
 
     //material Table hooks
     const [isLoading, updateLoading] = React.useState(true);
@@ -58,45 +31,43 @@ export default function Inventory(props) {
     const [columns, updateColumns] = React.useState([]);
     const [pageSize, updatePageSize] = React.useState(5);
 
-    //Dialog hooks
-    const [dialogOpen, setDialogOpen] = React.useState(false);
-    const [dialogTitle, setDialogTitle] = React.useState("Add");
-    //Form Hooks
-    const [inputs, setInputs] = React.useState(deepCopy(initialValues));
-    const [sport, setSport] = React.useState([]);
     const [sports, setSports] = React.useState([]);
     const [sportIdLookup, setSportIdLookup]= React.useState({});
-
-	const [inventory, setInventory] = React.useState([]);
 
     /**
      * Emulates ComponentDidMount lifecycle function
      * 
-     * Queries the backend for staff data, sports data and populates the table.
+     * Queries the backend for inventory data
      */
     React.useEffect(()=>{
-        let req = {isAthlete: true};
-        if (renderType === "Staff") {
-            req = {isAdmin: true, isEmployee: true, isCoach: true,};
-        }
-        InventoryAPI.getInventory(null, null, req).then( (inventory)=> {
+        InventoryAPI.getInventory(null, null, {}).then( (inventories)=> {
             updateColumns([
-                {title: 'Item ID', field: 'id'},
-                {title: 'Name', field: 'name'},
-				{title: 'Description', field: 'description'},
-				{title: 'Barcode', field: 'barcode'},
-                {title: 'Price', field: 'price'},
-                {title: 'Quantity', field: 'quantity'},
-                {title: '', cellStyle: {width:"100%"}},
+                {title: 'Item ID', field: 'id', hidden: true},
+                {title: 'Name', field: 'name', cellStyle: {width:"35%"}},
+				{title: 'Description', field: 'description', cellStyle: {width:"65%"}},
+                {title: 'Barcode', field: 'barcode', hidden: true},
+                {
+                    title: "Sport",
+                    field: "sports",
+                    sorting: false,
+                    render: (rowData) =>
+                      rowData.sports.map((val, index) => (
+                        <Chip key={index} label={val.displayName} style={{ margin: 2 }} icon={<Icon>{val.icon}</Icon>}></Chip>
+                      )),
+                    customFilterAndSearch: (term, rowData) =>
+                      rowData.sports.map((val) => val.displayName).some((val) => val.toLowerCase().includes(term.toLowerCase()))
+                  },
+                {title: 'Price', field: 'price', searchable: false, filtering: false},
+                {title: 'Quantity', field: 'quantity', searchable: false, filtering: false},
             ]);
-            const customData = inventory.map(inventories =>({
-                id: inventories.id,
-                name: inventories.name,
-				description: inventories.description,
-				barcode: inventories.barcode,
-                price: inventories.price,
-                //sportsJson: JSON.stringify(inventories.sports),
-                quantity: inventories.quantity
+            const customData = inventories.map(inventory =>({
+                id: inventory.id,
+                name: inventory.name,
+				description: inventory.description,
+                barcode: inventory.barcode,
+                sports: [inventory.sportSize.sport],
+                price: inventory.averagePrice,
+                quantity: inventory.totalQuantity
             }));
             updateData(customData);
             updateLoading(false);
@@ -108,169 +79,64 @@ export default function Inventory(props) {
                 return obj
             }, {}));
         });
-    }, [renderType]);
-    /**
-     * One function which handles all state changes in add/edit user form
-     * Sports select statement is excluded
-     * 
-     * @param {} event executed when a input is changed
-     */
-    const changeInput = (event) =>{
-        const key = event.target.name;
-        let value = event.target.value;
-        //special handler for radio button
-        if (key === "isActive") {
-            value = value === "active";
-        }
-        setInputs({...inputs, [key]: value});
-    };
-    /**
-     * handles changes in sports select input
-     * @param {*} event 
-     */
-    const handleSportChange = (event) => {
-        setSport(event.target.value);
-    };
-    /**
-     * Closes Dialog Box and sends the updated data to the backend
-     * 
-     * @param {*} type true if user clicked on confirm else false
-     */
-    const closeDialog = (type) => {
-        setDialogOpen(false);
-        if (type){
-            const sportIds = sport.filter(name => !sportIdLookup[name].default).map(name => sportIdLookup[name].id);
-            const newSportsJson = sport.map(sportName => ({
-                id: sportIdLookup[sportName].id,
-                displayName: sportIdLookup[sportName].displayName,
-                gender: sportIdLookup[sportName].gender,
-                icon: sportIdLookup[sportName].icon,
-            }));
-            const updatedUser = {
-                firstName: inputs.firstName,
-                lastName: inputs.lastName,
-                sportsJson: JSON.stringify(newSportsJson),
-                sports: newSportsJson
-            };
-            console.log("Updated SportIds:" + sportIds);
-            const newUser = deepCopy(inputs);
-            Object.keys(newUser).map(key => {
-                if (newUser[key] === "") {
-                    delete newUser[key];
-                }
-                return null;
-            });
-            newUser.schoolId = props.context.organization.id;
-            newUser.sports = sportIds;
-            if (dialogTitle.includes("Edit")) { 
-                updatedUser.id = inputs.id;
-                newUser.id = inputs.id;
-                UsersAPI.updateUser(newUser).then((res)=>{
-                    console.log(res);
-                    updatedUser.id = res.id;
-                    updateData(data.map(row => row.id === updatedUser.id? updatedUser: row));
-                    updateLoading(false); 
-                    props.showMessage(dialogTitle + " Done");
-                }).catch(err =>{
-                    props.showMessage("Error:" + err, "error");
-                    updateLoading(false);
-                });
-            }
-            else {
-                if (inputs.role !== "Athlete") {
-                    inputs["is" + inputs.role] = true;
-                }
-                UsersAPI.createUser(inputs.email, inputs.userName, inputs.password, inputs.isAdmin, inputs.isEmployee, inputs.isCoach, inputs.isAthlete, newUser).then((res)=>{
-                    console.log(res);
-                    updatedUser.id = res.id;
-                    updateData([...data, updatedUser]);
-                    updateLoading(false); 
-                    props.showMessage(dialogTitle + " Done");
-                }).catch(err =>{
-                    props.showMessage("Error:" + err, "error");
-                    updateLoading(false);
-                });
-                
-            }
-        }
-        else {
-            props.showMessage(dialogTitle + " Canceled", "info");
-            updateLoading(false);
-        }    
-    };
+        console.log(sports, sportIdLookup)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     return (
-    <div style={{ maxWidth: '100%', marginLeft: '10px', marginRight: '10px', marginBottom: '10px' }}>
+      <div style={{ maxWidth: "100%", marginLeft: "10px", marginRight: "10px", marginBottom: "10px" }}>
         <MaterialTable
-            title = {renderType}
-            isLoading= {isLoading}
-            columns={columns}
-            data={data}
-            pageSize = {pageSize}
-            onChangeRowsPerPage = {updatePageSize}
-            options={{
-                search: true,
-                filtering: true,
-                actionsColumnIndex: -1,
-                tableLayout: "auto"
-            }}
-            actions={[
-                /*{
-                    icon: 'account_circle',
-                    tooltip: 'Profile',
-                    onClick: (event, rowData) => {
-                      props.showMessage("Redirecting to Profile page...");
-                      props.history.push(`/profile?userId=${rowData.id}`);
-                    }
-                },
-                {
-                  icon: 'shopping_cart',
-                  tooltip: 'Transactions',
-                  onClick: (event, rowData) => {
-                    props.showMessage("Redirecting to Transactions page...");
-                    props.history.push(`/transactions?userId=${rowData.id}`);
-                  }
-                },*/
-                {
-                    icon: 'create',
-                    tooltip: 'Edit',
-                    onClick: (event, rowData) => {
-                        UsersAPI.getSingleUser(rowData.id).then((data)=>{
-                            updateLoading(true);
-                            //Remove all Null entries in json
-                            Object.keys(data).map(key => {data[key] = data[key] ? data[key]: ""; return null;});
-                            setInputs(deepCopy(data));
-                            const rowSportsJson = JSON.parse(rowData.sportsJson);
-                            setSport(rowSportsJson.map(sport => sport.displayName));
-                            setDialogOpen(true);
-                            setDialogTitle("Edit " + renderType);
-                        });
-                    }
-                },
-                {
-                    icon: 'add',
-                    tooltip: 'Add',
-                    isFreeAction: true,
-                    onClick: (event, rowData) => {
-                        updateLoading(true);
-                        setInputs(deepCopy(initialValues));
-                        setSport([]);
-                        setDialogOpen(true);
-                        setDialogTitle("Add " + renderType);
-                    }   
-                  },
-            ]}
+          title="Inventory"
+          isLoading={isLoading}
+          columns={columns}
+          data={data}
+          pageSize={pageSize}
+          onChangeRowsPerPage={updatePageSize}
+          options={{
+            search: true,
+            filtering: true,
+            actionsColumnIndex: -1,
+            tableLayout: "auto"
+          }}
+          actions={[
+            {
+              icon: "shopping_cart",
+              tooltip: "Transactions",
+              onClick: (event, rowData) => {
+                props.showMessage("Redirecting to Transactions page...");
+                props.history.push(`/checkout?inventoryId=${rowData.id}`);
+              }
+            }
+            // {
+            //     icon: 'create',
+            //     tooltip: 'Edit',
+            //     onClick: (event, rowData) => {
+            //         UsersAPI.getSingleUser(rowData.id).then((data)=>{
+            //             updateLoading(true);
+            //             //Remove all Null entries in json
+            //             Object.keys(data).map(key => {data[key] = data[key] ? data[key]: ""; return null;});
+            //             setInputs(deepCopy(data));
+            //             const rowSportsJson = JSON.parse(rowData.sportsJson);
+            //             setSport(rowSportsJson.map(sport => sport.displayName));
+            //             setDialogOpen(true);
+            //             setDialogTitle("Edit " + renderType);
+            //         });
+            //     }
+            // },
+            // {
+            //     icon: 'add',
+            //     tooltip: 'Add',
+            //     isFreeAction: true,
+            //     onClick: (event, rowData) => {
+            //         updateLoading(true);
+            //         setInputs(deepCopy(initialValues));
+            //         setSport([]);
+            //         setDialogOpen(true);
+            //         setDialogTitle("Add " + renderType);
+            //     }
+            //   },
+          ]}
         />
-        <ProfileDialog
-            {...props}
-            renderType = {renderType}
-            dialogOpen = {dialogOpen} 
-            closeDialog = {closeDialog}
-            dialogTitle = {dialogTitle}
-            inputs = {inputs}
-            changeInput = {changeInput}
-            sport = {sport}
-            sports = {sports}
-            handleSportChange = {handleSportChange}
-        />
-    </div>);
+      </div>
+    );
 }
