@@ -5,6 +5,7 @@ import Stepper from "@material-ui/core/Stepper";
 import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
 import MaterialTable from "material-table";
+import TransactionTable from "./TransactionTable";
 import Chip from "@material-ui/core/Chip";
 import Icon from "@material-ui/core/Icon";
 import StepButton from "@material-ui/core/StepButton";
@@ -27,6 +28,9 @@ export default function CheckOut(props) {
   const [isInventoryLoading, updateInventoryLoading] = React.useState(true);
 
   const [transactions, setTransactions] = React.useState([]);
+  const [isTransactionLoading, setTransactionLoading] = React.useState(true);
+  const [transactionColumns, setTransactionColumns] = React.useState([]);
+  const [transactionData, setTransactionData] = React.useState([]);
 
   function updateTransactions() {
     setTransactions(
@@ -38,12 +42,13 @@ export default function CheckOut(props) {
               ...item,
               checked: true,
               amount: 1,
-              inventorySize: item.inventorySizes.filter((inventorySize) => {
-                return (
-                  user.userSizes.filter((userSize) => userSize.sportSizeId === item.sportSize)[0]?.size ===
-                  inventorySize.size
-                );
-              })[0]?.id
+              inventorySize:
+                item.inventorySizes.filter((inventorySize) => {
+                  return (
+                    user.userSizes.filter((userSize) => userSize.sportSizeId === item.sportSize)[0]?.size ===
+                    inventorySize.size
+                  );
+                })[0] || ""
             };
           })
         };
@@ -60,6 +65,46 @@ export default function CheckOut(props) {
 
   React.useEffect(() => {
     if (props.context.authorized) {
+      InventoryAPI.getInventory(null, null, {}).then((inventory) => {
+        updateInventoryColumns([
+          { title: "ID", field: "id", hidden: true },
+          { title: "inventorySizes", field: "inventorySizes", hidden: true },
+          { title: "Name", field: "name" },
+          { title: "Description", field: "description", cellStyle: { width: "100%" } },
+          { title: "sportSize", field: "sportSize", hidden: true },
+          {
+            title: "Sport",
+            field: "sports",
+            render: (rowData) =>
+              rowData.sports.map((val, index) => (
+                <Chip key={index} label={val.displayName} style={{ margin: 2 }} icon={<Icon>{val.icon}</Icon>}></Chip>
+              )),
+            customFilterAndSearch: (term, rowData) =>
+              rowData.sports.map((val) => val.displayName).some((val) => val.toLowerCase().includes(term.toLowerCase()))
+          },
+          { title: "Quantity", field: "quantity" }
+        ]);
+        const customData = inventory.map((inventory) => {
+          let customerInventory = {
+            id: inventory.id,
+            inventorySizes: inventory.inventorySizes,
+            name: inventory.name,
+            description: inventory.description,
+            sportSize: inventory.sportSize.id,
+            sports: [inventory.sportSize.sport],
+            quantity: inventory.totalQuantity,
+            tableData: { checked: inventory.id === inventoryId }
+          };
+          if (customerInventory.tableData.checked) {
+            setInventorySelected([...inventorySelected, customerInventory]);
+            setActiveStep(userId ? 2 : 0);
+          }
+          return customerInventory;
+        });
+        updateInventoryData(customData);
+        updateInventoryLoading(false);
+      });
+
       UsersAPI.getUsers(null, null, {
         isAdmin: true,
         isEmployee: true,
@@ -106,47 +151,16 @@ export default function CheckOut(props) {
         updateUserData(customData);
         updateUserLoading(false);
       });
-
-      InventoryAPI.getInventory(null, null, {}).then((inventory) => {
-        updateInventoryColumns([
-          { title: "ID", field: "id", hidden: true },
-          { title: "inventorySizes", field: "inventorySizes", hidden: true },
-          { title: "Name", field: "name" },
-          { title: "Description", field: "description", cellStyle: { width: "100%" } },
-          { title: "sportSize", field: "sportSize", hidden: true },
-          {
-            title: "Sport",
-            field: "sports",
-            render: (rowData) =>
-              rowData.sports.map((val, index) => (
-                <Chip key={index} label={val.displayName} style={{ margin: 2 }} icon={<Icon>{val.icon}</Icon>}></Chip>
-              )),
-            customFilterAndSearch: (term, rowData) =>
-              rowData.sports.map((val) => val.displayName).some((val) => val.toLowerCase().includes(term.toLowerCase()))
-          },
-          { title: "Quantity", field: "quantity" }
-        ]);
-        const customData = inventory.map((inventory) => {
-          let customerInventory = {
-            id: inventory.id,
-            inventorySizes: inventory.inventorySizes,
-            name: inventory.name,
-            description: inventory.description,
-            sportSize: inventory.sportSize.id,
-            sports: [inventory.sportSize.sport],
-            quantity: inventory.totalQuantity,
-            tableData: { checked: inventory.id === inventoryId }
-          };
-          if (customerInventory.tableData.checked) {
-            setInventorySelected([...inventorySelected, customerInventory]);
-            setActiveStep(userId ? 2 : 0);
-          }
-          return customerInventory;
-        });
-        updateInventoryData(customData);
-        updateInventoryLoading(false);
-      });
+      setTransactionColumns([
+        { title: "ID", field: "id", hidden: true },
+        { title: "Issued To", field: "issuedTo" },
+        { title: "Issued By", field: "issuedBy" },
+        { title: "Equipment ID", field: "equipmentId" },
+        { title: "Amount", field: "amount" },
+        { title: "Returned", field: "returned"}
+      ]);
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.context.authorized, inventoryId, userId]);
 
@@ -156,7 +170,9 @@ export default function CheckOut(props) {
   }, [usersSelected, inventorySelected]);
 
   function getSteps() {
-    return ["Select Users", "Select Inventory", "Edit Transactions"];
+    return transactionData.length
+      ? ["Select Users", "Select Inventory", "Edit Transactions", "View Transactions"]
+      : ["Select Users", "Select Inventory", "Edit Transactions"];
   }
 
   function getStepContent(stepIndex) {
@@ -194,8 +210,8 @@ export default function CheckOut(props) {
           />
         );
       case 2:
-        if (props.location.pathname !== props.match.path + "/transactions") {
-          props.history.push(props.match.path + "/transactions?" + parser.toString());
+        if (props.location.pathname !== props.match.path + "/cart") {
+          props.history.push(props.match.path + "/cart?" + parser.toString());
         }
         return transactions.map((transaction, index) => (
           <CheckOutCard
@@ -205,8 +221,19 @@ export default function CheckOut(props) {
             updateSingleTransaction={updateSingleTransaction}
           />
         ));
+      case 3:
+        if (props.location.pathname !== props.match.path + "/transactions") {
+          props.history.push(props.match.path + "/transactions?" + parser.toString());
+        }
+        return (
+          <TransactionTable
+            transactionColumns={transactionColumns}
+            transactionData={transactionData}
+            isTransactionLoading={isTransactionLoading}
+          />
+        );
       default:
-        return <Typography>Test</Typography>;
+        return <Typography>Blank</Typography>;
     }
   }
 
@@ -214,8 +241,10 @@ export default function CheckOut(props) {
   let step = 0;
   if (props.location.pathname.includes("/inventory")) {
     step = 1;
-  } else if (props.location.pathname.includes("/transactions")) {
+  } else if (props.location.pathname.includes("/cart")) {
     step = 2;
+  } else if (props.location.pathname.includes("/transactions")) {
+    step = 3;
   }
   const [activeStep, setActiveStep] = React.useState(step);
   const steps = getSteps();
@@ -235,10 +264,45 @@ export default function CheckOut(props) {
   const handleReset = () => {
     setActiveStep(0);
   };
-  
+
   const handleSubmit = () => {
-    TransactionAPI.checkOut(transactions);
-  }
+    props.showMessage("Submitting order...", "info");
+    TransactionAPI.checkOut(transactions)
+      .then((transactions) => {
+        setUsersSelected([]);
+        setInventorySelected([]);
+        updateUserData(prev => {
+          return prev.map(user => {
+            return {
+              ...user,
+              tableData: {
+                ...user.tableData,
+                checked: false
+              }
+            }
+          })
+        });
+        updateInventoryData(prev => {
+          return prev.map(item => {
+            return {
+              ...item,
+              tableData: {
+                ...item.tableData,
+                checked: false
+              }
+            }
+          })
+        });
+        setTransactionData(transactions);
+        setTransactionLoading(false);
+        props.showMessage("Order created successfully!");
+        handleNext();
+      })
+      .catch((err) => {
+        console.log(err);
+        props.showMessage("Order failed to complete.", "error");
+      });
+  };
 
   return (
     <div style={{ maxWidth: "100%", marginLeft: "10px", marginRight: "10px", marginBottom: "10px" }}>
@@ -257,7 +321,6 @@ export default function CheckOut(props) {
       </Stepper>
       {activeStep === steps.length ? (
         <div>
-          <Typography>All steps completed</Typography>
           <Button onClick={handleReset}>Reset</Button>
         </div>
       ) : (
@@ -270,9 +333,26 @@ export default function CheckOut(props) {
               </Button>
             </Grid>
             <Grid item>
-              {activeStep === steps.length - 1 ? (
-                <Button variant="contained" color="secondary" onClick={handleSubmit}>
+              {activeStep === 2 ? (
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={handleSubmit}
+                  disabled={
+                    usersSelected.length === 0 ||
+                    inventorySelected.length === 0 ||
+                    transactions.filter((tran) => {
+                      return tran.items.filter((item) => {
+                        return !item.inventorySize && item.checked;
+                      }).length;
+                    }).length > 0
+                  }
+                >
                   Submit
+                </Button>
+              ) : activeStep === steps.length - 1 ? (
+                <Button variant="contained" color="primary" onClick={handleReset}>
+                  Reset
                 </Button>
               ) : (
                 <Button variant="contained" color="primary" onClick={handleNext}>

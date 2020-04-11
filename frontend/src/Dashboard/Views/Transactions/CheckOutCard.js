@@ -25,12 +25,12 @@ export default function CheckOutCard({ user, items, tranIndex, updateSingleTrans
         </Typography>
         <List>
           {items.map((item, index) => (
-            <ListItem key={index} dense disablePadding>
+            <ListItem key={index} dense>
               <Grid container spacing={2} alignItems="center">
                 <Grid item xs={3}>
                   <ListItemText primary={item.name} />
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={3}>
                   <FormControl variant="outlined" margin="dense" required fullWidth style={{ marginTop: "12px" }}>
                     <InputLabel id="inventory-size-label">Size</InputLabel>
                     <Select
@@ -41,14 +41,14 @@ export default function CheckOutCard({ user, items, tranIndex, updateSingleTrans
                       onChange={(e) => updateSingleTransaction(tranIndex, index, "inventorySize", e.target.value)}
                     >
                       {item.inventorySizes.map((inventorySize, index) => (
-                        <MenuItem key={index} value={inventorySize.id}>
+                        <MenuItem key={index} value={inventorySize}>
                           {inventorySize.size}
                         </MenuItem>
                       ))}
                     </Select>
                   </FormControl>
                 </Grid>
-                <Grid item xs={4}>
+                <Grid item xs={3}>
                   <TextField
                     variant="outlined"
                     margin="normal"
@@ -59,20 +59,45 @@ export default function CheckOutCard({ user, items, tranIndex, updateSingleTrans
                     onChange={(e) => {
                         let amount = e.target.value
                         updateSingleTransaction(tranIndex, index, "amount", amount)
-                        // updateSingleTransaction(tranIndex, index, "checked", amount>0)
+                        if(amount > 0) {
+                          updateSingleTransaction(tranIndex, index, "checked", true)
+                        } else {
+                          updateSingleTransaction(tranIndex, index, "checked", false)
+                        }
                     }}
                     value={item.amount}
                     size="small"
                     inputProps={{min:0, step:1}}
                   />
                 </Grid>
+                <Grid item xs={2}>
+                  <TextField
+                    variant="outlined"
+                    margin="normal"
+                    type="number"
+                    fullWidth
+                    id="price"
+                    label="Price"
+                    value={parseFloat((item.inventorySize?.price * item.amount).toFixed(2)) || ""}
+                    size="small"
+                    disabled
+                  />
+                </Grid>
                 <Grid item xs={1}>
                   <ListItemSecondaryAction>
                     <Checkbox
-                      defaultChecked={item.checked}
+                      checked={item.checked}
                       value={item.checked}
                       tabIndex={-1}
-                      onChange={(e) => updateSingleTransaction(tranIndex, index, "checked", e.target.checked)}
+                      onClick={(e) => {
+                        let checked = e.target.checked;
+                        updateSingleTransaction(tranIndex, index, "checked", checked)
+                        if(checked) {
+                          updateSingleTransaction(tranIndex, index, "amount", 1)
+                        } else {
+                          updateSingleTransaction(tranIndex, index, "amount", 0)
+                        }
+                      }}
                     />
                   </ListItemSecondaryAction>
                 </Grid>

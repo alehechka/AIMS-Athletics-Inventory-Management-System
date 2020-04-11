@@ -15,8 +15,8 @@ const version = 1;
 const apiUrl = `${domain}${port}/api/v${version}`;
 
 function changeFavicon(src) {
-  var link = document.createElement("link"),
-    oldLink = document.getElementById("dynamic-favicon");
+  var link = document.createElement("link");
+  var oldLink = document.getElementById("dynamic-favicon");
   link.id = "dynamic-favicon";
   link.rel = "shortcut icon";
   link.href = src;
