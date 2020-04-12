@@ -14,9 +14,7 @@ import ListIcon from "@material-ui/icons/List";
 import PersonIcon from "@material-ui/icons/Person";
 import MenuIcon from "@material-ui/icons/Menu";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
-import RemoveShoppingCartIcon from '@material-ui/icons/RemoveShoppingCart';
 import PowerSettingsNewIcon from "@material-ui/icons/PowerSettingsNew";
-import OutdoorGrillIcon from "@material-ui/icons/OutdoorGrill";
 import LockIcon from "@material-ui/icons/Lock";
 import Tooltip from "@material-ui/core/Tooltip";
 import Hidden from "@material-ui/core/Hidden";
@@ -112,15 +110,15 @@ function Navbar(props) {
     Athletes: <Icon className="fas fa-swimmer" />,
     Inventory: <ListIcon />,
     "Check Out": <ShoppingCartIcon />,
-    "Check In": <OutdoorGrillIcon />,
+    "Check In": <Icon className="fas fa-clipboard-check" style={{marginLeft:"4px"}}/>,
     Staff: <PersonIcon />,
     Admin: <LockIcon />
   };
   /**
    * Toggles menuOpen state
    */
-  const handleDrawerToggle = () => {
-    setMenuOpen(!menuOpen);
+  const handleDrawerToggle = (open) => {
+    setMenuOpen(open);
   };
   /**
    * Opens logout confirmation dialog
@@ -145,7 +143,7 @@ function Navbar(props) {
         <Toolbar>
           <IconButton
             edge="start"
-            onClick={handleDrawerToggle}
+            onClick={() => handleDrawerToggle(!menuOpen)}
             className={classes.menuButton}
             color="inherit"
             aria-label="menu"
@@ -193,9 +191,9 @@ function Navbar(props) {
             {Object.entries(menuItems)
               .filter(([key, value]) => allowedViews.includes(key))
               .map(([key, value]) => (
-                <StyledLink to={`/${key.replace(" ", "").toLowerCase()}`} key={key + Math.random()}>
+                <StyledLink to={`/${key.replace(" ", "").toLowerCase()}`} key={key + Math.random()} >
                   <Tooltip title={key} key={key + Math.random()} placement="right">
-                    <ListItem button key={key + Math.random()}>
+                    <ListItem button key={key + Math.random()} onClick={() => handleDrawerToggle(false)}>
                       <ListItemIcon>{value}</ListItemIcon>
                       <ListItemText primary={key} />
                     </ListItem>

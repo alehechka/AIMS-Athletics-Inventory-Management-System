@@ -57,8 +57,8 @@ export default function Inventory(props) {
                     customFilterAndSearch: (term, rowData) =>
                       rowData.sports.map((val) => val.displayName).some((val) => val.toLowerCase().includes(term.toLowerCase()))
                   },
-                {title: 'Price', field: 'price', searchable: false, filtering: false},
-                {title: 'Quantity', field: 'quantity', searchable: false, filtering: false},
+                {title: 'Price', field: 'price', type: 'currency', searchable: false, filtering: false},
+                {title: 'Quantity', field: 'quantity', type: 'numeric', searchable: false, filtering: false},
             ]);
             const customData = inventories.map(inventory =>({
                 id: inventory.id,

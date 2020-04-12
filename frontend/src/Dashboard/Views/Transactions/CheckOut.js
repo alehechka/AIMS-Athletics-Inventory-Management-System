@@ -29,7 +29,6 @@ export default function CheckOut(props) {
 
   const [transactions, setTransactions] = React.useState([]);
   const [isTransactionLoading, setTransactionLoading] = React.useState(true);
-  const [transactionColumns, setTransactionColumns] = React.useState([]);
   const [transactionData, setTransactionData] = React.useState([]);
 
   function updateTransactions() {
@@ -69,8 +68,8 @@ export default function CheckOut(props) {
         updateInventoryColumns([
           { title: "ID", field: "id", hidden: true },
           { title: "inventorySizes", field: "inventorySizes", hidden: true },
-          { title: "Name", field: "name" },
-          { title: "Description", field: "description", cellStyle: { width: "100%" } },
+          { title: "Name", field: "name", cellStyle: { width: "35%" } },
+          { title: "Description", field: "description", cellStyle: { width: "65%" } },
           { title: "sportSize", field: "sportSize", hidden: true },
           {
             title: "Sport",
@@ -82,7 +81,8 @@ export default function CheckOut(props) {
             customFilterAndSearch: (term, rowData) =>
               rowData.sports.map((val) => val.displayName).some((val) => val.toLowerCase().includes(term.toLowerCase()))
           },
-          { title: "Quantity", field: "quantity" }
+          { title: "Price", field: "price", type: 'currency', searchable: false, filtering: false },
+          { title: "Quantity", field: "quantity", type: 'numeric', searchable: false, filtering: false }
         ]);
         const customData = inventory.map((inventory) => {
           let customerInventory = {
@@ -92,6 +92,7 @@ export default function CheckOut(props) {
             description: inventory.description,
             sportSize: inventory.sportSize.id,
             sports: [inventory.sportSize.sport],
+            price: inventory.averagePrice,
             quantity: inventory.totalQuantity,
             tableData: { checked: inventory.id === inventoryId }
           };
@@ -151,14 +152,6 @@ export default function CheckOut(props) {
         updateUserData(customData);
         updateUserLoading(false);
       });
-      setTransactionColumns([
-        { title: "ID", field: "id", hidden: true },
-        { title: "Issued To", field: "issuedTo" },
-        { title: "Issued By", field: "issuedBy" },
-        { title: "Equipment ID", field: "equipmentId" },
-        { title: "Amount", field: "amount" },
-        { title: "Returned", field: "returned"}
-      ]);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -227,7 +220,6 @@ export default function CheckOut(props) {
         }
         return (
           <TransactionTable
-            transactionColumns={transactionColumns}
             transactionData={transactionData}
             isTransactionLoading={isTransactionLoading}
           />

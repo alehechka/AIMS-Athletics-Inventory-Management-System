@@ -229,7 +229,7 @@ export default function Users(props) {
                   tooltip: 'Transactions',
                   onClick: (event, rowData) => {
                     props.showMessage("Redirecting to Transactions page...");
-                    props.history.push(`/transactions?userId=${rowData.id}`);
+                    props.history.push(`/checkout?userId=${rowData.id}`);
                   }
                 },
                 {

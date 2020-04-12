@@ -74,7 +74,7 @@ export default function CheckOutCard({ user, items, tranIndex, updateSingleTrans
                   <TextField
                     variant="outlined"
                     margin="normal"
-                    type="number"
+                    type="currency"
                     fullWidth
                     id="price"
                     label="Price"

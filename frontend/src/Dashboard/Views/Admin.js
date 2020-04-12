@@ -45,7 +45,7 @@ export default function Admin(props) {
         {title: 'Email', field: 'email', editable: 'never', searchable : true},
         {title: 'First Name', field: 'firstName', ...defaultOptions},
         {title: 'Last Name', field: 'lastName', ...defaultOptions},
-        {title: 'Role', field: 'role', editComponent: props => (
+        {title: 'Role', field: 'role', cellStyle: {width:"100%"}, editComponent: props => (
           <FormControl required component="fieldset">
               <RadioGroup row value={props.value} name= "role" onChange={e => props.onChange(e.target.value)}>
                   <FormControlLabel value = "Admin"  label="Admin" control={<Radio />}/>
@@ -71,10 +71,10 @@ export default function Admin(props) {
     SportsAPI.getSports().then((res)=> {
       updateSportsColumns([
         {name: 'ID', field: 'id', ...defaultOptions},
-        {title: 'Name', field: 'name'},
+        {title: 'Name', field: 'name', cellStyle: {width:"100%"}},
         {title: 'Gender', field: 'gender'},
         {title: 'Icon', field: 'icon', ...defaultOptions},
-        {title: 'Default', field: 'default', type: 'boolean', editable: 'never'},
+        {title: 'Default', field: 'default', type: 'boolean', editable: 'never', searchable: false, filtering: false},
         {title: 'Display Name', field: 'displayName', ...defaultOptions}
       ]);
       updateSportsData(res);
@@ -84,7 +84,7 @@ export default function Admin(props) {
   return (
     <div style={{ maxWidth: '100%', marginLeft: '10px', marginRight: '10px', marginBottom: '10px' }}>
       <Grid container spacing={3}>
-        <Grid item xs={6}>
+        <Grid item xs="auto">
           <MaterialTable
               title="Roles"
               isLoading= {isRoleLoading}
@@ -96,7 +96,7 @@ export default function Admin(props) {
                   search: true,
                   filtering: true,
                   actionsColumnIndex: -1,
-                  tableLayout: "fixed",
+                  tableLayout: "auto",
               }}
               editable={{
                 onRowUpdate: (newData, oldData) =>
@@ -123,7 +123,7 @@ export default function Admin(props) {
               }}
           /> 
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs="auto">
         <MaterialTable
               title="Sports"
               isLoading= {isSportsLoading}
@@ -135,7 +135,7 @@ export default function Admin(props) {
                   search: true,
                   filtering: true,
                   actionsColumnIndex: -1,
-                  tableLayout: "fixed",
+                  tableLayout: "auto",
               }}
               editable={{
                   onRowAdd: newData =>
