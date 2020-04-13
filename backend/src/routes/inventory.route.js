@@ -22,12 +22,12 @@ inventoryRouter.get(
         offset,
         limit,
         where: Sequelize.and(
-          req.query.id ? { id: req.query.id } : null,
+          req.query.id && { id: req.query.id },
           { organizationId: req.user.organizationId },
-          req.query.surplus ? { surplus: req.query.surplus } : null,
-          req.query.sportSizeId ? { sportSizeId: req.query.sportSizeId } : null,
-          req.query.taxable ? { taxable : req.query.taxable } : null,
-          req.query.expendable ? { expendable : req.query.expendable } : null,
+          req.query.surplus && { surplus: req.query.surplus },
+          req.query.sportSizeId && { sportSizeId: req.query.sportSizeId },
+          req.query.taxable && { taxable : req.query.taxable },
+          req.query.expendable && { expendable : req.query.expendable },
         ),
         attributes: {
           exclude: ["createdAt", "updatedAt", "sportSizeId", "organizationId"]
@@ -40,8 +40,8 @@ inventoryRouter.get(
           {
             model: SportSize,
             where: Sequelize.and(
-              req.query.sportSizeId ? { id: req.query.sportSizeId } : null,
-              req.query["sports[]"] ? Sequelize.or({ sportId: req.query["sports[]"] }) : null,
+              req.query.sportSizeId && { id: req.query.sportSizeId },
+              req.query["sports[]"] && Sequelize.or({ sportId: req.query["sports[]"] }),
             ),
             attributes: {
               exclude: req.query.id ? ["sportId"] : ["sportId", "sizes"]
@@ -50,7 +50,7 @@ inventoryRouter.get(
               {
                 model: Sport,
                 where: Sequelize.and(
-                  req.query.gender ? { gender: req.query.gender } : null
+                  req.query.gender && { gender: req.query.gender }
                 ),
                 attributes: { exclude: ["organizationId"] }
               }

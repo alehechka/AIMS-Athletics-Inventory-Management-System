@@ -26,4 +26,8 @@ function changeFavicon(src) {
   document.head.appendChild(link);
 }
 
-export { apiUrl, CredentialAPI, UsersAPI, SportsAPI, InventoryAPI, EquipmentAPI, TransactionAPI, OrganizationAPI, changeFavicon };
+ function indexedDbExists() {
+  return ('indexedDB' in window)
+ }
+
+export { apiUrl, CredentialAPI, UsersAPI, SportsAPI, InventoryAPI, EquipmentAPI, TransactionAPI, OrganizationAPI, changeFavicon, indexedDbExists };

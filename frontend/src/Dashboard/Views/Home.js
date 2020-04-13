@@ -136,7 +136,7 @@ export default function Home(props) {
       <button onClick={() => TransactionAPI.checkIn(transactions2, "comment")}>Check in</button>
       <br />
       <br />
-      <button onClick={() => changeFavicon("assets/creighton.ico")}>Change Favicon</button>
+      <button onClick={() => changeFavicon("https://www.google.com/favicon.ico")}>Change Favicon</button>
     </div>
   );
 }

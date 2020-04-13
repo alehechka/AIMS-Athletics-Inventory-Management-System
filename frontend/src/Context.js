@@ -102,7 +102,8 @@ export class Provider extends Component {
       })
     } 
     if (credentials?.organization?.logo) {
-      changeFavicon("assets/" + credentials.organization.logo);
+      let url = window.location.protocol + "//" + window.location.hostname + (window.location.port ? `:${window.location.port}` : "") + "/assets/" + credentials.organization.logo;
+      changeFavicon(url);
     }
   };
 }

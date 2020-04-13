@@ -203,6 +203,7 @@ async function getUsers(user, {
   isEmployee,
   isCoach,
   isAthlete,
+  isActive = true,
   withDetails = []
 }) {
   try {
@@ -220,7 +221,8 @@ async function getUsers(user, {
         { organizationId: user.organizationId },
         credentialId ? { credentialId: user.id } : null,
         userId ? { id: userId } : null,
-        gender ? { gender } : null
+        gender ? { gender } : null,
+        { isActive }
       ),
       attributes: {
         exclude: ["createdAt", "updatedAt", "credentialId", "organizationId", "statusId"]
@@ -266,7 +268,7 @@ async function getUsers(user, {
           attributes: userId || credentialId || withDetails.includes("Equipment") ? ["id", "count"] : [],
           where: withDetails.includes("Equipment") && { 
             count: { 
-              [Sequelize.Op.gte]: 1
+              [Sequelize.Op.gte]: 0
             } 
           },
           include: [
