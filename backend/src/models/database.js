@@ -133,7 +133,7 @@ function addFullNameToUsers(users) {
     let fullName = (users.firstName ? users.firstName : "") + (users.lastName ? " " + users.lastName : "");
     users.fullName = fullName || null;
     if(users.credential) {
-      user.role = getRole(users.credential);
+      users.role = getRole(users.credential);
     }
     return users;
   }

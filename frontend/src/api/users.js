@@ -2,7 +2,7 @@ import axios from "axios";
 
 import { apiUrl, indexedDbExists } from "./index";
 
-import { openDB, deleteDB } from "idb/with-async-ittr.js";
+import { openDB } from "idb/with-async-ittr.js";
 
 // Allows an admin to create a user profile with temporary credentials
 // Only required field is the email, username can be generated from email
@@ -173,7 +173,6 @@ async function getUsersFromBackend(
 
 async function saveUsersToLocalDB(users, userDetails) {
   try {
-    await deleteDB("AIMS");
     const db = await openDB("AIMS", 1, {
       upgrade(db) {
         // Create a store of objects

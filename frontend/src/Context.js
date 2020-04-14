@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { CredentialAPI, changeFavicon } from "./api";
+import { CredentialAPI, changeFavicon, UsersAPI, deleteIndexedDB } from "./api";
 
 const Context = React.createContext();
 
@@ -44,22 +44,25 @@ export class Provider extends Component {
   }
 
   signup = async (email, username, password, remember) => {
-    return await CredentialAPI.signup(email, username, password, remember).then((res) => {
+    return await CredentialAPI.signup(email, username, password, remember).then(async (res) => {
       this.setCredentials(res, true);
+      await UsersAPI.getUsersFromBackend(null, null, {withDetails: ["UserSize", "Equipment"]});
       return res;
     });
   };
 
   login = async (email, password, remember) => {
-    return await CredentialAPI.login(email, password, remember).then((res) => {
+    return await CredentialAPI.login(email, password, remember).then(async (res) => {
       this.setCredentials(res, true);
+      await UsersAPI.getUsersFromBackend(null, null, {withDetails: ["UserSize", "Equipment"]});
       return res;
     });
   };
 
   logout = async () => {
-    return await CredentialAPI.logout().then((res) => {
+    return await CredentialAPI.logout().then(async (res) => {
       this.setCredentials(res, false);
+      await deleteIndexedDB();
       return res;
     });
   };

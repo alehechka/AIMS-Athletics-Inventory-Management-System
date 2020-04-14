@@ -5,6 +5,7 @@ import * as InventoryAPI from "./inventory";
 import * as EquipmentAPI from "./equipment";
 import * as OrganizationAPI from "./organization";
 import * as TransactionAPI from "./transactions";
+import { deleteDB } from "idb/with-async-ittr.js";
 
 const domain = process.env.NODE_ENV === "production" ? "https://aims-backend-dot-aims-272900.appspot.com" : "http://localhost";
 
@@ -30,4 +31,8 @@ function changeFavicon(src) {
   return ('indexedDB' in window)
  }
 
-export { apiUrl, CredentialAPI, UsersAPI, SportsAPI, InventoryAPI, EquipmentAPI, TransactionAPI, OrganizationAPI, changeFavicon, indexedDbExists };
+ async function deleteIndexedDB() {
+  await deleteDB("AIMS");
+ }
+
+export { apiUrl, CredentialAPI, UsersAPI, SportsAPI, InventoryAPI, EquipmentAPI, TransactionAPI, OrganizationAPI, changeFavicon, indexedDbExists, deleteIndexedDB };
