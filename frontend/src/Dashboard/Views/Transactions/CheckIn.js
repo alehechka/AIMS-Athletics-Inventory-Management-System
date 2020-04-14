@@ -35,6 +35,48 @@ export default function CheckOut(props) {
   const [transactions, setTransactions] = React.useState([]);
 
 
+  React.useEffect(() => {
+    updateTransactions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [usersSelected]);
+
+  function updateTransactions(){
+    var listOfItemIds = usersSelected.map( (user) => {
+      return (
+          user.equipment.map( (transaction) => {
+            return (transaction.inventorySize.inventory.id);
+        })
+      )
+    })
+
+    var listOfSharedItemIds = getCommonElements(listOfItemIds);
+
+    setTransactions(
+      usersSelected.map( (user) => {
+        let listOfItems = user.equipment.map( (transaction) => {
+          return (transaction.inventorySize.inventory);
+        })
+
+        let listOfItemsMASTER = JSON.parse(JSON.stringify(listOfItems));
+
+        var listOfSharedItems = []; 
+
+        for(var element of listOfItemsMASTER){
+            if(listOfSharedItemIds.includes(element.id)){
+              listOfSharedItems.push(...listOfItems.splice(listOfItems.indexOf(element),1));
+            }
+        }
+
+        return {
+          user,
+          items: listOfItems,
+          sharedItems: listOfSharedItems
+        }
+      })
+    )
+    console.log(transactions);
+  }
+
   function updateSingleTransaction(tranIndex, itemIndex, key, value) {
     setTransactions((prev) => {
       prev[tranIndex].items[itemIndex][key] = value;
@@ -43,6 +85,31 @@ export default function CheckOut(props) {
   }
 
 
+  function getCommonElements(arrays) {
+    
+    if(arrays.length == 0){
+      arrays =[-1];
+    }
+    var currentValues = {};
+    var commonValues = {};
+    for (var i = arrays[0].length -1; i >=0; i--){
+      currentValues[arrays[0][i]] = 1; 
+    }
+    for (var i = arrays.length-1; i>0; i--){
+      var currentArray = arrays[i];
+      for (var j = currentArray.length-1; j >=0; j--){
+        if (currentArray[j] in currentValues){
+          commonValues[currentArray[j]] = 1; 
+        }
+      }
+      currentValues = commonValues;
+      commonValues = {};
+    }
+    return Object.keys(currentValues).map(function(value){
+      return parseInt(value);
+    });
+  }
+
   React.useEffect(() => {
     if (props.context.authorized) {
       UsersAPI.getUsers(null, null, {
@@ -50,7 +117,7 @@ export default function CheckOut(props) {
         isEmployee: true,
         isCoach: true,
         isAthlete: true,
-        withDetails: ["UserSize"]
+        withDetails: ["Equipment"]
       }).then((users) => {
         updateUserColumns([
           { title: "ID", field: "id", hidden: true },
@@ -75,11 +142,11 @@ export default function CheckOut(props) {
         const customData = users.map((user) => {
           let customUser = {
             id: user.id,
-            userSizes: user.userSizes,
             firstName: user.firstName,
             lastName: user.lastName,
             sportsJson: JSON.stringify(user.sports),
             sports: user.sports,
+            equipment: user.equipment,
             tableData: { checked: user.id === userId }
           };
           if (customUser.tableData.checked) {
@@ -118,11 +185,11 @@ export default function CheckOut(props) {
         if (props.location.pathname !== props.match.path + "/inventory") {
           props.history.push(props.match.path + "/inventory?" + parser.toString());
         }
-        return usersSelected.map((user, index) => (
+        return transactions.map((transaction, index) => (
           <CheckInCard
             key={index}
             tranIndex={index}
-            user={user}
+            {...transaction}
             updateSingleTransaction={updateSingleTransaction}
           />
         ));
@@ -192,6 +259,9 @@ export default function CheckOut(props) {
               </Button>
             </Grid>
           </Grid>
+          <Button variant="contained" color="primary" onClick={() => console.log(transactions)}>
+                test
+            </Button>
         </div>
       )}
     </div>
