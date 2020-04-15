@@ -5,9 +5,10 @@ import * as InventoryAPI from "./inventory";
 import * as EquipmentAPI from "./equipment";
 import * as OrganizationAPI from "./organization";
 import * as TransactionAPI from "./transactions";
-import { deleteDB } from "idb/with-async-ittr.js";
+import { openDB } from "idb/with-async-ittr.js";
 
-const domain = process.env.NODE_ENV === "production" ? "https://aims-backend-dot-aims-272900.appspot.com" : "http://localhost";
+const domain =
+  process.env.NODE_ENV === "production" ? "https://aims-backend-dot-aims-272900.appspot.com" : "http://localhost";
 
 const port = process.env.NODE_ENV === "production" ? "" : ":5000";
 
@@ -27,12 +28,34 @@ function changeFavicon(src) {
   document.head.appendChild(link);
 }
 
- function indexedDbExists() {
-  return ('indexedDB' in window)
- }
+function indexedDbExists() {
+  return "indexedDB" in window;
+}
 
- async function deleteIndexedDB() {
-  await deleteDB("AIMS");
- }
+async function clearIndexedDB(tables) {
+  if (indexedDbExists()) {
+    const db = await openDB("AIMS", 1, {});
+    for (let table of tables) {
+      if (db.objectStoreNames.contains(table)) {
+        let tx = await db.transaction(table, "readwrite");
+        await tx.objectStore(table).clear();
+        await tx.done;
+      }
+    }
+    db.close();
+  }
+}
 
-export { apiUrl, CredentialAPI, UsersAPI, SportsAPI, InventoryAPI, EquipmentAPI, TransactionAPI, OrganizationAPI, changeFavicon, indexedDbExists, deleteIndexedDB };
+export {
+  apiUrl,
+  CredentialAPI,
+  UsersAPI,
+  SportsAPI,
+  InventoryAPI,
+  EquipmentAPI,
+  TransactionAPI,
+  OrganizationAPI,
+  changeFavicon,
+  indexedDbExists,
+  clearIndexedDB
+};

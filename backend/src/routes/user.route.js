@@ -149,7 +149,9 @@ userRouter.put("/current", auth(), async (req, res, next) => {
     user.height = putUser.height;
     user.weight = putUser.weight;
     await user.save();
-    res.json(await user.reload());
+    await user.reload();
+    user.sports = await addDisplayNameToSports(user.sports);
+    res.json(user);
   } catch (err) {
     next(err);
   }
@@ -186,7 +188,9 @@ userRouter.put("/", auth(["isAdmin", "isEmployee"]), queryParams(["id"]), async 
     foundUser.statusId = putUser.statusId;
     foundUser.isActive = putUser.isActive === true || putUser.isActive === false ? putUser.isActive : true;
     await foundUser.save();
-    res.json(await foundUser.reload());
+    await foundUser.reload();
+    foundUser.sports = await addDisplayNameToSports(foundUser.sports);
+    res.json(foundUser);
   } catch (err) {
     next(err);
   }

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { CredentialAPI, changeFavicon, UsersAPI, deleteIndexedDB } from "./api";
+import { CredentialAPI, changeFavicon, UsersAPI, clearIndexedDB } from "./api";
 
 const Context = React.createContext();
 
@@ -62,7 +62,7 @@ export class Provider extends Component {
   logout = async () => {
     return await CredentialAPI.logout().then(async (res) => {
       this.setCredentials(res, false);
-      await deleteIndexedDB();
+      await clearIndexedDB(["users", "inventory"]);
       return res;
     });
   };

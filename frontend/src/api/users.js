@@ -68,7 +68,10 @@ async function createUser(
       },
       { withCredentials: true }
     )
-    .then((res) => {
+    .then(async (res) => {
+      if(indexedDbExists()) {
+        insertIndexedDB(res.data);
+      }
       return res.data;
     });
 }
@@ -171,7 +174,7 @@ async function getUsersFromBackend(
     });
 }
 
-async function saveUsersToLocalDB(users, userDetails) {
+async function saveUsersToLocalDB(users) {
   try {
     const db = await openDB("AIMS", 1, {
       upgrade(db) {
@@ -258,7 +261,10 @@ async function updateCurrentUser(
       },
       { withCredentials: true }
     )
-    .then((res) => {
+    .then(async (res) => {
+      if (indexedDbExists()) {
+        await updateIndexedDB(res.data);
+      }
       return res.data;
     });
 }
@@ -312,9 +318,34 @@ async function updateUser(
       },
       { params: { id }, withCredentials: true }
     )
-    .then((res) => {
+    .then(async (res) => {
+      if (indexedDbExists()) {
+        await updateIndexedDB(res.data);
+      }
       return res.data;
     });
+}
+
+async function updateIndexedDB(user) {
+  const db = await openDB("AIMS", 1, {});
+    const tx = await db.transaction("users", "readwrite");
+    const index = tx.store.index('id');
+    for await (const cursor of index.iterate()) {
+      let dbUser = { ...cursor.value };
+      if(dbUser.id === user.id) {
+        cursor.update(user);
+      }
+    }
+    await tx.done;
+  db.close();
+}
+
+async function insertIndexedDB(user) {
+  const db = await openDB("AIMS", 1, {});
+    const tx = await db.transaction("users", "readwrite");
+    tx.store.add(user);
+    await tx.done;
+  db.close();
 }
 
 export { createUser, getUsers, getUsersFromBackend, getSingleUser, getCurrentUser, updateCurrentUser, updateUser };
