@@ -93,11 +93,23 @@ export default function CheckOut(props) {
     console.log(transactions);
   }
 
-  function updateSingleTransaction(tranIndex, itemIndex, key, value) {
-    setTransactions((prev) => {
-      prev[tranIndex].items[itemIndex][key] = value;
-      return [...prev];
-    });
+
+  //Need to split into function for shared and unique list
+  function updateSingleTransaction(tranIndex, itemIndex, key, value, uniqiue) {
+    
+    if(uniqiue){
+      setTransactions((prev) => {
+        prev[tranIndex].items[itemIndex][key] = value;
+        return [...prev];
+      });
+    } else {
+      setTransactions((prev) => {
+        prev[tranIndex].sharedItems[itemIndex][key] = value;
+        return [...prev];
+      });
+    }
+
+
   }
 
 

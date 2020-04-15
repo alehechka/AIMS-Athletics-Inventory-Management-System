@@ -31,11 +31,11 @@ export default function CheckInCard({ user, items, sharedItems, tranIndex, updat
                 <Grid item xs= {3}>
                     <List style={{overflow: 'auto', maxHeight: 300, maxWidth: 360}}>
                         <ListSubheader>Shared Items</ListSubheader>
-                        {sharedItems.map( (item, index) => (
+                        {sharedItems.map( (sharedItem, index) => (
                             <ListItem key={index} dense>
                                 <Grid container spacing={2}>
                                     <Grid item xs={6}>
-                                        <ListItemText primary ={item.name} secondary = {item.size} />
+                                        <ListItemText primary ={sharedItem.name} secondary = {sharedItem.size} />
                                     </Grid>
                                     <Grid item xs={4}>
                                         <TextField
@@ -47,31 +47,31 @@ export default function CheckInCard({ user, items, sharedItems, tranIndex, updat
                                         label="Amount"
                                         onChange={(e) => {
                                             let amount = e.target.value
-                                            updateSingleTransaction(tranIndex, index, "amount", amount)
+                                            updateSingleTransaction(tranIndex, index, "amountCheckedIn", amount, false)
                                             if(amount > 0) {
-                                            updateSingleTransaction(tranIndex, index, "checked", true)
+                                            updateSingleTransaction(tranIndex, index, "checked", true, false)
                                             } else {
-                                            updateSingleTransaction(tranIndex, index, "checked", false)
+                                            updateSingleTransaction(tranIndex, index, "checked", false, false)
                                             }
                                         }}
-                                        defaultValue={item.amountCheckedIn}
+                                        defaultValue={sharedItem.amountCheckedIn}
                                         size="small"
-                                        inputProps={{min:0, step:1, max: item.amountCheckedOut}} //max should be amount checked
+                                        inputProps={{min:0, step:1, max: sharedItem.amountCheckedOut}} //max should be amount checked
                                         />
                                     </Grid>
                                     <Grid item xs ={2}>
                                         <ListItemSecondaryAction>
                                             <Checkbox
-                                            checked={item.checked}
-                                            value={item.checked}
+                                            checked={sharedItem.checked}
+                                            value={sharedItem.checked}
                                             tabIndex={-1}
                                             onClick={(e) => {
                                                 let checked = e.target.checked;
-                                                updateSingleTransaction(tranIndex, index, "checked", checked)
+                                                updateSingleTransaction(tranIndex, index, "checked", checked, false)
                                                 if(checked) {
-                                                updateSingleTransaction(tranIndex, index, "amount", 1)
+                                                updateSingleTransaction(tranIndex, index, "amountCheckedIn", 1, false)
                                                 } else {
-                                                updateSingleTransaction(tranIndex, index, "amount", 0)
+                                                updateSingleTransaction(tranIndex, index, "amountCheckedIn", 0, false)
                                                 }
                                             }}
                                             />
@@ -101,14 +101,15 @@ export default function CheckInCard({ user, items, sharedItems, tranIndex, updat
                                             label="Amount"
                                             onChange={(e) => {
                                                 let amount = e.target.value
-                                                updateSingleTransaction(tranIndex, index, "amount", amount)
+                                                updateSingleTransaction(tranIndex, index, "amountCheckedIn", amount, true)
                                                 if(amount > 0) {
-                                                updateSingleTransaction(tranIndex, index, "checked", true)
+                                                updateSingleTransaction(tranIndex, index, "checked", true, true)
                                                 } else {
-                                                updateSingleTransaction(tranIndex, index, "checked", false)
+                                                updateSingleTransaction(tranIndex, index, "checked", false, true)
                                                 }
                                             }}
                                             defaultValue={item.amountCheckedIn}
+                                            value={item.amountCheckedIn}
                                             size="small"
                                             inputProps={{min:0, step:1, max: item.amountCheckedOut}} //max should be amount checked
                                             />
@@ -121,11 +122,11 @@ export default function CheckInCard({ user, items, sharedItems, tranIndex, updat
                                                 tabIndex={-1}
                                                 onClick={(e) => {
                                                     let checked = e.target.checked;
-                                                    updateSingleTransaction(tranIndex, index, "checked", checked)
+                                                    updateSingleTransaction(tranIndex, index, "checked", checked, true)
                                                     if(checked) {
-                                                    updateSingleTransaction(tranIndex, index, "amount", 1)
+                                                    updateSingleTransaction(tranIndex, index, "amountCheckedIn", 1, true)
                                                     } else {
-                                                    updateSingleTransaction(tranIndex, index, "amount", 0)
+                                                    updateSingleTransaction(tranIndex, index, "amountCheckedIn", 0, true)
                                                     }
                                                 }}
                                                 />
