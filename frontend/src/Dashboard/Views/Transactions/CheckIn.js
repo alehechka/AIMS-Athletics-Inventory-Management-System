@@ -33,6 +33,7 @@ export default function CheckOut(props) {
 
 
   const [transactions, setTransactions] = React.useState([]);
+  const [transactionData, setTransactionData] = React.useState([]);
 
 
   React.useEffect(() => {
@@ -189,8 +190,12 @@ export default function CheckOut(props) {
     }
   }, [props.context.authorized, inventoryId, userId]);
 
+
+
   function getSteps() {
-    return ["Select Users", "Edit Transactions"];
+    return transactionData.length
+    ? ["Select Users", "Edit Transactions", "View Transactions"]
+    : ["Select Users", "Edit Transactions"];
   }
 
   function getStepContent(stepIndex) {
@@ -221,6 +226,8 @@ export default function CheckOut(props) {
             updateSingleTransaction={updateSingleTransaction}
           />
         ));
+      case 2:
+        return <Typography>table goes here</Typography>;
       default:
         return <Typography>Test</Typography>;
     }
@@ -251,12 +258,19 @@ export default function CheckOut(props) {
   const handleReset = () => {
     setActiveStep(0);
   };
+
+  const handleSubmit= () => {
+    props.showMessage("Submitting order..." ,"info");
+    setTransactionData(transactions);
+    handleNext();
+    props.showMessage("Order created successfully!");
+  }
   //
 
   return (
     <div style={{ maxWidth: "100%", marginLeft: "10px", marginRight: "10px", marginBottom: "10px" }}>
       <Typography component="h1" variant="h6">
-        Checkout Equipment {usersSelected.length ? `(${usersSelected.length} users)` : ""}
+        Check In Equipment {usersSelected.length ? `(${usersSelected.length} users)` : ""}
       </Typography>
       <Stepper nonLinear activeStep={activeStep} alternativeLabel>
         {steps.map((label, index) => (
@@ -269,7 +283,6 @@ export default function CheckOut(props) {
       </Stepper>
       {activeStep === steps.length ? (
         <div>
-          <Typography>All steps completed</Typography>
           <Button onClick={handleReset}>Reset</Button>
         </div>
       ) : (
@@ -282,14 +295,25 @@ export default function CheckOut(props) {
               </Button>
             </Grid>
             <Grid item>
-              <Button variant="contained" color="primary" onClick={handleNext}>
-                {activeStep === steps.length - 1 ? "Submit" : "Next"}
-              </Button>
+              {activeStep === 1 ? (
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  onClick={handleSubmit}
+                >
+                  Submit
+                </Button>
+              ) : activeStep === steps.length - 1 ? (
+                <Button variant="contained" color="primary" onClick={handleReset}>
+                  Reset
+                </Button>
+              ) : (
+                <Button variant="contained" color="primary" onClick={handleNext}>
+                  Next
+                </Button>
+              )}
             </Grid>
           </Grid>
-          <Button variant="contained" color="primary" onClick={() => console.log(transactions)}>
-                test
-            </Button>
         </div>
       )}
     </div>
