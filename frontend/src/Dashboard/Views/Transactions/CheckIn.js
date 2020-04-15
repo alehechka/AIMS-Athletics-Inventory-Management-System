@@ -49,13 +49,25 @@ export default function CheckOut(props) {
       )
     })
 
+
+    console.log(listOfItemIds);
     var listOfSharedItemIds = getCommonElements(listOfItemIds);
+    console.log("Shared " + listOfSharedItemIds);
 
     setTransactions(
       usersSelected.map( (user) => {
         let listOfItems = user.equipment.map( (transaction) => {
-          return (transaction.inventorySize.inventory);
+          return {
+            id: transaction.inventorySize.inventory.id,
+            name: transaction.inventorySize.inventory.name,
+            description: transaction.inventorySize.inventory.description,
+            size: transaction.inventorySize.size,
+            amountCheckedOut: transaction.count,
+            amountCheckedIn: 0,
+            checked: false};
         })
+
+        console.log(listOfItems);
 
         let listOfItemsMASTER = JSON.parse(JSON.stringify(listOfItems));
 
@@ -64,6 +76,10 @@ export default function CheckOut(props) {
         for(var element of listOfItemsMASTER){
             if(listOfSharedItemIds.includes(element.id)){
               listOfSharedItems.push(...listOfItems.splice(listOfItems.indexOf(element),1));
+              var pushed = listOfSharedItems.pop();
+              pushed.checked = true;
+              pushed.amountCheckedIn = 1;
+              listOfSharedItems.push(pushed);
             }
         }
 
