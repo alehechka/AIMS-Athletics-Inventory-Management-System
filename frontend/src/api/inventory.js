@@ -1,6 +1,4 @@
-import axios from "axios";
-
-import { apiUrl } from "./index";
+import { api } from "./index";
 
 //Gets all inventory items in the based on pagination and filters provided
 async function getInventory(page, limit, { id, surplus, sportSize, sports, gender, taxable, expendable }) {
@@ -8,10 +6,9 @@ async function getInventory(page, limit, { id, surplus, sportSize, sports, gende
   sports = sports?.map((sport) => {
     return sport?.id ?? sport;
   });
-  return await axios
-    .get(`${apiUrl}/inventory`, {
-      params: { page, limit, id, surplus, sportSizeId, gender, sports, taxable, expendable },
-      withCredentials: true
+  return await api
+    .get(`/inventory`, {
+      params: { page, limit, id, surplus, sportSizeId, gender, sports, taxable, expendable }
     })
     .then((res) => {
       return res.data;
@@ -29,20 +26,16 @@ async function createInventory({ name, description, surplus, sportSize, taxable,
         }
     ] */
   let sportSizeId = sportSize?.id ?? sportSize;
-  return await axios
-    .post(
-      `${apiUrl}/inventory`,
-      {
-        name,
-        description,
-        surplus,
-        taxable,
-        expendable,
-        sportSizeId,
-        inventorySizes
-      },
-      { withCredentials: true }
-    )
+  return await api
+    .post(`/inventory`, {
+      name,
+      description,
+      surplus,
+      taxable,
+      expendable,
+      sportSizeId,
+      inventorySizes
+    })
     .then((res) => {
       return res.data;
     });
@@ -63,9 +56,9 @@ async function updateInventory({ id, name, description, surplus, sportSize, taxa
           }
       ] */
   let sportSizeId = sportSize?.id ?? sportSize;
-  return await axios
+  return await api
     .put(
-      `${apiUrl}/inventory`,
+      `/inventory`,
       {
         name,
         description,
@@ -75,7 +68,7 @@ async function updateInventory({ id, name, description, surplus, sportSize, taxa
         sportSizeId,
         inventorySizes
       },
-      { params: { id }, withCredentials: true }
+      { params: { id } }
     )
     .then((res) => {
       return res.data;

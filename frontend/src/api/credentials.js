@@ -1,13 +1,11 @@
-import axios from "axios";
-
-import { apiUrl } from "./index";
+import { api, clearIndexedDB } from "./index";
 
 /**
  * Pings the backend to get current credentials of user logged in
  * @return credential object from backend to be used as authorization in the app state
  */
 async function getCredentials() {
-  return await axios.get(`${apiUrl}/credentials/current`, { withCredentials: true }).then((res) => {
+  return await api.get(`/credentials/current`).then((res) => {
     sessionStorage.setItem(
       "creds",
       JSON.stringify({
@@ -36,26 +34,41 @@ async function getCredentials() {
  * @return credential object from backend to be used as authorization in the app state
  */
 async function signup(email, username, password, organization, remember) {
-  return await axios
+  return await api
     .post(
-      `${apiUrl}/credentials/signup`,
-      { email, username, password, remember, organizationId: organization?.id || organization },
-      { withCredentials: true }
+      `/credentials/signup`,
+      { email, username, password, remember, organizationId: organization?.id || organization }
     )
     .then((res) => {
-      sessionStorage.setItem(
-        "creds",
-        JSON.stringify({
-          authorized: true,
-          email: res.data.email,
-          username: res.data.username,
-          isAdmin: res.data.isAdmin,
-          isEmployee: res.data.isEmployee,
-          isAthlete: res.data.isAthlete,
-          isCoach: res.data.isCoach
-        })
-      );
-      sessionStorage.setItem("org", JSON.stringify(res.data.organization));
+      if (remember) {
+        localStorage.setItem(
+          "creds",
+          JSON.stringify({
+            authorized: true,
+            email: res.data.email,
+            username: res.data.username,
+            isAdmin: res.data.isAdmin,
+            isEmployee: res.data.isEmployee,
+            isAthlete: res.data.isAthlete,
+            isCoach: res.data.isCoach
+          })
+        );
+        localStorage.setItem("org", JSON.stringify(res.data.organization));
+      } else {
+        sessionStorage.setItem(
+          "creds",
+          JSON.stringify({
+            authorized: true,
+            email: res.data.email,
+            username: res.data.username,
+            isAdmin: res.data.isAdmin,
+            isEmployee: res.data.isEmployee,
+            isAthlete: res.data.isAthlete,
+            isCoach: res.data.isCoach
+          })
+        );
+        sessionStorage.setItem("org", JSON.stringify(res.data.organization));
+      }
       return res.data;
     });
 }
@@ -69,22 +82,38 @@ async function signup(email, username, password, organization, remember) {
  * @return credential object from backend to be used as authorization in the app state
  */
 async function login(email, password, remember) {
-  return await axios
-    .post(`${apiUrl}/credentials/login`, { email, password, remember }, { withCredentials: true })
+  return await api
+    .post(`/credentials/login`, { email, password, remember })
     .then((res) => {
-      sessionStorage.setItem(
-        "creds",
-        JSON.stringify({
-          authorized: true,
-          email: res.data.email,
-          username: res.data.username,
-          isAdmin: res.data.isAdmin,
-          isEmployee: res.data.isEmployee,
-          isAthlete: res.data.isAthlete,
-          isCoach: res.data.isCoach
-        })
-      );
-      sessionStorage.setItem("org", JSON.stringify(res.data.organization));
+      if (remember) {
+        localStorage.setItem(
+          "creds",
+          JSON.stringify({
+            authorized: true,
+            email: res.data.email,
+            username: res.data.username,
+            isAdmin: res.data.isAdmin,
+            isEmployee: res.data.isEmployee,
+            isAthlete: res.data.isAthlete,
+            isCoach: res.data.isCoach
+          })
+        );
+        localStorage.setItem("org", JSON.stringify(res.data.organization));
+      } else {
+        sessionStorage.setItem(
+          "creds",
+          JSON.stringify({
+            authorized: true,
+            email: res.data.email,
+            username: res.data.username,
+            isAdmin: res.data.isAdmin,
+            isEmployee: res.data.isEmployee,
+            isAthlete: res.data.isAthlete,
+            isCoach: res.data.isCoach
+          })
+        );
+        sessionStorage.setItem("org", JSON.stringify(res.data.organization));
+      }
       return res.data;
     });
 }
@@ -96,8 +125,11 @@ async function login(email, password, remember) {
 async function logout() {
   sessionStorage.removeItem("creds");
   sessionStorage.removeItem("org");
+  localStorage.removeItem("creds");
+  localStorage.removeItem("org");
+  await clearIndexedDB(["users", "inventory"]);
 
-  return await axios.get(`${apiUrl}/credentials/logout`, { withCredentials: true }).then(() => {
+  return await api.get(`/credentials/logout`).then(() => {
     return null;
   });
 }
@@ -113,17 +145,16 @@ async function logout() {
  * @return message describing if the operation was successful
  */
 async function updateCurrentCredentials({ email, username, isEmployee, isCoach, isAthlete }) {
-  return await axios
+  return await api
     .put(
-      `${apiUrl}/credentials/current`,
+      `/credentials/current`,
       {
         email,
         username,
         isEmployee,
         isCoach,
         isAthlete
-      },
-      { withCredentials: true }
+      }
     )
     .then((res) => {
       return res.data;
@@ -150,9 +181,9 @@ async function updateCredentials({
   isCoach,
   isAthlete
 }) {
-  return await axios
+  return await api
     .put(
-      `${apiUrl}/credentials`,
+      `/credentials`,
       {
         email,
         username,
@@ -161,7 +192,7 @@ async function updateCredentials({
         isCoach,
         isAthlete
       },
-      { params: id, withCredentials: true }
+      { params: id }
     )
     .then((res) => {
       return res.data;
@@ -176,8 +207,8 @@ async function updateCredentials({
  * @return message describing if the operation was successful
  */
 async function changePassword(password, newPassword) {
-  return await axios
-    .put(`${apiUrl}/credentials/changePassword`, { password, newPassword }, { withCredentials: true })
+  return await api
+    .put(`/credentials/changePassword`, { password, newPassword })
     .then((res) => {
       return res.data;
     });

@@ -7,7 +7,7 @@ export default function SportsChip({ sport }) {
     <Chip
       label={sport.displayName}
       style={{ margin: 2 }}
-      icon={<Icon className={sport.icon}>{sport.icon}</Icon>}
+      icon={sport.icon && <Icon className={sport.icon}>{sport.icon}</Icon>}
     ></Chip>
   );
 }

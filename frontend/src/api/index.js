@@ -6,6 +6,8 @@ import * as EquipmentAPI from "./equipment";
 import * as OrganizationAPI from "./organization";
 import * as TransactionAPI from "./transactions";
 import { openDB } from "idb/with-async-ittr.js";
+import axios from 'axios';
+import AxiosOffline from 'axios-offline';
 
 const domain =
   process.env.NODE_ENV === "production" ? "https://aims-backend-dot-aims-272900.appspot.com" : "http://localhost";
@@ -15,6 +17,17 @@ const port = process.env.NODE_ENV === "production" ? "" : ":5000";
 const version = 1;
 
 const apiUrl = `${domain}${port}/api/v${version}`;
+
+const AxiosOfflineAdapter = AxiosOffline({
+  defaultAdapter: axios.defaults.adapter, //require, basic adapter
+  storageName: "axios-offline", //optional, default: "axios-stack"
+});
+
+let api = axios.create({
+  adapter: AxiosOfflineAdapter,
+  baseURL: apiUrl,
+  withCredentials: true
+});
 
 function changeFavicon(src) {
   var link = document.createElement("link");
@@ -47,7 +60,7 @@ async function clearIndexedDB(tables) {
 }
 
 export {
-  apiUrl,
+  api,
   CredentialAPI,
   UsersAPI,
   SportsAPI,

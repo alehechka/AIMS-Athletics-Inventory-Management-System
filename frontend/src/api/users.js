@@ -1,6 +1,4 @@
-import axios from "axios";
-
-import { apiUrl, indexedDbExists } from "./index";
+import { api, indexedDbExists } from "./index";
 
 import { openDB } from "idb/with-async-ittr.js";
 
@@ -37,9 +35,9 @@ async function createUser(
     userSizes
   }
 ) {
-  return await axios
+  return await api
     .post(
-      `${apiUrl}/users`,
+      `/users`,
       {
         email,
         username,
@@ -65,8 +63,7 @@ async function createUser(
         statusId: status?.id,
         sports,
         userSizes
-      },
-      { withCredentials: true }
+      }
     )
     .then(async (res) => {
       if(indexedDbExists()) {
@@ -105,10 +102,9 @@ async function getSingleUserFromIndexedDB(id) {
 }
 
 async function getSingleUserFromBackend(id) {
-  return await axios
-    .get(`${apiUrl}/users`, {
-      params: { id },
-      withCredentials: true
+  return await api
+    .get(`/users`, {
+      params: { id }
     })
     .then((res) => {
       return res.data;
@@ -161,10 +157,9 @@ async function getUsersFromBackend(
   sports = sports?.map((sport) => {
     return sport?.id ?? sport;
   });
-  return await axios
-    .get(`${apiUrl}/users`, {
-      params: { page, limit, gender, sports, isAdmin, isEmployee, isCoach, isAthlete, withDetails },
-      withCredentials: true
+  return await api
+    .get(`/users`, {
+      params: { page, limit, gender, sports, isAdmin, isEmployee, isCoach, isAthlete, withDetails }
     })
     .then(async (res) => {
       if (indexedDbExists()) {
@@ -208,7 +203,7 @@ async function saveUsersToLocalDB(users) {
 }
 
 async function getCurrentUser() {
-  return await axios.get(`${apiUrl}/users/current`, { withCredentials: true }).then((res) => {
+  return await api.get(`/users/current`).then((res) => {
     return res.data;
   });
 }
@@ -237,9 +232,9 @@ async function updateCurrentUser(
     userSizes
   }
 ) {
-  return await axios
+  return await api
     .put(
-      `${apiUrl}/users/current`,
+      `/users/current`,
       {
         schoolId,
         firstName,
@@ -258,8 +253,7 @@ async function updateCurrentUser(
         statusId: status?.id,
         sports,
         userSizes
-      },
-      { withCredentials: true }
+      }
     )
     .then(async (res) => {
       if (indexedDbExists()) {
@@ -294,9 +288,9 @@ async function updateUser(
     userSizes
   }
 ) {
-  return await axios
+  return await api
     .put(
-      `${apiUrl}/users`,
+      `/users`,
       {
         schoolId,
         firstName,
@@ -316,7 +310,7 @@ async function updateUser(
         sports,
         userSizes
       },
-      { params: { id }, withCredentials: true }
+      { params: { id } }
     )
     .then(async (res) => {
       if (indexedDbExists()) {

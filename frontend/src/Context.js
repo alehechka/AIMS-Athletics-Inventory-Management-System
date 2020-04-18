@@ -1,13 +1,13 @@
 import React, { Component } from "react";
-import { CredentialAPI, changeFavicon, UsersAPI, clearIndexedDB } from "./api";
+import { CredentialAPI, changeFavicon, UsersAPI } from "./api";
 
 const Context = React.createContext();
 
 export class Provider extends Component {
   state = {
-    credentials: JSON.parse(sessionStorage.getItem("creds")) || null,
-    organization: JSON.parse(sessionStorage.getItem("org")) || null,
-    authorized: sessionStorage.getItem("creds") ? true : false,
+    credentials: JSON.parse(localStorage.getItem("creds")) || JSON.parse(sessionStorage.getItem("creds")) || null,
+    organization: JSON.parse(localStorage.getItem("org")) || JSON.parse(sessionStorage.getItem("org")) || null,
+    authorized: localStorage.getItem("creds") || sessionStorage.getItem("creds") ? true : false,
     loadingCredentials: true
   };
 
@@ -62,7 +62,6 @@ export class Provider extends Component {
   logout = async () => {
     return await CredentialAPI.logout().then(async (res) => {
       this.setCredentials(res, false);
-      await clearIndexedDB(["users", "inventory"]);
       return res;
     });
   };

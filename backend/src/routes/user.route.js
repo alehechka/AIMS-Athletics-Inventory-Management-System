@@ -243,7 +243,7 @@ async function getUsers(user, {
           include: [
             {
               model: SportSize,
-              attributes: userId || credentialId ? ["sportId", "name", "sizes"] : []
+              attributes: userId || credentialId ? ["id", "name", "sizes"] : []
             }
           ]
         },

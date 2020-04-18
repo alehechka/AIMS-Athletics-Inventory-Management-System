@@ -290,6 +290,9 @@ const Inventory = db.define(
   }
 );
 
+Sport.hasMany(Inventory, { foreignKey: { allowNull: false } });
+Inventory.belongsTo(Sport, { foreignKey: { allowNull: false } });
+
 SportSize.hasMany(Inventory, { foreignKey: { allowNull: false } });
 Inventory.belongsTo(SportSize, { foreignKey: { allowNull: false } });
 

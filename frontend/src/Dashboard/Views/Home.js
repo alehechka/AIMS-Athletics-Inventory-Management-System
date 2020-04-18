@@ -34,7 +34,7 @@ export default function Home(props) {
   }
   const transactions = [
     {
-      issuedTo: user,
+      user: user,
       items: [
         {
           checked:true,
@@ -51,11 +51,12 @@ export default function Home(props) {
   ];
   const transactions2 = [
     {
-      issuedTo: user,
+      user: user,
       items: [
         {
           equipment: {id: 1},
-          amount: 2
+          amount: 2,
+          checked: true
         },
       ]
     }

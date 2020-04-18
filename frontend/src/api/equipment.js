@@ -1,6 +1,4 @@
-import axios from "axios";
-
-import { apiUrl } from "./index";
+import { api } from "./index";
 
 /**
  * Allows admins, employees, and coaches to view equipment of users
@@ -28,10 +26,9 @@ async function getEquipment(
   sports = sports?.map((sport) => {
     return sport?.id ?? sport;
   });
-  return await axios
-    .get(`${apiUrl}/equipment`, {
-      params: { page, limit, userId, sports, sportSizeId, inventoryId, taxable, surplus, expendable, count },
-      withCredentials: true
+  return await api
+    .get(`/equipment`, {
+      params: { page, limit, userId, sports, sportSizeId, inventoryId, taxable, surplus, expendable, count }
     })
     .then((res) => {
       return res.data;
@@ -47,10 +44,9 @@ async function getEquipment(
 async function getCurrentEquipment({
   count // will return items with count greater than or equal to provided (default is 1)
 }) {
-  return await axios
-    .get(`${apiUrl}/equipment/current`, {
-      params: { count },
-      withCredentials: true
+  return await api
+    .get(`/equipment/current`, {
+      params: { count }
     })
     .then((res) => {
       return res.data;
