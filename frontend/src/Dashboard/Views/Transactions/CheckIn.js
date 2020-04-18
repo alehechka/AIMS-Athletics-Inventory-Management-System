@@ -51,15 +51,16 @@ export default function CheckOut(props) {
     })
 
 
-    console.log(listOfItemIds);
+    //console.log(listOfItemIds);
     var listOfSharedItemIds = getCommonElements(listOfItemIds);
-    console.log("Shared " + listOfSharedItemIds);
+    //console.log("Shared " + listOfSharedItemIds);
 
     setTransactions(
       usersSelected.map( (user) => {
         let listOfItems = user.equipment.map( (transaction) => {
           return {
-            id: transaction.inventorySize.inventory.id,
+            itemId: transaction.inventorySize.inventory.id,
+            inventoryId : transaction.id,
             name: transaction.inventorySize.inventory.name,
             description: transaction.inventorySize.inventory.description,
             size: transaction.inventorySize.size,
@@ -68,19 +69,19 @@ export default function CheckOut(props) {
             checked: false};
         })
 
-        console.log(listOfItems);
+       
 
         let listOfItemsMASTER = JSON.parse(JSON.stringify(listOfItems));
 
+        //console.log(listOfItemsMASTER);
         var listOfSharedItems = []; 
 
         for(var element of listOfItemsMASTER){
-            if(listOfSharedItemIds.includes(element.id)){
-              listOfSharedItems.push(...listOfItems.splice(listOfItems.indexOf(element),1));
-              var pushed = listOfSharedItems.pop();
-              pushed.checked = true;
-              pushed.amountCheckedIn = 1;
-              listOfSharedItems.push(pushed);
+            if(listOfSharedItemIds.includes(element.itemId)){
+              element.checked = true;
+              element.amountCheckedIn = 1;
+              listOfSharedItems.push(element);
+              listOfItems.splice(element,1);
             }
         }
 
@@ -91,7 +92,7 @@ export default function CheckOut(props) {
         }
       })
     )
-    console.log(transactions);
+    //console.log(transactions);
   }
 
 
@@ -314,6 +315,9 @@ export default function CheckOut(props) {
               )}
             </Grid>
           </Grid>
+          <Button variant="contained" color="primary" onClick={() => console.log(transactions)}>
+            Test
+          </Button>
         </div>
       )}
     </div>
