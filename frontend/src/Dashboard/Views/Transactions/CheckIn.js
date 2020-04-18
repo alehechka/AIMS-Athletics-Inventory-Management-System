@@ -9,17 +9,9 @@ import Chip from "@material-ui/core/Chip";
 import Icon from "@material-ui/core/Icon";
 import StepButton from "@material-ui/core/StepButton";
 import Grid from "@material-ui/core/Grid";
-import Card from "@material-ui/core/Card";
-import CardActions from "@material-ui/core/CardActions";
-import CardContent from "@material-ui/core/CardContent";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-import ListItemText from "@material-ui/core/ListItemText";
-import Checkbox from "@material-ui/core/Checkbox";
+import TransactionTable from "./TransactionTable";
 import CheckInCard from "./CheckInCard";
-import { InventoryAPI, UsersAPI } from "../../../api";
+import {UsersAPI, TransactionAPI } from "../../../api";
 
 export default function CheckOut(props) {
   const parser = new URLSearchParams(props.location.search);
@@ -34,6 +26,8 @@ export default function CheckOut(props) {
 
   const [transactions, setTransactions] = React.useState([]);
   const [transactionData, setTransactionData] = React.useState([]);
+  const [isTransactionLoading, setTransactionLoading] = React.useState(true);
+  
 
 
   React.useEffect(() => {
@@ -51,16 +45,15 @@ export default function CheckOut(props) {
     })
 
 
-    //console.log(listOfItemIds);
     var listOfSharedItemIds = getCommonElements(listOfItemIds);
-    //console.log("Shared " + listOfSharedItemIds);
+
 
     setTransactions(
       usersSelected.map( (user) => {
         let listOfItems = user.equipment.map( (transaction) => {
           return {
-            itemId: transaction.inventorySize.inventory.id,
-            inventoryId : transaction.id,
+            inventoryId: transaction.inventorySize.inventory.id,
+            equipmentId : transaction.id,
             name: transaction.inventorySize.inventory.name,
             description: transaction.inventorySize.inventory.description,
             size: transaction.inventorySize.size,
@@ -73,11 +66,10 @@ export default function CheckOut(props) {
 
         let listOfItemsMASTER = JSON.parse(JSON.stringify(listOfItems));
 
-        //console.log(listOfItemsMASTER);
         var listOfSharedItems = []; 
 
         for(var element of listOfItemsMASTER){
-            if(listOfSharedItemIds.includes(element.itemId)){
+            if(listOfSharedItemIds.includes(element.inventoryId)){
               element.checked = true;
               element.amountCheckedIn = 1;
               listOfSharedItems.push(element);
@@ -216,8 +208,8 @@ export default function CheckOut(props) {
           />
         );
       case 1:
-        if (props.location.pathname !== props.match.path + "/inventory") {
-          props.history.push(props.match.path + "/inventory?" + parser.toString());
+        if (props.location.pathname !== props.match.path + "/checkin") {
+          props.history.push(props.match.path + "/checkin?" + parser.toString());
         }
         return transactions.map((transaction, index) => (
           <CheckInCard
@@ -228,7 +220,12 @@ export default function CheckOut(props) {
           />
         ));
       case 2:
-        return <Typography>table goes here</Typography>;
+        return (
+          <TransactionTable
+            transactionData={transactionData}
+            isTransactionLoading={isTransactionLoading}
+          />
+        );
       default:
         return <Typography>Test</Typography>;
     }
@@ -236,11 +233,7 @@ export default function CheckOut(props) {
 
   //STEPPER CONFIG
   let step = 0;
-  if (props.location.pathname.includes("/inventory")) {
-    step = 1;
-  } else if (props.location.pathname.includes("/checkOut")) {
-    step = 2;
-  }
+
   const [activeStep, setActiveStep] = React.useState(step);
   const steps = getSteps();
 
@@ -262,11 +255,57 @@ export default function CheckOut(props) {
 
   const handleSubmit= () => {
     props.showMessage("Submitting order..." ,"info");
-    setTransactionData(transactions);
-    handleNext();
-    props.showMessage("Order created successfully!");
+
+    var formattedTransactions = 
+      transactions.map( (transaction) => {
+        let items = transaction.items
+            .filter( (item)  => item.checked).map( (item) => {
+                return{
+                  equipment: item.equipmentId,
+                  amount: item.amountCheckedIn
+                }
+            });
+
+        let sharedItems = transaction.sharedItems
+            .filter( (item)  => item.checked).map( (item) => {
+                return{
+                  equipment: item.equipmentId,
+                  amount: item.amountCheckedIn
+                }
+            });
+
+        let combinedItems = items.concat(sharedItems);
+
+        return {
+          issuedTo: transaction.user.id,
+          items: combinedItems
+        }
+      })
+
+    TransactionAPI.checkIn(formattedTransactions).then( (formattedTransactions)  => {
+      setUsersSelected([]);
+      updateUserData(prev => {
+        return prev.map(user => {
+          return {
+            ...user,
+            tableData: {
+              ...user.tableData,
+              checked: false
+            }
+          }
+        })
+      });
+      setTransactionData(formattedTransactions);
+      setTransactionLoading(false);
+      props.showMessage("Order created successfully!");
+      handleNext();
+    })
+    .catch((err) => {
+      console.log(err);
+      props.showMessage("Order failed to complete.", "error");
+    });   
   }
-  //
+
 
   return (
     <div style={{ maxWidth: "100%", marginLeft: "10px", marginRight: "10px", marginBottom: "10px" }}>
@@ -301,6 +340,20 @@ export default function CheckOut(props) {
                   variant="contained"
                   color="secondary"
                   onClick={handleSubmit}
+                  disabled = {usersSelected.length === 0 || 
+                  (
+                    transactions.filter((tran) => {
+                      return tran.items.filter((item) => {
+                        return item.checked;
+                      }).length;
+                    }).length === 0
+                    &&
+                    transactions.filter((tran) => {
+                      return tran.sharedItems.filter((item) => {
+                        return item.checked;
+                      }).length;
+                    }).length === 0
+                  )}
                 >
                   Submit
                 </Button>

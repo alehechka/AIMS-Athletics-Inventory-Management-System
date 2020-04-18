@@ -18,7 +18,6 @@ import TextField from "@material-ui/core/TextField";
 import ListSubheader from "@material-ui/core/ListSubheader";
 
 export default function CheckInCard({ user, items, sharedItems, tranIndex, updateSingleTransaction }) {
-    console.log(items);
   return (
     <Card style={{ marginBottom: "5px" }} variant="outlined">
         <CardContent>
