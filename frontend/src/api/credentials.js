@@ -192,7 +192,7 @@ async function updateCredentials({
         isCoach,
         isAthlete
       },
-      { params: id }
+      { params: { id } }
     )
     .then((res) => {
       return res.data;

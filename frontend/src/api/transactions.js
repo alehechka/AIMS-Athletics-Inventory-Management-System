@@ -49,8 +49,8 @@ async function checkIn(transactions, comment) {
         .filter((item) => item.checked)
         .map((item) => {
           return {
-            amount: item.amount,
-            equipment: item.equipment?.id || item.equipment
+            amount: item.amountCheckedIn,
+            equipment: item.equipment?.id || item.equipmentId
           };
         })
     };

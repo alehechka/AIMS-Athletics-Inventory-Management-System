@@ -5,92 +5,82 @@ import Stepper from "@material-ui/core/Stepper";
 import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
 import MaterialTable from "material-table";
-import SportsChip from '../Components/SportsChip';
+import SportsChip from "../Components/SportsChip";
 import StepButton from "@material-ui/core/StepButton";
 import Grid from "@material-ui/core/Grid";
 import TransactionTable from "./TransactionTable";
 import CheckInCard from "./CheckInCard";
-import {UsersAPI, TransactionAPI } from "../../../api";
+import { UsersAPI, TransactionAPI } from "../../../api";
 
 export default function CheckOut(props) {
   const parser = new URLSearchParams(props.location.search);
   const userId = parseInt(parser.get("userId"));
   const inventoryId = parseInt(parser.get("inventoryId"));
-  
+
   const [usersSelected, setUsersSelected] = React.useState([]);
   const [userColumns, updateUserColumns] = React.useState([]);
   const [userData, updateUserData] = React.useState([]);
   const [isUserLoading, updateUserLoading] = React.useState(true);
 
-
   const [transactions, setTransactions] = React.useState([]);
   const [transactionData, setTransactionData] = React.useState([]);
   const [isTransactionLoading, setTransactionLoading] = React.useState(true);
-  
-
 
   React.useEffect(() => {
     updateTransactions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [usersSelected]);
 
-  function updateTransactions(){
-    var listOfItemIds = usersSelected.map( (user) => {
-      return (
-          user.equipment.map( (transaction) => {
-            return (transaction.inventorySize.inventory.id);
-        })
-      )
-    })
-
+  function updateTransactions() {
+    var listOfItemIds = usersSelected.map((user) => {
+      return user.equipment.map((transaction) => {
+        return transaction.inventorySize.inventory.id;
+      });
+    });
 
     var listOfSharedItemIds = getCommonElements(listOfItemIds);
 
-
     setTransactions(
-      usersSelected.map( (user) => {
-        let listOfItems = user.equipment.map( (transaction) => {
+      usersSelected.map((user) => {
+        let listOfItems = user.equipment.map((transaction) => {
           return {
             inventoryId: transaction.inventorySize.inventory.id,
-            equipmentId : transaction.id,
+            equipmentId: transaction.id,
             name: transaction.inventorySize.inventory.name,
             description: transaction.inventorySize.inventory.description,
             size: transaction.inventorySize.size,
             amountCheckedOut: transaction.count,
             amountCheckedIn: 0,
-            checked: false};
-        })
-
-       
+            checked: false
+          };
+        });
 
         let listOfItemsMASTER = JSON.parse(JSON.stringify(listOfItems));
 
-        var listOfSharedItems = []; 
+        var listOfSharedItems = [];
 
-        for(var element of listOfItemsMASTER){
-            if(listOfSharedItemIds.includes(element.inventoryId)){
-              element.checked = true;
-              element.amountCheckedIn = 1;
-              listOfSharedItems.push(element);
-              listOfItems.splice(element,1);
-            }
+        for (var element of listOfItemsMASTER) {
+          if (listOfSharedItemIds.includes(element.inventoryId)) {
+            element.checked = true;
+            element.amountCheckedIn = 1;
+            listOfSharedItems.push(element);
+            listOfItems.splice(element, 1);
+          }
         }
 
         return {
           user,
           items: listOfItems,
           sharedItems: listOfSharedItems
-        }
+        };
       })
-    )
+    );
     //console.log(transactions);
   }
 
-
   //Need to split into function for shared and unique list
   function updateSingleTransaction(tranIndex, itemIndex, key, value, uniqiue) {
-    
-    if(uniqiue){
+    if (uniqiue) {
       setTransactions((prev) => {
         prev[tranIndex].items[itemIndex][key] = value;
         return [...prev];
@@ -101,32 +91,28 @@ export default function CheckOut(props) {
         return [...prev];
       });
     }
-
-
   }
 
-
   function getCommonElements(arrays) {
-    
-    if(arrays.length == 0){
-      arrays =[-1];
+    if (arrays.length === 0) {
+      arrays = [-1];
     }
-    var currentValues = {};
-    var commonValues = {};
-    for (var i = arrays[0].length -1; i >=0; i--){
-      currentValues[arrays[0][i]] = 1; 
+    let currentValues = {};
+    let commonValues = {};
+    for (let i = arrays[0].length - 1; i >= 0; i--) {
+      currentValues[arrays[0][i]] = 1;
     }
-    for (var i = arrays.length-1; i>0; i--){
-      var currentArray = arrays[i];
-      for (var j = currentArray.length-1; j >=0; j--){
-        if (currentArray[j] in currentValues){
-          commonValues[currentArray[j]] = 1; 
+    for (let i = arrays.length - 1; i > 0; i--) {
+      let currentArray = arrays[i];
+      for (let j = currentArray.length - 1; j >= 0; j--) {
+        if (currentArray[j] in currentValues) {
+          commonValues[currentArray[j]] = 1;
         }
       }
       currentValues = commonValues;
       commonValues = {};
     }
-    return Object.keys(currentValues).map(function(value){
+    return Object.keys(currentValues).map(function(value) {
       return parseInt(value);
     });
   }
@@ -149,10 +135,7 @@ export default function CheckOut(props) {
           {
             title: "Sport(s)",
             field: "sports",
-            render: (rowData) =>
-              rowData.sports.map((val, index) => (
-                <SportsChip key={index} sport={val}/>
-              )),
+            render: (rowData) => rowData.sports.map((val, index) => <SportsChip key={index} sport={val} />),
             customFilterAndSearch: (term, rowData) =>
               rowData.sports
                 .map((val) => val.displayName)
@@ -182,12 +165,10 @@ export default function CheckOut(props) {
     }
   }, [props.context.authorized, inventoryId, userId]);
 
-
-
   function getSteps() {
     return transactionData.length
-    ? ["Select Users", "Edit Transactions", "View Transactions"]
-    : ["Select Users", "Edit Transactions"];
+      ? ["Select Users", "Edit Transactions", "View Transactions"]
+      : ["Select Users", "Edit Transactions"];
   }
 
   function getStepContent(stepIndex) {
@@ -219,12 +200,7 @@ export default function CheckOut(props) {
           />
         ));
       case 2:
-        return (
-          <TransactionTable
-            transactionData={transactionData}
-            isTransactionLoading={isTransactionLoading}
-          />
-        );
+        return <TransactionTable transactionData={transactionData} isTransactionLoading={isTransactionLoading} />;
       default:
         return <Typography>Test</Typography>;
     }
@@ -252,59 +228,40 @@ export default function CheckOut(props) {
     setActiveStep(0);
   };
 
-  const handleSubmit= () => {
-    props.showMessage("Submitting order..." ,"info");
+  const handleSubmit = () => {
+    props.showMessage("Submitting order...", "info");
 
-    var formattedTransactions = 
-      transactions.map( (transaction) => {
-        let items = transaction.items
-            .filter( (item)  => item.checked).map( (item) => {
-                return{
-                  equipment: item.equipmentId,
-                  amount: item.amountCheckedIn
-                }
-            });
+    var formattedTransactions = transactions.map((transaction) => {
+      return {
+        ...transaction,
+        items: transaction.items.concat(transaction.sharedItems)
+      }
+    });
 
-        let sharedItems = transaction.sharedItems
-            .filter( (item)  => item.checked).map( (item) => {
-                return{
-                  equipment: item.equipmentId,
-                  amount: item.amountCheckedIn
-                }
-            });
-
-        let combinedItems = items.concat(sharedItems);
-
-        return {
-          issuedTo: transaction.user.id,
-          items: combinedItems
-        }
+    TransactionAPI.checkIn(formattedTransactions)
+      .then((formattedTransactions) => {
+        setUsersSelected([]);
+        updateUserData((prev) => {
+          return prev.map((user) => {
+            return {
+              ...user,
+              tableData: {
+                ...user.tableData,
+                checked: false
+              }
+            };
+          });
+        });
+        setTransactionData(formattedTransactions);
+        setTransactionLoading(false);
+        props.showMessage("Order created successfully!");
+        handleNext();
       })
-
-    TransactionAPI.checkIn(formattedTransactions).then( (formattedTransactions)  => {
-      setUsersSelected([]);
-      updateUserData(prev => {
-        return prev.map(user => {
-          return {
-            ...user,
-            tableData: {
-              ...user.tableData,
-              checked: false
-            }
-          }
-        })
+      .catch((err) => {
+        console.log(err);
+        props.showMessage("Order failed to complete.", "error");
       });
-      setTransactionData(formattedTransactions);
-      setTransactionLoading(false);
-      props.showMessage("Order created successfully!");
-      handleNext();
-    })
-    .catch((err) => {
-      console.log(err);
-      props.showMessage("Order failed to complete.", "error");
-    });   
-  }
-
+  };
 
   return (
     <div style={{ maxWidth: "100%", marginLeft: "10px", marginRight: "10px", marginBottom: "10px" }}>
@@ -339,20 +296,19 @@ export default function CheckOut(props) {
                   variant="contained"
                   color="secondary"
                   onClick={handleSubmit}
-                  disabled = {usersSelected.length === 0 || 
-                  (
-                    transactions.filter((tran) => {
+                  disabled={
+                    usersSelected.length === 0 ||
+                    (transactions.filter((tran) => {
                       return tran.items.filter((item) => {
                         return item.checked;
                       }).length;
-                    }).length === 0
-                    &&
-                    transactions.filter((tran) => {
-                      return tran.sharedItems.filter((item) => {
-                        return item.checked;
-                      }).length;
-                    }).length === 0
-                  )}
+                    }).length === 0 &&
+                      transactions.filter((tran) => {
+                        return tran.sharedItems.filter((item) => {
+                          return item.checked;
+                        }).length;
+                      }).length === 0)
+                  }
                 >
                   Submit
                 </Button>
@@ -375,4 +331,3 @@ export default function CheckOut(props) {
     </div>
   );
 }
-

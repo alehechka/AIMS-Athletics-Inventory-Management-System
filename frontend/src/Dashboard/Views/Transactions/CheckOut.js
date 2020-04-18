@@ -90,7 +90,7 @@ export default function CheckOut(props) {
             name: inventory.name,
             description: inventory.description,
             sportSize: inventory.sportSize.id,
-            sports: [inventory.sportSize.sport],
+            sports: [inventory.sport],
             price: inventory.averagePrice,
             quantity: inventory.totalQuantity,
             tableData: { checked: inventory.id === inventoryId }
