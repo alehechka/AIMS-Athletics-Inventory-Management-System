@@ -6,8 +6,8 @@ import * as EquipmentAPI from "./equipment";
 import * as OrganizationAPI from "./organization";
 import * as TransactionAPI from "./transactions";
 import { openDB } from "idb/with-async-ittr.js";
-import axios from 'axios';
-import AxiosOffline from 'axios-offline';
+import axios from "axios";
+import AxiosOffline from "axios-offline";
 
 const domain =
   process.env.NODE_ENV === "production" ? "https://aims-backend-dot-aims-272900.appspot.com" : "http://localhost";
@@ -20,7 +20,7 @@ const apiUrl = `${domain}${port}/api/v${version}`;
 
 const AxiosOfflineAdapter = AxiosOffline({
   defaultAdapter: axios.defaults.adapter, //require, basic adapter
-  storageName: "axios-offline", //optional, default: "axios-stack"
+  storageName: "axios-offline" //optional, default: "axios-stack"
 });
 
 let api = axios.create({
@@ -43,6 +43,51 @@ function changeFavicon(src) {
 
 function indexedDbExists() {
   return "indexedDB" in window;
+}
+
+async function createIndexedDB() {
+  if (indexedDbExists()) {
+    try {
+      await openDB("AIMS", 1, {
+        upgrade(db) {
+          // Create a store of objects
+          if (!db.objectStoreNames.contains("users")) {
+            const store = db.createObjectStore("users", {
+              // The 'id' property of the object will be the key.
+              keyPath: "id",
+              // If it isn't explicitly set, create a value by auto incrementing.
+              autoIncrement: true
+            });
+            store.createIndex("id", "id");
+            store.createIndex("firstName", "firstName");
+            store.createIndex("lastName", "lastName");
+          }
+          if (!db.objectStoreNames.contains("inventory")) {
+            const store = db.createObjectStore("inventory", {
+              // The 'id' property of the object will be the key.
+              keyPath: "id",
+              // If it isn't explicitly set, create a value by auto incrementing.
+              autoIncrement: true
+            });
+            store.createIndex("id", "id");
+            store.createIndex("name", "name");
+          }
+          if (!db.objectStoreNames.contains("sports")) {
+            const store = db.createObjectStore("sports", {
+              // The 'id' property of the object will be the key.
+              keyPath: "id",
+              // If it isn't explicitly set, create a value by auto incrementing.
+              autoIncrement: true
+            });
+            store.createIndex("id", "id");
+            store.createIndex("name", "name");
+          }
+        }
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  }
 }
 
 async function clearIndexedDB(tables) {
@@ -68,6 +113,7 @@ export {
   EquipmentAPI,
   TransactionAPI,
   OrganizationAPI,
+  createIndexedDB,
   changeFavicon,
   indexedDbExists,
   clearIndexedDB

@@ -1,10 +1,60 @@
-import { api } from "./index";
+import { api, indexedDbExists } from "./index";
+
+import { openDB } from "idb/with-async-ittr.js";
 
 //Gets all sports in the user's organization
 async function getSports() {
+  try {
+    return await getSportsFromIndexedDB();
+  } catch (err) {
+    console.error(err);
+    return await getSportsFromBackend();
+  }
+}
+
+async function getSportsFromIndexedDB() {
+  try {
+    if (indexedDbExists()) {
+      const db = await openDB("AIMS", 1, {});
+      let dbSports = [];
+      if (db.objectStoreNames.contains("sports")) {
+        dbSports = await db.getAll("sports");
+      }
+      db.close();
+      if (dbSports.length) {
+        return dbSports;
+      }
+    }
+    throw new Error("No entries found in local storage.");
+  } catch (err) {
+    throw err;
+  }
+}
+
+async function getSportsFromBackend() {
   return await api.get(`/sports`).then((res) => {
+    if (indexedDbExists()) {
+      saveSportsToIndexedDB(res.data);
+    }
     return res.data;
   });
+}
+
+async function saveSportsToIndexedDB(sports) {
+  try {
+    const db = await openDB("AIMS", 1, {});
+    {
+      const tx = await db.transaction("sports", "readwrite");
+      await tx.objectStore("sports").clear();
+      for (let sport of sports) {
+        tx.store.add(sport);
+      }
+      await tx.done;
+    }
+    db.close();
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 //Gets a single sport by ID
@@ -17,6 +67,9 @@ async function getSport(id) {
 //Allows an admin to create a sport
 async function createSport({ name, gender, icon }) {
   return await api.post(`/sports`, { name, gender, icon }).then((res) => {
+    if(indexedDbExists()) {
+      insertSportIndexedDB(res.data);
+    }
     return res.data;
   });
 }
@@ -24,8 +77,33 @@ async function createSport({ name, gender, icon }) {
 //Allows an admin to update a sport
 async function updateSport({ id, name, gender, icon }) {
   return await api.put(`/sports`, { name, gender, icon }, { params: { id } }).then((res) => {
+    if(indexedDbExists()) {
+      updateSportIndexedDB(res.data);
+    }
     return res.data;
   });
+}
+
+async function insertSportIndexedDB(sport) {
+  const db = await openDB("AIMS", 1, {});
+  const tx = await db.transaction("sports", "readwrite");
+  tx.store.add(sport);
+  await tx.done;
+  db.close();
+}
+
+async function updateSportIndexedDB(sport) {
+  const db = await openDB("AIMS", 1, {});
+  const tx = await db.transaction("sports", "readwrite");
+  const index = tx.store.index("id");
+  for await (const cursor of index.iterate()) {
+    let item = { ...cursor.value };
+    if (item.id === sport.id) {
+      cursor.update(sport);
+    }
+  }
+  await tx.done;
+  db.close();
 }
 
 //Allows an admin to delete a sport
@@ -45,4 +123,4 @@ async function updateUserSports(userId, sports) {
   });
 }
 
-export { getSports, getSport, createSport, updateSport, updateUserSports };
+export { getSports, getSport, createSport, updateSport, updateUserSports, getSportsFromBackend };

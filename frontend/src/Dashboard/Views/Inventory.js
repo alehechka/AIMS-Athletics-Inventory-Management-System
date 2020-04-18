@@ -64,7 +64,7 @@ export default function Inventory(props) {
                 name: inventory.name,
 				description: inventory.description,
                 barcode: inventory.barcode,
-                sports: [inventory.sportSize.sport],
+                sports: [inventory.sport],
                 price: inventory.averagePrice,
                 quantity: inventory.totalQuantity
             }));
@@ -80,7 +80,6 @@ export default function Inventory(props) {
                 return obj
             }, {}));
         });
-        console.log(sports, sportIdLookup)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 

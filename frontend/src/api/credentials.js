@@ -127,7 +127,7 @@ async function logout() {
   sessionStorage.removeItem("org");
   localStorage.removeItem("creds");
   localStorage.removeItem("org");
-  await clearIndexedDB(["users", "inventory"]);
+  await clearIndexedDB(["users", "inventory", "sports"]);
 
   return await api.get(`/credentials/logout`).then(() => {
     return null;

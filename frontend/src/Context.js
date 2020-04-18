@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { CredentialAPI, changeFavicon, UsersAPI } from "./api";
+import { CredentialAPI, changeFavicon, UsersAPI, InventoryAPI, SportsAPI, createIndexedDB } from "./api";
 
 const Context = React.createContext();
 
@@ -12,6 +12,7 @@ export class Provider extends Component {
   };
 
   componentDidMount() {
+    createIndexedDB();
     if (!(this.state.credentials && this.state.organization)) {
       CredentialAPI.getCredentials()
         .then((res) => {
@@ -47,6 +48,8 @@ export class Provider extends Component {
     return await CredentialAPI.signup(email, username, password, remember).then(async (res) => {
       this.setCredentials(res, true);
       await UsersAPI.getUsersFromBackend(null, null, {withDetails: ["UserSize", "Equipment"]});
+      await InventoryAPI.getInventoryFromBackend(null, null, {});
+      await SportsAPI.getSportsFromBackend();
       return res;
     });
   };
@@ -55,6 +58,8 @@ export class Provider extends Component {
     return await CredentialAPI.login(email, password, remember).then(async (res) => {
       this.setCredentials(res, true);
       await UsersAPI.getUsersFromBackend(null, null, {withDetails: ["UserSize", "Equipment"]});
+      await InventoryAPI.getInventoryFromBackend(null, null, {});
+      await SportsAPI.getSportsFromBackend();
       return res;
     });
   };

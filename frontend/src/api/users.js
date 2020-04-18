@@ -36,38 +36,35 @@ async function createUser(
   }
 ) {
   return await api
-    .post(
-      `/users`,
-      {
-        email,
-        username,
-        password,
-        isAdmin,
-        isEmployee,
-        isCoach,
-        isAthlete,
-        schoolId,
-        firstName,
-        lastName,
-        address,
-        city,
-        state,
-        zip,
-        phone,
-        gender,
-        height,
-        weight,
-        lockerNumber,
-        lockerCode,
-        isActive,
-        statusId: status?.id,
-        sports,
-        userSizes
-      }
-    )
+    .post(`/users`, {
+      email,
+      username,
+      password,
+      isAdmin,
+      isEmployee,
+      isCoach,
+      isAthlete,
+      schoolId,
+      firstName,
+      lastName,
+      address,
+      city,
+      state,
+      zip,
+      phone,
+      gender,
+      height,
+      weight,
+      lockerNumber,
+      lockerCode,
+      isActive,
+      statusId: status?.id,
+      sports,
+      userSizes
+    })
     .then(async (res) => {
-      if(indexedDbExists()) {
-        insertIndexedDB(res.data);
+      if (indexedDbExists()) {
+        insertUserIndexedDB(res.data);
       }
       return res.data;
     });
@@ -77,7 +74,7 @@ async function createUser(
 async function getSingleUser(id) {
   try {
     return await getSingleUserFromIndexedDB(id);
-  } catch(err) {
+  } catch (err) {
     return await getSingleUserFromBackend(id);
   }
 }
@@ -91,7 +88,7 @@ async function getSingleUserFromIndexedDB(id) {
         dbUser = await db.getAllFromIndex("users", "id", parseInt(id));
       }
       db.close();
-      if(dbUser.length) {
+      if (dbUser.length) {
         return dbUser[0];
       }
     }
@@ -115,7 +112,7 @@ async function getUsers(page, limit, userDetails) {
   try {
     return await getUsersFromIndexedDB(page, limit, userDetails);
   } catch (err) {
-    console.log(err)
+    console.error(err);
     return await getUsersFromBackend(page, limit, userDetails);
   }
 }
@@ -130,15 +127,14 @@ async function getUsersFromIndexedDB(page, limit, { gender, sports, isAdmin, isE
       }
       db.close();
       if (dbUsers.length) {
-        let users = [];
-        for(let user of dbUsers) {
-          if(gender && !(user.gender === gender)) continue;
-          if(isAdmin && user.credential.isAdmin === isAdmin) {users.push(user); continue;}
-          if(isEmployee && user.credential.isEmployee === isEmployee) {users.push(user); continue;}
-          if(isCoach && user.credential.isCoach === isCoach) {users.push(user); continue;}
-          if(isAthlete && user.credential.isAthlete === isAthlete) {users.push(user); continue;}
-        }
-        return users;
+        return dbUsers.filter((user) => {
+          return (
+            (isAdmin && user.credential.isAdmin === isAdmin) ||
+            (isEmployee && user.credential.isEmployee === isEmployee) ||
+            (isCoach && user.credential.isCoach === isCoach) ||
+            (isAthlete && user.credential.isAthlete === isAthlete)
+          );
+        });
       }
     }
     throw new Error("No entries in local storage.");
@@ -163,30 +159,15 @@ async function getUsersFromBackend(
     })
     .then(async (res) => {
       if (indexedDbExists()) {
-        saveUsersToLocalDB(res.data);
+        saveUsersToIndexedDB(res.data);
       }
       return res.data;
     });
 }
 
-async function saveUsersToLocalDB(users) {
+async function saveUsersToIndexedDB(users) {
   try {
-    const db = await openDB("AIMS", 1, {
-      upgrade(db) {
-        // Create a store of objects
-        if (!db.objectStoreNames.contains("users")) {
-          const store = db.createObjectStore("users", {
-            // The 'id' property of the object will be the key.
-            keyPath: "id",
-            // If it isn't explicitly set, create a value by auto incrementing.
-            autoIncrement: true
-          });
-          store.createIndex("id", "id");
-          store.createIndex("firstName", "firstName");
-          store.createIndex("lastName", "lastName");
-        }
-      }
-    });
+    const db = await openDB("AIMS", 1, {});
 
     {
       const tx = await db.transaction("users", "readwrite");
@@ -233,31 +214,28 @@ async function updateCurrentUser(
   }
 ) {
   return await api
-    .put(
-      `/users/current`,
-      {
-        schoolId,
-        firstName,
-        lastName,
-        address,
-        city,
-        state,
-        zip,
-        phone,
-        gender,
-        height,
-        weight,
-        lockerNumber,
-        lockerCode,
-        isActive,
-        statusId: status?.id,
-        sports,
-        userSizes
-      }
-    )
+    .put(`/users/current`, {
+      schoolId,
+      firstName,
+      lastName,
+      address,
+      city,
+      state,
+      zip,
+      phone,
+      gender,
+      height,
+      weight,
+      lockerNumber,
+      lockerCode,
+      isActive,
+      statusId: status?.id,
+      sports,
+      userSizes
+    })
     .then(async (res) => {
       if (indexedDbExists()) {
-        await updateIndexedDB(res.data);
+        await updateUserIndexedDB(res.data);
       }
       return res.data;
     });
@@ -314,31 +292,31 @@ async function updateUser(
     )
     .then(async (res) => {
       if (indexedDbExists()) {
-        await updateIndexedDB(res.data);
+        await updateUserIndexedDB(res.data);
       }
       return res.data;
     });
 }
 
-async function updateIndexedDB(user) {
+async function updateUserIndexedDB(user) {
   const db = await openDB("AIMS", 1, {});
-    const tx = await db.transaction("users", "readwrite");
-    const index = tx.store.index('id');
-    for await (const cursor of index.iterate()) {
-      let dbUser = { ...cursor.value };
-      if(dbUser.id === user.id) {
-        cursor.update(user);
-      }
+  const tx = await db.transaction("users", "readwrite");
+  const index = tx.store.index("id");
+  for await (const cursor of index.iterate()) {
+    let dbUser = { ...cursor.value };
+    if (dbUser.id === user.id) {
+      cursor.update(user);
     }
-    await tx.done;
+  }
+  await tx.done;
   db.close();
 }
 
-async function insertIndexedDB(user) {
+async function insertUserIndexedDB(user) {
   const db = await openDB("AIMS", 1, {});
-    const tx = await db.transaction("users", "readwrite");
-    tx.store.add(user);
-    await tx.done;
+  const tx = await db.transaction("users", "readwrite");
+  tx.store.add(user);
+  await tx.done;
   db.close();
 }
 
