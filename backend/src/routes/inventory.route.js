@@ -22,12 +22,12 @@ inventoryRouter.get(
         offset,
         limit,
         where: Sequelize.and(
-          req.query.id ? { id: req.query.id } : null,
+          req.query.id && { id: req.query.id },
           { organizationId: req.user.organizationId },
-          req.query.surplus ? { surplus: req.query.surplus } : null,
-          req.query.sportSizeId ? { sportSizeId: req.query.sportSizeId } : null,
-          req.query.taxable ? { taxable : req.query.taxable } : null,
-          req.query.expendable ? { expendable : req.query.expendable } : null,
+          req.query.surplus && { surplus: req.query.surplus },
+          req.query.sportSizeId && { sportSizeId: req.query.sportSizeId },
+          req.query.taxable && { taxable: req.query.taxable },
+          req.query.expendable && { expendable: req.query.expendable }
         ),
         attributes: {
           exclude: ["createdAt", "updatedAt", "sportSizeId", "organizationId"]
@@ -35,31 +35,39 @@ inventoryRouter.get(
         include: [
           {
             model: InventorySize,
-            attributes: { exclude: req.query.id ? ["createdAt", "updatedAt", "inventoryId"] : ["createdAt", "updatedAt", "inventoryId", "barcode"] }
+            attributes: {
+              exclude: req.query.id
+                ? ["createdAt", "updatedAt", "inventoryId"]
+                : ["createdAt", "updatedAt", "inventoryId", "barcode"]
+            }
+          },
+          {
+            model: Sport,
+            attributes: { exclude: ["organizationId"] },
+            where: Sequelize.and(
+              req.query.gender && { gender: req.query.gender },
+              req.query["sports[]"] && Sequelize.or({ id: req.query["sports[]"] })
+            )
           },
           {
             model: SportSize,
             where: Sequelize.and(
-              req.query.sportSizeId ? { id: req.query.sportSizeId } : null,
-              req.query["sports[]"] ? Sequelize.or({ sportId: req.query["sports[]"] }) : null,
+              req.query.sportSizeId && { id: req.query.sportSizeId },
             ),
             attributes: {
-              exclude: req.query.id ? ["sportId"] : ["sportId", "sizes"]
+              exclude: req.query.id ? [] : ["sizes"]
             },
             include: [
               {
                 model: Sport,
-                where: Sequelize.and(
-                  req.query.gender ? { gender: req.query.gender } : null
-                ),
                 attributes: { exclude: ["organizationId"] }
               }
             ]
           }
         ]
       });
-      for(let inventory of inventories) {
-        inventory.sportSize.sport = await addDisplayNameToSports(inventory.sportSize.sport);
+      for (let inventory of inventories) {
+        inventory.sport = await addDisplayNameToSports(inventory.sport);
       }
       res.json(req.query.id && inventories.length ? inventories[0] : inventories);
     } catch (err) {
@@ -142,7 +150,7 @@ inventoryRouter.put("/", auth(["isAdmin", "isEmployee"]), queryParams(["id"]), a
           include: [{ model: Sport, attributes: { exclude: ["organizationId"] } }]
         }
       ]
-    })
+    });
 
     foundItem.name = putInventory.name;
     foundItem.description = putInventory.description;
@@ -164,7 +172,7 @@ inventoryRouter.put("/", auth(["isAdmin", "isEmployee"]), queryParams(["id"]), a
           size: item.size,
           barcode: item.barcode,
           price: item.price,
-          quantity: item.quantity,
+          quantity: item.quantity
         },
         {
           where: {
@@ -190,9 +198,7 @@ inventoryRouter.put("/", auth(["isAdmin", "isEmployee"]), queryParams(["id"]), a
         }
       });
     }
-    res.json(
-      await foundItem.reload()
-    );
+    res.json(await foundItem.reload());
   } catch (err) {
     next(err);
   }

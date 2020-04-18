@@ -1,21 +1,69 @@
-import axios from "axios";
+import { api, indexedDbExists } from "./index";
 
-import { apiUrl } from "./index";
+import { openDB } from "idb/with-async-ittr.js";
+
+async function getInventory(page, limit, inventoryDetails) {
+  try {
+    return await getInventoryFromIndexedDB(page, limit, inventoryDetails);
+  } catch (err) {
+    console.error(err);
+    return await getInventoryFromBackend(page, limit, inventoryDetails);
+  }
+}
+
+async function getInventoryFromIndexedDB(page, limit, { id, surplus, sportSize, sports, gender, taxable, expendable }) {
+  try {
+    if (indexedDbExists()) {
+      const db = await openDB("AIMS", 1, {});
+      let dbInventory = [];
+      if (db.objectStoreNames.contains("inventory")) {
+        dbInventory = await db.getAll("inventory");
+      }
+      db.close();
+      if (dbInventory.length) {
+        return dbInventory;
+      }
+    }
+    throw new Error("No entries found in local storage.");
+  } catch (err) {
+    throw err;
+  }
+}
 
 //Gets all inventory items in the based on pagination and filters provided
-async function getInventory(page, limit, { id, surplus, sportSize, sports, gender, taxable, expendable }) {
+async function getInventoryFromBackend(page, limit, { id, surplus, sportSize, sports, gender, taxable, expendable }) {
   let sportSizeId = sportSize?.id ?? sportSize;
   sports = sports?.map((sport) => {
     return sport?.id ?? sport;
   });
-  return await axios
-    .get(`${apiUrl}/inventory`, {
-      params: { page, limit, id, surplus, sportSizeId, gender, sports, taxable, expendable },
-      withCredentials: true
+  return await api
+    .get(`/inventory`, {
+      params: { page, limit, id, surplus, sportSizeId, gender, sports, taxable, expendable }
     })
     .then((res) => {
+      if (indexedDbExists()) {
+        saveInventoryToIndexedDB(res.data);
+      }
       return res.data;
     });
+}
+
+async function saveInventoryToIndexedDB(inventory) {
+  try {
+    const db = await openDB("AIMS", 1, {});
+
+    {
+      const tx = await db.transaction("inventory", "readwrite");
+      await tx.objectStore("inventory").clear();
+      for (let item of inventory) {
+        tx.store.add(item);
+      }
+      await tx.done;
+    }
+    db.close();
+  } catch (err) {
+    console.log(err);
+  }
 }
 
 //Creates inventory item
@@ -29,21 +77,20 @@ async function createInventory({ name, description, surplus, sportSize, taxable,
         }
     ] */
   let sportSizeId = sportSize?.id ?? sportSize;
-  return await axios
-    .post(
-      `${apiUrl}/inventory`,
-      {
-        name,
-        description,
-        surplus,
-        taxable,
-        expendable,
-        sportSizeId,
-        inventorySizes
-      },
-      { withCredentials: true }
-    )
+  return await api
+    .post(`/inventory`, {
+      name,
+      description,
+      surplus,
+      taxable,
+      expendable,
+      sportSizeId,
+      inventorySizes
+    })
     .then((res) => {
+      if (indexedDbExists()) {
+        insertInventoryIndexedDB(res.data);
+      }
       return res.data;
     });
 }
@@ -63,9 +110,9 @@ async function updateInventory({ id, name, description, surplus, sportSize, taxa
           }
       ] */
   let sportSizeId = sportSize?.id ?? sportSize;
-  return await axios
+  return await api
     .put(
-      `${apiUrl}/inventory`,
+      `/inventory`,
       {
         name,
         description,
@@ -75,11 +122,36 @@ async function updateInventory({ id, name, description, surplus, sportSize, taxa
         sportSizeId,
         inventorySizes
       },
-      { params: { id }, withCredentials: true }
+      { params: { id } }
     )
     .then((res) => {
+      if (indexedDbExists()) {
+        updateInventoryIndexedDB(res.data);
+      }
       return res.data;
     });
 }
 
-export { getInventory, createInventory, updateInventory };
+async function insertInventoryIndexedDB(inventory) {
+  const db = await openDB("AIMS", 1, {});
+  const tx = await db.transaction("inventory", "readwrite");
+  tx.store.add(inventory);
+  await tx.done;
+  db.close();
+}
+
+async function updateInventoryIndexedDB(inventory) {
+  const db = await openDB("AIMS", 1, {});
+  const tx = await db.transaction("inventory", "readwrite");
+  const index = tx.store.index("id");
+  for await (const cursor of index.iterate()) {
+    let item = { ...cursor.value };
+    if (item.id === inventory.id) {
+      cursor.update(inventory);
+    }
+  }
+  await tx.done;
+  db.close();
+}
+
+export { getInventory, createInventory, updateInventory, getInventoryFromBackend };

@@ -106,7 +106,9 @@ const User = db.define(
     height: { type: Sequelize.INTEGER, comment: "in inches", allowNull: true },
     weight: { type: Sequelize.INTEGER, comment: "in pounds", allowNull: true },
     isActive: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: true },
-    fullName: { type: Sequelize.VIRTUAL }
+    jerseyNumber: { type: Sequelize.INTEGER, allowNull: true },
+    fullName: { type: Sequelize.VIRTUAL },
+    role: {type: Sequelize.VIRTUAL }
   },
   {
     timestamps: true,
@@ -123,13 +125,33 @@ function addFullNameToUsers(users) {
     for (let user of users) {
       let fullName = (user.firstName ? user.firstName : "") + (user.lastName ? " " + user.lastName : "");
       user.fullName = fullName || null;
+      if(user.credential) {
+        user.role = getRole(user.credential);
+      }
     }
   } else {
     let fullName = (users.firstName ? users.firstName : "") + (users.lastName ? " " + users.lastName : "");
     users.fullName = fullName || null;
+    if(users.credential) {
+      users.role = getRole(users.credential);
+    }
     return users;
   }
 }
+
+function getRole(credentials) {
+  let role = "Athlete";
+  if (credentials.isAdmin) {
+    role = "Admin";
+  } else if (credentials.isEmployee) {
+    role = "Employee";
+  } else if (credentials.isCoach) {
+    role = "Coach";
+  } else if (credentials.isAthlete) {
+    role = "Athlete";
+  }
+  return role;
+};
 
 Credential.hasOne(User, {
   foreignKey: { allowNull: false, unique: true },
@@ -235,6 +257,7 @@ const Inventory = db.define(
   {
     name: { type: Sequelize.STRING, allowNull: false },
     description: { type: Sequelize.STRING, allowNull: true },
+    color: { type: Sequelize.STRING, allowNull: true }, 
     surplus: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
     taxable: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
     expendable: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
@@ -266,6 +289,9 @@ const Inventory = db.define(
     }
   }
 );
+
+Sport.hasMany(Inventory, { foreignKey: { allowNull: false } });
+Inventory.belongsTo(Sport, { foreignKey: { allowNull: false } });
 
 SportSize.hasMany(Inventory, { foreignKey: { allowNull: false } });
 Inventory.belongsTo(SportSize, { foreignKey: { allowNull: false } });

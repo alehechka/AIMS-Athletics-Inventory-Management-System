@@ -1,8 +1,7 @@
 import React from 'react';
 import MaterialTable from 'material-table';
-import Chip from '@material-ui/core/Chip';
 import {SportsAPI, InventoryAPI} from "../../api";
-import Icon from "@material-ui/core/Icon";
+import SportsChip from './Components/SportsChip';
 
 /**
  * Contains the material table which lets the user edit staff entries.
@@ -52,7 +51,7 @@ export default function Inventory(props) {
                     sorting: false,
                     render: (rowData) =>
                       rowData.sports.map((val, index) => (
-                        <Chip key={index} label={val.displayName} style={{ margin: 2 }} icon={<Icon>{val.icon}</Icon>}></Chip>
+                        <SportsChip key={index} sport={val} />
                       )),
                     customFilterAndSearch: (term, rowData) =>
                       rowData.sports.map((val) => val.displayName).some((val) => val.toLowerCase().includes(term.toLowerCase()))
@@ -65,12 +64,14 @@ export default function Inventory(props) {
                 name: inventory.name,
 				description: inventory.description,
                 barcode: inventory.barcode,
-                sports: [inventory.sportSize.sport],
+                sports: [inventory.sport],
                 price: inventory.averagePrice,
                 quantity: inventory.totalQuantity
             }));
             updateData(customData);
             updateLoading(false);
+        }).catch(err => {
+          updateLoading(false);
         });
         SportsAPI.getSports().then((sports)=> {
             setSports(sports.map(sport => sport.displayName));
@@ -79,7 +80,6 @@ export default function Inventory(props) {
                 return obj
             }, {}));
         });
-        console.log(sports, sportIdLookup)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
