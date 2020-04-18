@@ -51,13 +51,13 @@ export default function Admin(props) {
           <FormControl required component="fieldset">
               <FormGroup>
                   <FormControlLabel value = "Admin"  label="Admin" 
-                    control={<Checkbox checked={props.value.isAdmin} onChange={()=>{props.onChange({...props.value, isAdmin: true})}} name="Admin" />}/>
+                    control={<Checkbox checked={props.value.isAdmin} onChange={(e)=>{props.onChange({...props.value, isAdmin: e.target.checked})}} name="Admin" />}/>
                   <FormControlLabel value = "Athlete"  label="Athlete" 
-                    control={<Checkbox checked={props.value.isAthlete} onChange={()=>{props.onChange({...props.value, isAthlete: true})}} name="Athlete" />}/>
+                    control={<Checkbox checked={props.value.isAthlete} onChange={(e)=>{props.onChange({...props.value, isAthlete: e.target.checked})}} name="Athlete" />}/>
                   <FormControlLabel value = "Coach"  label="Coach" 
-                    control={<Checkbox checked={props.value.isCoach} onChange={()=>{props.onChange({...props.value, isCoach: true})}} name="Coach" />}/>
+                    control={<Checkbox checked={props.value.isCoach} onChange={(e)=>{props.onChange({...props.value, isCoach: e.target.checked})}} name="Coach" />}/>
                   <FormControlLabel value = "Employee"  label="Employee" 
-                    control={<Checkbox checked={props.value.isEmployee} onChange={()=>{props.onChange({...props.value, isEmployee: true})}} name="Employee" />}/>
+                    control={<Checkbox checked={props.value.isEmployee} onChange={(e)=>{props.onChange({...props.value, isEmployee: e.target.checked})}} name="Employee" />}/>
               </FormGroup>
           </FormControl>)
         }
