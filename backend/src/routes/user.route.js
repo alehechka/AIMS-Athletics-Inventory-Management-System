@@ -149,7 +149,9 @@ userRouter.put("/current", auth(), async (req, res, next) => {
     user.height = putUser.height;
     user.weight = putUser.weight;
     await user.save();
-    res.json(await user.reload());
+    await user.reload();
+    user.sports = await addDisplayNameToSports(user.sports);
+    res.json(user);
   } catch (err) {
     next(err);
   }
@@ -186,7 +188,9 @@ userRouter.put("/", auth(["isAdmin", "isEmployee"]), queryParams(["id"]), async 
     foundUser.statusId = putUser.statusId;
     foundUser.isActive = putUser.isActive === true || putUser.isActive === false ? putUser.isActive : true;
     await foundUser.save();
-    res.json(await foundUser.reload());
+    await foundUser.reload();
+    foundUser.sports = await addDisplayNameToSports(foundUser.sports);
+    res.json(foundUser);
   } catch (err) {
     next(err);
   }
@@ -203,6 +207,7 @@ async function getUsers(user, {
   isEmployee,
   isCoach,
   isAthlete,
+  isActive = true,
   withDetails = []
 }) {
   try {
@@ -220,7 +225,8 @@ async function getUsers(user, {
         { organizationId: user.organizationId },
         credentialId ? { credentialId: user.id } : null,
         userId ? { id: userId } : null,
-        gender ? { gender } : null
+        gender ? { gender } : null,
+        { isActive }
       ),
       attributes: {
         exclude: ["createdAt", "updatedAt", "credentialId", "organizationId", "statusId"]
@@ -237,7 +243,7 @@ async function getUsers(user, {
           include: [
             {
               model: SportSize,
-              attributes: userId || credentialId ? ["sportId", "name", "sizes"] : []
+              attributes: userId || credentialId ? ["id", "name", "sizes"] : []
             }
           ]
         },
@@ -266,7 +272,7 @@ async function getUsers(user, {
           attributes: userId || credentialId || withDetails.includes("Equipment") ? ["id", "count"] : [],
           where: withDetails.includes("Equipment") && { 
             count: { 
-              [Sequelize.Op.gte]: 1
+              [Sequelize.Op.gte]: 0
             } 
           },
           include: [

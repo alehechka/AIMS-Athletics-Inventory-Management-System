@@ -1,17 +1,18 @@
 import React, { Component } from "react";
-import { CredentialAPI, changeFavicon } from "./api";
+import { CredentialAPI, changeFavicon, UsersAPI, InventoryAPI, SportsAPI, createIndexedDB } from "./api";
 
 const Context = React.createContext();
 
 export class Provider extends Component {
   state = {
-    credentials: JSON.parse(sessionStorage.getItem("creds")) || null,
-    organization: JSON.parse(sessionStorage.getItem("org")) || null,
-    authorized: sessionStorage.getItem("creds") ? true : false,
+    credentials: JSON.parse(localStorage.getItem("creds")) || JSON.parse(sessionStorage.getItem("creds")) || null,
+    organization: JSON.parse(localStorage.getItem("org")) || JSON.parse(sessionStorage.getItem("org")) || null,
+    authorized: localStorage.getItem("creds") || sessionStorage.getItem("creds") ? true : false,
     loadingCredentials: true
   };
 
   componentDidMount() {
+    createIndexedDB();
     if (!(this.state.credentials && this.state.organization)) {
       CredentialAPI.getCredentials()
         .then((res) => {
@@ -44,21 +45,27 @@ export class Provider extends Component {
   }
 
   signup = async (email, username, password, remember) => {
-    return await CredentialAPI.signup(email, username, password, remember).then((res) => {
+    return await CredentialAPI.signup(email, username, password, remember).then(async (res) => {
       this.setCredentials(res, true);
+      await UsersAPI.getUsersFromBackend(null, null, {withDetails: ["UserSize", "Equipment"]});
+      await InventoryAPI.getInventoryFromBackend(null, null, {});
+      await SportsAPI.getSportsFromBackend();
       return res;
     });
   };
 
   login = async (email, password, remember) => {
-    return await CredentialAPI.login(email, password, remember).then((res) => {
+    return await CredentialAPI.login(email, password, remember).then(async (res) => {
       this.setCredentials(res, true);
+      await UsersAPI.getUsersFromBackend(null, null, {withDetails: ["UserSize", "Equipment"]});
+      await InventoryAPI.getInventoryFromBackend(null, null, {});
+      await SportsAPI.getSportsFromBackend();
       return res;
     });
   };
 
   logout = async () => {
-    return await CredentialAPI.logout().then((res) => {
+    return await CredentialAPI.logout().then(async (res) => {
       this.setCredentials(res, false);
       return res;
     });
@@ -102,7 +109,8 @@ export class Provider extends Component {
       })
     } 
     if (credentials?.organization?.logo) {
-      changeFavicon("assets/" + credentials.organization.logo);
+      let url = window.location.protocol + "//" + window.location.hostname + (window.location.port ? `:${window.location.port}` : "") + "/assets/" + credentials.organization.logo;
+      changeFavicon(url);
     }
   };
 }

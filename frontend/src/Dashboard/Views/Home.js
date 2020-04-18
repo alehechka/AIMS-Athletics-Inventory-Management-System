@@ -34,7 +34,7 @@ export default function Home(props) {
   }
   const transactions = [
     {
-      issuedTo: user,
+      user: user,
       items: [
         {
           checked:true,
@@ -51,11 +51,12 @@ export default function Home(props) {
   ];
   const transactions2 = [
     {
-      issuedTo: user,
+      user: user,
       items: [
         {
           equipment: {id: 1},
-          amount: 2
+          amount: 2,
+          checked: true
         },
       ]
     }
@@ -136,7 +137,7 @@ export default function Home(props) {
       <button onClick={() => TransactionAPI.checkIn(transactions2, "comment")}>Check in</button>
       <br />
       <br />
-      <button onClick={() => changeFavicon("assets/creighton.ico")}>Change Favicon</button>
+      <button onClick={() => changeFavicon("https://www.google.com/favicon.ico")}>Change Favicon</button>
     </div>
   );
 }

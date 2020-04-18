@@ -57,6 +57,7 @@ const createSportSizes = async () => {
       sportId: sports[index % sports.length].id,
     }).then(res => {
       sport_sizes[index].id = res.id;
+      sport_sizes[index].sportId = sports[index % sports.length].id;
     });
   }
 };
@@ -66,6 +67,7 @@ const createInventories = async () => {
     await db.Inventory.create({
       ...inventories[index],
       sportSizeId: sport_sizes[index % sport_sizes.length].id,
+      sportId: sport_sizes[index % sport_sizes.length].sportId,
       organizationId: organizations[0].id
     }).then(async res => {
       inventories[index].id = res.id;

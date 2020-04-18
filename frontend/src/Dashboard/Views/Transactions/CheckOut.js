@@ -6,12 +6,11 @@ import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
 import MaterialTable from "material-table";
 import TransactionTable from "./TransactionTable";
-import Chip from "@material-ui/core/Chip";
-import Icon from "@material-ui/core/Icon";
 import StepButton from "@material-ui/core/StepButton";
 import Grid from "@material-ui/core/Grid";
 import CheckOutCard from "./CheckOutCard";
 import { InventoryAPI, UsersAPI, TransactionAPI } from "../../../api";
+import SportsChip from "../Components/SportsChip";
 
 export default function CheckOut(props) {
   const parser = new URLSearchParams(props.location.search);
@@ -76,7 +75,7 @@ export default function CheckOut(props) {
             field: "sports",
             render: (rowData) =>
               rowData.sports.map((val, index) => (
-                <Chip key={index} label={val.displayName} style={{ margin: 2 }} icon={<Icon>{val.icon}</Icon>}></Chip>
+                <SportsChip key={index} sport={val} />
               )),
             customFilterAndSearch: (term, rowData) =>
               rowData.sports.map((val) => val.displayName).some((val) => val.toLowerCase().includes(term.toLowerCase()))
@@ -124,7 +123,7 @@ export default function CheckOut(props) {
             field: "sports",
             render: (rowData) =>
               rowData.sports.map((val, index) => (
-                <Chip key={index} label={val.displayName} style={{ margin: 2 }} icon={<Icon>{val.icon}</Icon>}></Chip>
+                <SportsChip key={index} sport={val} />
               )),
             customFilterAndSearch: (term, rowData) =>
               rowData.sports
