@@ -89,17 +89,7 @@ export default function Admin(props) {
           </FormControl>)
         }
       ]);
-      const newRoleData = users.map(user=> {
-        return {
-          id: user.id,
-          email: user.credential.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-          fullName: user.fullName,
-          role: user.credential,
-        };
-      });
-      updateRoleData(newRoleData);
+      updateRoleData(mapUsers(users));
       updateRoleLoading(false);
     });
     SportsAPI.getSports().then((res)=> {
@@ -153,6 +143,20 @@ export default function Admin(props) {
       updateSportsLoading(false);
     });
   }, [getRole]);
+
+  const mapUsers = (users) => {
+    return users.map(user=> {
+      return {
+        id: user.id,
+        email: user.credential.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        fullName: user.fullName,
+        role: user.credential,
+      };
+    });
+  }
+
   return (
     <div style={{ maxWidth: '100%', marginLeft: '10px', marginRight: '10px', marginBottom: '10px' }}>
       <Grid container spacing={3}>
@@ -163,6 +167,7 @@ export default function Admin(props) {
             updateRoleLoading  = {updateRoleLoading}
             roleData = {roleData}
             updateRoleData = {updateRoleData}
+            mapUsers = {mapUsers}
             roleColumns = {roleColumns}
             rolePageSize = {rolePageSize}
             updateRolePageSize = {updateRolePageSize}
