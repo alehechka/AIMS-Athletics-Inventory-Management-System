@@ -5,8 +5,12 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import InfoIcon from '@material-ui/icons/Info';
 import RolesTable from "./AdminComponents/RolesTable";
 import SportsTable from "./AdminComponents/SportsTable";
+
 
 /***
  * Contains the logic for admin page.
@@ -29,6 +33,19 @@ export default function Admin(props) {
   const [sportsColumns, updateSportsColumns] = React.useState([]);
   const [sportsPageSize, updateSportsPageSize] = React.useState(5);
 
+  const [sizesDialogOpen, setSizesDialogOpen] = React.useState(false);
+  const [sizesDialogTitle, setSizesDialogTitle] = React.useState("Edit Sport");
+  const [sizesDialogContent, setSizesDialogContent] = React.useState("Filler");
+  const closeSizesDialog = (editConfirmed) => {
+    if (editConfirmed) {
+
+    }
+    else {
+
+    }
+    setSizesDialogOpen(false);
+  };
+
   const { getRole } = props.context.actions;
 
   /**
@@ -42,14 +59,14 @@ export default function Admin(props) {
       //lets users search hidden columns
       updateRoleColumns([
         {title: 'ID', field: 'id', ...defaultOptions},
-        {title: 'Email', field: 'email', editable: 'never', searchable : true},
+        {title: 'Email', field: 'email', editable: 'never', searchable : true, cellStyle: {width: "40%"}},
         {title: 'First Name', field: 'firstName', ...defaultOptions},
         {title: 'Last Name', field: 'lastName', ...defaultOptions},
-        {title: 'Role', field: 'role', cellStyle: {width:"100%"},
+        {title: 'Role', field: 'role', cellStyle: {width: "50%"},
         render: rowData  => getRole(rowData.role),
         editComponent: props => (
           <FormControl required component="fieldset">
-              <FormGroup>
+              <FormGroup row>
                   <FormControlLabel value = "Admin"  label="Admin" 
                     control={<Checkbox checked={props.value.isAdmin} onChange={(e)=>{props.onChange({...props.value, isAdmin: e.target.checked})}} name="Admin" />}/>
                   <FormControlLabel value = "Athlete"  label="Athlete" 
@@ -77,8 +94,21 @@ export default function Admin(props) {
     SportsAPI.getSports().then((res)=> {
       updateSportsColumns([
         {name: 'ID', field: 'id', ...defaultOptions},
-        {title: 'Name', field: 'name', cellStyle: {width:"100%"}},
+        {title: 'Name', field: 'name', cellStyle: { width: "90%"}},
         {title: 'Gender', field: 'gender'},
+        {title: 'Sizes', field: 'sportSizes', 
+          render: rowData => (
+          <Tooltip title= "View Sport Sizes">
+            <IconButton onClick = {() => {
+                setSizesDialogTitle("View Sport Sizes");
+                setSizesDialogOpen(true);
+                setSizesDialogContent(JSON.stringify(rowData.sportSizes));
+                }}>
+              <InfoIcon />
+            </IconButton>
+          </Tooltip>
+        ), editable: 'never'
+        },
         {title: 'Icon', field: 'icon', ...defaultOptions},
         {title: 'Default', field: 'default', type: 'boolean', editable: 'never', searchable: false, filtering: false},
         {title: 'Display Name', field: 'displayName', ...defaultOptions}
@@ -90,7 +120,7 @@ export default function Admin(props) {
   return (
     <div style={{ maxWidth: '100%', marginLeft: '10px', marginRight: '10px', marginBottom: '10px' }}>
       <Grid container spacing={3}>
-        <Grid item xs="auto">
+        <Grid item xs={6}>
           <RolesTable
             showMessage = {props.showMessage}
             isRoleLoading = {isRoleLoading}
@@ -102,7 +132,7 @@ export default function Admin(props) {
             updateRolePageSize = {updateRolePageSize}
           />
         </Grid>
-        <Grid item xs="auto">
+        <Grid item xs={6}>
           <SportsTable
             showMessage = {props.showMessage}
             isSportsLoading = {isSportsLoading}
@@ -112,6 +142,14 @@ export default function Admin(props) {
             sportsColumns = {sportsColumns}
             sportsPageSize = {sportsPageSize}
             updateSportsPageSize = {updateSportsPageSize}
+
+            sizesDialogTitle = {sizesDialogTitle}
+            setSizesDialogTitle = {setSizesDialogTitle}
+            sizesDialogContent = {sizesDialogContent}
+            setSizesDialogContent ={setSizesDialogContent}
+            sizesDialogOpen = {sizesDialogOpen}
+            setSizesDialogOpen = {setSizesDialogOpen}
+            closeSizesDialog = {closeSizesDialog} 
           />
         </Grid>
       </Grid>
