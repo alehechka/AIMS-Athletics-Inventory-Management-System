@@ -10,7 +10,12 @@ import Tooltip from '@material-ui/core/Tooltip';
 import InfoIcon from '@material-ui/icons/Info';
 import RolesTable from "./AdminComponents/RolesTable";
 import SportsTable from "./AdminComponents/SportsTable";
-
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import Icon from '@material-ui/core/Icon';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
 
 /***
  * Contains the logic for admin page.
@@ -21,6 +26,9 @@ import SportsTable from "./AdminComponents/SportsTable";
  * columns - contains column information [unchanged for now]
  * pagesize - updates default pageSize for table
  */
+const iconList = ['people', 'sports', 'sports_baseball', 'sports_basketball', 'sports_cricket', 'sports_football',
+  'sports_esports', 'sports_golf', 'sports_handball', 'sports_hockey', 'sports_kabbadi', 'sports_mma', 'sports_motorsports',
+  'sports_rugby', 'sports_soccer', 'sports_tennis', 'sports_volleyball'];
 export default function Admin(props) {
   //material Table hooks
   const [isRoleLoading, updateRoleLoading] = React.useState(true);
@@ -59,10 +67,12 @@ export default function Admin(props) {
       //lets users search hidden columns
       updateRoleColumns([
         {title: 'ID', field: 'id', ...defaultOptions},
-        {title: 'Email', field: 'email', editable: 'never', searchable : true, cellStyle: {width: "40%"}},
+        {title: 'Email', field: 'email', ...defaultOptions},
+        {title: 'Full Name', field: 'fullName', editable: 'never', searchable : true, cellStyle: {width: "40%"}},
         {title: 'First Name', field: 'firstName', ...defaultOptions},
         {title: 'Last Name', field: 'lastName', ...defaultOptions},
         {title: 'Role', field: 'role', cellStyle: {width: "50%"},
+        customFilterAndSearch: (term, rowData) => getRole(rowData.role).toLowerCase().includes(term.toLowerCase()),
         render: rowData  => getRole(rowData.role),
         editComponent: props => (
           <FormControl required component="fieldset">
@@ -85,6 +95,7 @@ export default function Admin(props) {
           email: user.credential.email,
           firstName: user.firstName,
           lastName: user.lastName,
+          fullName: user.fullName,
           role: user.credential,
         };
       });
@@ -94,22 +105,47 @@ export default function Admin(props) {
     SportsAPI.getSports().then((res)=> {
       updateSportsColumns([
         {name: 'ID', field: 'id', ...defaultOptions},
-        {title: 'Name', field: 'name', cellStyle: { width: "90%"}},
-        {title: 'Gender', field: 'gender'},
+        {title: 'Name', field: 'name', cellStyle: { width: "30%"}},
+        {title: 'Gender', field: 'gender', cellStyle: { width: "30%"}, lookup: {"M": "Male", "F": "Female"},
+          editComponent: props => (
+            <FormControl required component="fieldset">
+                <RadioGroup row defaultValue = "F" value={props.value} name= "gender" onChange = {e => props.onChange(e.target.value)}>
+                    <FormControlLabel value="F" control={<Radio />} label="Female" />
+                    <FormControlLabel value="M" control={<Radio />} label="Male" />
+                </RadioGroup>
+            </FormControl>
+          )
+        },
         {title: 'Sizes', field: 'sportSizes', 
           render: rowData => (
-          <Tooltip title= "View Sport Sizes">
+          <Tooltip title= "View Item Sizes">
             <IconButton onClick = {() => {
-                setSizesDialogTitle("View Sport Sizes");
+                setSizesDialogTitle("View Item Sizes");
                 setSizesDialogOpen(true);
-                setSizesDialogContent(JSON.stringify(rowData.sportSizes));
+                setSizesDialogContent(rowData);
                 }}>
               <InfoIcon />
             </IconButton>
           </Tooltip>
-        ), editable: 'never'
+        ), editable: 'never', filtering: false
         },
-        {title: 'Icon', field: 'icon', ...defaultOptions},
+        {title: 'Icon', field: 'icon', filtering: false, render: rowData=> <Icon>{rowData.icon}</Icon>,
+          editComponent: props => (
+            <FormControl>
+              <Select defaultValue = "people" value = {props.value} onChange = {e => props.onChange(e.target.value)}
+              >
+                {iconList.map(icon=>(
+                  <MenuItem value = {icon}>
+                    <ListItemIcon>
+                      <Icon>{icon}</Icon>
+                      {icon}
+                    </ListItemIcon>
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )
+        },
         {title: 'Default', field: 'default', type: 'boolean', editable: 'never', searchable: false, filtering: false},
         {title: 'Display Name', field: 'displayName', ...defaultOptions}
       ]);
@@ -120,7 +156,7 @@ export default function Admin(props) {
   return (
     <div style={{ maxWidth: '100%', marginLeft: '10px', marginRight: '10px', marginBottom: '10px' }}>
       <Grid container spacing={3}>
-        <Grid item xs={6}>
+        <Grid item xs={12}>
           <RolesTable
             showMessage = {props.showMessage}
             isRoleLoading = {isRoleLoading}
@@ -132,7 +168,7 @@ export default function Admin(props) {
             updateRolePageSize = {updateRolePageSize}
           />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12}>
           <SportsTable
             showMessage = {props.showMessage}
             isSportsLoading = {isSportsLoading}

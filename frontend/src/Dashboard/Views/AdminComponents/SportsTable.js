@@ -4,14 +4,14 @@ import {SportsAPI} from "../../../api";
 import SizesDialog from "./SizesDialog";
 
 export default function SportsTable(props){
-    const [isSportsLoading, updateSportsLoading] = [props.isSportsLoading, props.updateSportsLoading];
+    const [isSportsLoading] = [props.isSportsLoading];
     const [sportsData, updateSportsData] = [props.sportsData, props.updateSportsData];
     const sportsColumns = props.sportsColumns;
     const [sportsPageSize, updateSportsPageSize] = [props.sportsPageSize, props.updateSportsPageSize];
 
-    const [sizesDialogOpen, setSizesDialogOpen, closeSizesDialog] = [props.sizesDialogOpen, props.setSizesDialogOpen, props.closeSizesDialog] ;
+    const [sizesDialogOpen, closeSizesDialog] = [props.sizesDialogOpen, props.closeSizesDialog] ;
     const [sizesDialogTitle, setSizesDialogTitle] = [props.sizesDialogTitle, props.setSizesDialogTitle];
-    const [sizesDialogContent, setSizesDialogContent] = [props.sizesDialogContent, props.setSizesDialogContent];
+    const [sizesDialogContent] = [props.sizesDialogContent, props];
     return(
         <React.Fragment>
             <MaterialTable
@@ -27,21 +27,12 @@ export default function SportsTable(props){
                     actionsColumnIndex: -1,
                     tableLayout: "auto",
                 }}
-                actions={[
-                    {
-                    icon: 'edit',
-                    tooltip: 'Edit Sport',
-                    onClick: (event, rowData) => {
-                        setSizesDialogTitle("Edit Sport");
-                        setSizesDialogContent(JSON.stringify(rowData.sportSizes));
-                        setSizesDialogOpen(true);
-                        /**
-                         * editable={{
+                editable={{
                     onRowAdd: newData =>
                     new Promise((resolve, reject) => {
                         if (newData.name.length === 0) {
-                        resolve();
-                        props.showMessage(`Sports Name cannot be empty.`, "warning");
+                            props.showMessage(`Sports Name cannot be empty.`, "warning");
+                            reject();
                         }
                         else {
                         newData.displayName = newData.name + ` (${newData.gender})`;
@@ -58,44 +49,36 @@ export default function SportsTable(props){
                     }),
                     onRowUpdate: (newData, oldData) =>
                     new Promise((resolve, reject) => {
-                        if (oldData.name === newData.name && oldData.gender === newData.gender) {
-                        resolve();
-                        props.showMessage(`You didn't change anything for ${oldData.displayName}.`, "info");
+                        const testChanges = oldData.name === newData.name && oldData.gender === newData.gender && oldData.icon === newData.icon;
+                        const valid = newData.name.length > 0;
+                        if (testChanges) {
+                            props.showMessage(`You didn't change anything for ${oldData.displayName}.`, "info");
+                            resolve();
+                        }
+                        else if (!valid) {
+                            props.showMessage(`Sports Name cannot be empty.`, "warning");
+                            reject();
                         }
                         else {
-                        newData.displayName = newData.name + ` (${newData.gender})`;
-                        SportsAPI.updateSport(newData).then((res) =>{
-                            updateSportsData(sportsData.map(sport => newData.id === sport.id ? newData : sport)); 
-                            props.showMessage(`Updated entry for ${newData.displayName}`);
-                            resolve();
-                        }).catch(err => {
-                            props.showMessage(`Unable to update entry for ${newData.displayName}`, 'error');
-                            reject();
-                        });
-                        
+                            newData.displayName = newData.name + ` (${newData.gender})`;
+                            SportsAPI.updateSport(newData).then((res) =>{
+                                updateSportsData(sportsData.map(sport => newData.id === sport.id ? newData : sport)); 
+                                props.showMessage(`Updated entry for ${newData.displayName}`);
+                                resolve();
+                            }).catch(err => {
+                                props.showMessage(`Unable to update entry for ${newData.displayName}`, 'error');
+                                reject();
+                            });
                         }
                     }),
                 }}
-                         */
-                    }
-                    },
-                    {
-                        icon: 'add',
-                        tooltip: 'Add Sport',
-                        isFreeAction: true,
-                        onClick: (event) => {
-                            setSizesDialogTitle("Add Sport");
-                            setSizesDialogContent("Filler");
-                            setSizesDialogOpen(true);
-                        }
-                    }
-                ]}
             />
             <SizesDialog
               dialogTitle = {sizesDialogTitle}
+              setDialogTitle = {setSizesDialogTitle}
               dialogContent = {sizesDialogContent}
               sizesDialogOpen = {sizesDialogOpen}
-              closeSizesDialog = {closeSizesDialog} 
+              closeSizesDialog = {closeSizesDialog}
             />
         </React.Fragment>
     );
