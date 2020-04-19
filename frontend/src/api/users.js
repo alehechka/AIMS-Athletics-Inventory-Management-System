@@ -155,13 +155,20 @@ async function getUsersFromBackend(
   });
   return await api
     .get(`/users`, {
-      params: { page, limit, gender, sports, isAdmin, isEmployee, isCoach, isAthlete, withDetails }
+      params: indexedDbExists() ? {withDetails: ["UserSize", "Equipment"]} : { page, limit, gender, sports, isAdmin, isEmployee, isCoach, isAthlete, withDetails }
     })
     .then(async (res) => {
       if (indexedDbExists()) {
         saveUsersToIndexedDB(res.data);
       }
-      return res.data;
+      return res.data.filter((user) => {
+        return (
+          (isAdmin && user.credential.isAdmin === isAdmin) ||
+          (isEmployee && user.credential.isEmployee === isEmployee) ||
+          (isCoach && user.credential.isCoach === isCoach) ||
+          (isAthlete && user.credential.isAthlete === isAthlete)
+        );
+      });
     });
 }
 

@@ -270,11 +270,6 @@ async function getUsers(user, {
         {
           model: Equipment,
           attributes: userId || credentialId || withDetails.includes("Equipment") ? ["id", "count"] : [],
-          where: withDetails.includes("Equipment") && { 
-            count: { 
-              [Sequelize.Op.gte]: 0
-            } 
-          },
           include: [
             {
               model: InventorySize,
@@ -290,10 +285,12 @@ async function getUsers(user, {
         }
       ]
     });
-    for (let user of allUsers) {
+    let users = allUsers.map(user => user.toJSON());
+    for (let user of users) {
       user.sports = await addDisplayNameToSports(user.sports);
+      user.equipment = user.equipment.filter(item => item.count > 0);
     }
-    return (userId || credentialId) && allUsers.length ? allUsers[0] : allUsers;
+    return (userId || credentialId) && users.length ? users[0] : users;
   } catch (err) {
     console.log(err)
     throw err;
