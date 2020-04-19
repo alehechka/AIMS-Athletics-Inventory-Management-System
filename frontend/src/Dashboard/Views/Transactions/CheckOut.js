@@ -43,7 +43,7 @@ export default function CheckOut(props) {
               inventorySize:
                 item.inventorySizes.filter((inventorySize) => {
                   return (
-                    user.userSizes.filter((userSize) => userSize.sportSizeId === item.sportSize)[0]?.size ===
+                    user.userSizes?.filter((userSize) => userSize.sportSizeId === item.sportSize)[0]?.size ===
                     inventorySize.size
                   );
                 })[0] || ""
