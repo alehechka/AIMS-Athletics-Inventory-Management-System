@@ -73,7 +73,7 @@ userRouter.post("/", auth(["isAdmin"]), async (req, res, next) => {
     if (user.userSizes) {
       await updateUserSizes(createdUser.id, user.userSizes);
     }
-    res.json(await getUsers(req.user, {userId: createdUser.id}));
+    res.json(await getUsers(req.user, { userId: createdUser.id }));
   } catch (err) {
     next(err);
   }
@@ -85,21 +85,26 @@ userRouter.post("/", auth(["isAdmin"]), async (req, res, next) => {
 userRouter.get(
   "/",
   auth(["isAdmin", "isEmployee", "isCoach"]),
-  queryParams([], ["page", "limit", "id", "gender", "sports[]", "isAdmin", "isEmployee", "isCoach", "isAthlete", "withDetails[]"]),
+  queryParams(
+    [],
+    ["page", "limit", "id", "gender", "sports[]", "isAdmin", "isEmployee", "isCoach", "isAthlete", "withDetails[]"]
+  ),
   async (req, res, next) => {
     try {
-      res.json(await getUsers(req.user, {
-        page: req.query.page,
-        limit: req.query.limit,
-        userId: req.query.id,
-        gender: req.query.gender,
-        sports: req.query["sports[]"],
-        isAdmin: req.query.isAdmin,
-        isEmployee: req.query.isEmployee,
-        isCoach: req.query.isCoach,
-        isAthlete: req.query.isAthlete,
-        withDetails: req.query["withDetails[]"]
-      }));
+      res.json(
+        await getUsers(req.user, {
+          page: req.query.page,
+          limit: req.query.limit,
+          userId: req.query.id,
+          gender: req.query.gender,
+          sports: req.query["sports[]"],
+          isAdmin: req.query.isAdmin,
+          isEmployee: req.query.isEmployee,
+          isCoach: req.query.isCoach,
+          isAthlete: req.query.isAthlete,
+          withDetails: req.query["withDetails[]"]
+        })
+      );
     } catch (err) {
       next(err);
     }
@@ -110,7 +115,7 @@ userRouter.get(
 //Retrieves the currently logged in user
 userRouter.get("/current", auth(), async (req, res, next) => {
   try {
-    res.json(await getUsers(req.user, {credentialId: req.user.id}));
+    res.json(await getUsers(req.user, { credentialId: req.user.id }));
   } catch (err) {
     next(err);
   }
@@ -121,7 +126,7 @@ userRouter.get("/current", auth(), async (req, res, next) => {
 userRouter.put("/current", auth(), async (req, res, next) => {
   let putUser = req.body;
   try {
-    let user = await getUsers(req.user, {credentialId: req.user.id});
+    let user = await getUsers(req.user, { credentialId: req.user.id }, true);
     if (req.user.isAdmin) {
       user.schoolId = putUser.schoolId;
     }
@@ -163,7 +168,7 @@ userRouter.put("/current", auth(), async (req, res, next) => {
 userRouter.put("/", auth(["isAdmin", "isEmployee"]), queryParams(["id"]), async (req, res, next) => {
   let putUser = req.body;
   try {
-    let foundUser = await getUsers(req.user, {userId: req.query.id});
+    let foundUser = await getUsers(req.user, { userId: req.query.id }, true);
     if (req.user.isAdmin) {
       foundUser.schoolId = putUser.schoolId;
     }
@@ -196,20 +201,24 @@ userRouter.put("/", auth(["isAdmin", "isEmployee"]), queryParams(["id"]), async 
   }
 });
 
-async function getUsers(user, {
-  page,
-  limit,
-  userId,
-  credentialId,
-  gender,
-  sports,
-  isAdmin,
-  isEmployee,
-  isCoach,
-  isAthlete,
-  isActive = true,
-  withDetails = []
-}) {
+async function getUsers(
+  user,
+  {
+    page,
+    limit,
+    userId,
+    credentialId,
+    gender,
+    sports,
+    isAdmin,
+    isEmployee,
+    isCoach,
+    isAthlete,
+    isActive = true,
+    withDetails = []
+  },
+  update = false
+) {
   try {
     let coachSports = [];
     if (user.highestAccess.isCoach) {
@@ -285,14 +294,19 @@ async function getUsers(user, {
         }
       ]
     });
-    let users = allUsers.map(user => user.toJSON());
-    for (let user of users) {
-      user.sports = await addDisplayNameToSports(user.sports);
-      user.equipment = user.equipment.filter(item => item.count > 0);
+    let users;
+    if (update) {
+      users = allUsers;
+    } else {
+      users = allUsers.map((user) => user.toJSON());
+      for (let user of users) {
+        user.sports = await addDisplayNameToSports(user.sports);
+        user.equipment = user.equipment.filter((item) => item.count > 0);
+      }
     }
     return (userId || credentialId) && users.length ? users[0] : users;
   } catch (err) {
-    console.log(err)
+    console.log(err);
     throw err;
   }
 }
