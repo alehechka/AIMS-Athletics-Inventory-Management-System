@@ -65,33 +65,13 @@ export default function Users(props) {
   const [sport, setSport] = React.useState([]);
   const [sports, setSports] = React.useState([]);
   const [sportIdLookup, setSportIdLookup] = React.useState({});
-
   /**
    * Emulates ComponentDidMount lifecycle function
    *
    * Queries the backend for staff data, sports data and populates the table.
    */
-  const req = renderType === "Staff" ? { isAdmin: true, isEmployee: true, isCoach: true } : { isAthlete: true };
   React.useEffect(() => {
-    UsersAPI.getUsers(null, null, req).then((users) => {
-      updateColumns([
-        { title: "ID", field: "id", hidden: true },
-        { title: "Sport", field: "sportsJson", hidden: true },
-        { title: "First Name", field: "firstName" },
-        { title: "Last Name", field: "lastName" },
-        {
-          title: "Sport(s)",
-          field: "sports",
-          render: (rowData) => rowData.sports.map((val, index) => <SportsChip key={index} sport={val} />),
-          customFilterAndSearch: (term, rowData) =>
-            rowData.sports.map((val) => val.displayName).some((val) => val.toLowerCase().includes(term.toLowerCase())),
-          cellStyle: { width: "100%" }
-        }
-      ]);
-
-      updateData(mapUsers(users));
-      updateLoading(false);
-    });
+    const req = renderType === "Staff" ? { isAdmin: true, isEmployee: true, isCoach: true } : { isAthlete: true };
     SportsAPI.getSports().then((sports) => {
       setSports(sports.map((sport) => sport.displayName));
       setSportIdLookup(
@@ -100,7 +80,38 @@ export default function Users(props) {
           return obj;
         }, {})
       );
+      const selectOptions = sports.reduce((obj, sport) => {
+        obj[sport.displayName] = sport.displayName;
+        return obj;
+      }, {});
+      UsersAPI.getUsers(null, null, req).then((users) => {
+        updateColumns([
+          { title: "ID", field: "id", hidden: true },
+          { title: "Sport", field: "sportsJson", hidden: true },
+          { title: "First Name", field: "firstName" },
+          { title: "Last Name", field: "lastName" },
+          {
+            title: "Sport(s)",
+            field: "sports",
+            render: (rowData) => rowData.sports.map((val, index) => <SportsChip key={index} sport={val} />),
+            lookup: selectOptions,
+            customFilterAndSearch: (term, rowData) => {
+              if (Array.isArray(term)) {
+                if (term.length === 0) return true;
+                return term.some(selectedVal => rowData.sports.map((val) => val.displayName).includes(selectedVal));
+              }
+              return rowData.sports.map((val) => val.displayName).some((val) => val.toLowerCase().includes(term.toLowerCase()));
+            },
+            cellStyle: { width: "100%" }
+          }
+        ]);
+        updateData(mapUsers(users));
+        updateLoading(false);
+      });
     });
+    
+
+    
   }, [renderType]);
 
   const mapUsers = (users) => {
@@ -279,6 +290,7 @@ export default function Users(props) {
             onClick: async (event, rowData) => {
               props.showMessage("Refreshing users...", "info");
               updateLoading(true);
+              const req = renderType === "Staff" ? { isAdmin: true, isEmployee: true, isCoach: true } : { isAthlete: true };
               await UsersAPI.getUsersFromBackend(null, null, req).then(users => {
                 updateData(mapUsers(users));
                 updateLoading(false);

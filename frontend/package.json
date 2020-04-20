@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@material-ui/core": "^4.9.4",
+    "@material-ui/core": "^4.9.11",
     "@material-ui/icons": "^4.9.1",
     "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.4.0",
+    "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
     "axios": "^0.19.2",
     "axios-offline": "^1.5.2",
@@ -14,12 +14,12 @@
     "idb": "^5.0.2",
     "js-cookie": "^2.2.1",
     "material-table": "^1.57.2",
-    "notistack": "^0.9.8",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
+    "notistack": "^0.9.10",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
     "react-router-dom": "^5.1.2",
-    "react-scripts": "^3.4.0",
-    "styled-components": "^5.0.1"
+    "react-scripts": "^3.4.1",
+    "styled-components": "^5.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
