@@ -9,13 +9,17 @@ import TransactionTable from "./TransactionTable";
 import StepButton from "@material-ui/core/StepButton";
 import Grid from "@material-ui/core/Grid";
 import CheckOutCard from "./CheckOutCard";
-import { InventoryAPI, UsersAPI, TransactionAPI } from "../../../api";
+import { InventoryAPI, UsersAPI, TransactionAPI, SportsAPI } from "../../../api";
 import SportsChip from "../Components/SportsChip";
 
 export default function CheckOut(props) {
   const parser = new URLSearchParams(props.location.search);
   const userId = parseInt(parser.get("userId"));
   const inventoryId = parseInt(parser.get("inventoryId"));
+
+  const [sports, setSports] = React.useState([]);
+  const [sportIdLookup, setSportIdLookup] = React.useState({});
+
   const [usersSelected, setUsersSelected] = React.useState([]);
   const [userColumns, updateUserColumns] = React.useState([]);
   const [userData, updateUserData] = React.useState([]);
@@ -63,94 +67,7 @@ export default function CheckOut(props) {
 
   React.useEffect(() => {
     if (props.context.authorized) {
-      InventoryAPI.getInventory(null, null, {}).then((inventory) => {
-        updateInventoryColumns([
-          { title: "ID", field: "id", hidden: true },
-          { title: "inventorySizes", field: "inventorySizes", hidden: true },
-          { title: "Name", field: "name", cellStyle: { width: "35%" } },
-          { title: "Description", field: "description", cellStyle: { width: "65%" } },
-          { title: "sportSize", field: "sportSize", hidden: true },
-          {
-            title: "Sport",
-            field: "sports",
-            render: (rowData) =>
-              rowData.sports.map((val, index) => (
-                <SportsChip key={index} sport={val} />
-              )),
-            customFilterAndSearch: (term, rowData) =>
-              rowData.sports.map((val) => val.displayName).some((val) => val.toLowerCase().includes(term.toLowerCase()))
-          },
-          { title: "Price", field: "price", type: 'currency', searchable: false, filtering: false },
-          { title: "Quantity", field: "quantity", type: 'numeric', searchable: false, filtering: false }
-        ]);
-        const customData = inventory.map((inventory) => {
-          let customerInventory = {
-            id: inventory.id,
-            inventorySizes: inventory.inventorySizes,
-            name: inventory.name,
-            description: inventory.description,
-            sportSize: inventory.sportSize.id,
-            sports: [inventory.sport],
-            price: inventory.averagePrice,
-            quantity: inventory.totalQuantity,
-            tableData: { checked: inventory.id === inventoryId }
-          };
-          if (customerInventory.tableData.checked) {
-            setInventorySelected([...inventorySelected, customerInventory]);
-            setActiveStep(userId ? 2 : 0);
-          }
-          return customerInventory;
-        });
-        updateInventoryData(customData);
-        updateInventoryLoading(false);
-      });
-
-      UsersAPI.getUsers(null, null, {
-        isAdmin: true,
-        isEmployee: true,
-        isCoach: true,
-        isAthlete: true,
-        withDetails: ["UserSize"]
-      }).then((users) => {
-        updateUserColumns([
-          { title: "ID", field: "id", hidden: true },
-          { title: "Sport", field: "sportsJson", hidden: true },
-          { title: "userSizes", field: "userSizes", hidden: true },
-          { title: "First Name", field: "firstName" },
-          { title: "Last Name", field: "lastName" },
-          {
-            title: "Sport(s)",
-            field: "sports",
-            render: (rowData) =>
-              rowData.sports.map((val, index) => (
-                <SportsChip key={index} sport={val} />
-              )),
-            customFilterAndSearch: (term, rowData) =>
-              rowData.sports
-                .map((val) => val.displayName)
-                .some((val) => val.toLowerCase().includes(term.toLowerCase())),
-            cellStyle: { width: "100%" }
-          }
-        ]);
-        const customData = users.map((user) => {
-          let customUser = {
-            id: user.id,
-            userSizes: user.userSizes,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            sportsJson: JSON.stringify(user.sports),
-            sports: user.sports,
-            tableData: { checked: user.id === userId }
-          };
-          if (customUser.tableData.checked) {
-            setUsersSelected([...usersSelected, customUser]);
-            setActiveStep(inventoryId ? 2 : 1);
-          }
-          return customUser;
-        });
-        updateUserData(customData);
-        updateUserLoading(false);
-      });
+      fetchData();
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -160,6 +77,121 @@ export default function CheckOut(props) {
     updateTransactions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [usersSelected, inventorySelected]);
+
+  async function fetchData() {
+    let selectOptions;
+    await SportsAPI.getSports().then((sports) => {
+      setSports(sports.map((sport) => sport.displayName));
+      setSportIdLookup(
+        sports.reduce((obj, sport) => {
+          obj[sport.displayName] = sport;
+          return obj;
+        }, {})
+      );
+      selectOptions = sports.reduce((obj, sport) => {
+        obj[sport.displayName] = sport.displayName;
+        console.log(obj);
+        return obj;
+      }, {});
+    });
+    InventoryAPI.getInventory(null, null, {}).then((inventory) => {
+      updateInventoryColumns([
+        { title: "ID", field: "id", hidden: true },
+        { title: "inventorySizes", field: "inventorySizes", hidden: true },
+        { title: "Name", field: "name", cellStyle: { width: "35%" } },
+        { title: "Description", field: "description", cellStyle: { width: "65%" } },
+        { title: "sportSize", field: "sportSize", hidden: true },
+        {
+          title: "Sport",
+          field: "sports",
+          render: (rowData) => rowData.sports.map((val, index) => <SportsChip key={index} sport={val} />),
+          lookup: selectOptions,
+          customFilterAndSearch: (term, rowData) => {
+            if (Array.isArray(term)) {
+              if (term.length === 0) return true;
+              return term.some((selectedVal) => rowData.sports.map((val) => val.displayName).includes(selectedVal));
+            }
+            return rowData.sports
+              .map((val) => val.displayName)
+              .some((val) => val.toLowerCase().includes(term.toLowerCase()));
+          }
+        },
+        { title: "Price", field: "price", type: "currency", searchable: false, filtering: false },
+        { title: "Quantity", field: "quantity", type: "numeric", searchable: false, filtering: false }
+      ]);
+      const customData = inventory.map((inventory) => {
+        let customerInventory = {
+          id: inventory.id,
+          inventorySizes: inventory.inventorySizes,
+          name: inventory.name,
+          description: inventory.description,
+          sportSize: inventory.sportSize.id,
+          sports: [inventory.sport],
+          price: inventory.averagePrice,
+          quantity: inventory.totalQuantity,
+          tableData: { checked: inventory.id === inventoryId }
+        };
+        if (customerInventory.tableData.checked) {
+          setInventorySelected([...inventorySelected, customerInventory]);
+          setActiveStep(userId ? 2 : 0);
+        }
+        return customerInventory;
+      });
+      updateInventoryData(customData);
+      updateInventoryLoading(false);
+    });
+
+    UsersAPI.getUsers(null, null, {
+      isAdmin: true,
+      isEmployee: true,
+      isCoach: true,
+      isAthlete: true,
+      withDetails: ["UserSize"]
+    }).then((users) => {
+      updateUserColumns([
+        { title: "ID", field: "id", hidden: true },
+        { title: "Sport", field: "sportsJson", hidden: true },
+        { title: "userSizes", field: "userSizes", hidden: true },
+        { title: "First Name", field: "firstName" },
+        { title: "Last Name", field: "lastName" },
+        {
+          title: "Sport(s)",
+          field: "sports",
+          render: (rowData) => rowData.sports.map((val, index) => <SportsChip key={index} sport={val} />),
+          lookup: selectOptions,
+          customFilterAndSearch: (term, rowData) => {
+            if (Array.isArray(term)) {
+              if (term.length === 0) return true;
+              return term.some((selectedVal) => rowData.sports.map((val) => val.displayName).includes(selectedVal));
+            }
+            return rowData.sports
+              .map((val) => val.displayName)
+              .some((val) => val.toLowerCase().includes(term.toLowerCase()));
+          },
+          cellStyle: { width: "20%" }
+        },
+        { cellStyle: { width: "80%" } }
+      ]);
+      const customData = users.map((user) => {
+        let customUser = {
+          id: user.id,
+          userSizes: user.userSizes,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          sportsJson: JSON.stringify(user.sports),
+          sports: user.sports,
+          tableData: { checked: user.id === userId }
+        };
+        if (customUser.tableData.checked) {
+          setUsersSelected([...usersSelected, customUser]);
+          setActiveStep(inventoryId ? 2 : 1);
+        }
+        return customUser;
+      });
+      updateUserData(customData);
+      updateUserLoading(false);
+    });
+  }
 
   function getSteps() {
     return transactionData.length
@@ -217,12 +249,7 @@ export default function CheckOut(props) {
         if (props.location.pathname !== props.match.path + "/transactions") {
           props.history.push(props.match.path + "/transactions?" + parser.toString());
         }
-        return (
-          <TransactionTable
-            transactionData={transactionData}
-            isTransactionLoading={isTransactionLoading}
-          />
-        );
+        return <TransactionTable transactionData={transactionData} isTransactionLoading={isTransactionLoading} />;
       default:
         return <Typography>Blank</Typography>;
     }
@@ -262,27 +289,27 @@ export default function CheckOut(props) {
       .then((transactions) => {
         setUsersSelected([]);
         setInventorySelected([]);
-        updateUserData(prev => {
-          return prev.map(user => {
+        updateUserData((prev) => {
+          return prev.map((user) => {
             return {
               ...user,
               tableData: {
                 ...user.tableData,
                 checked: false
               }
-            }
-          })
+            };
+          });
         });
-        updateInventoryData(prev => {
-          return prev.map(item => {
+        updateInventoryData((prev) => {
+          return prev.map((item) => {
             return {
               ...item,
               tableData: {
                 ...item.tableData,
                 checked: false
               }
-            }
-          })
+            };
+          });
         });
         setTransactionData(transactions);
         setTransactionLoading(false);

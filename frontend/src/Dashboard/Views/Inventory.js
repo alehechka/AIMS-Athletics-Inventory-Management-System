@@ -38,7 +38,26 @@ export default function Inventory(props) {
    * Queries the backend for inventory data
    */
   React.useEffect(() => {
-    InventoryAPI.getInventory(null, null, {})
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function fetchData() {
+    let selectOptions;
+    await SportsAPI.getSports().then((sports) => {
+      setSports(sports.map((sport) => sport.displayName));
+      setSportIdLookup(
+        sports.reduce((obj, sport) => {
+          obj[sport.displayName] = sport;
+          return obj;
+        }, {})
+      );
+      selectOptions = sports.reduce((obj, sport) => {
+        obj[sport.displayName] = sport.displayName;
+        return obj;
+      }, {});
+    });
+    await InventoryAPI.getInventory(null, null, {})
       .then((inventories) => {
         updateColumns([
           { title: "Item ID", field: "id", hidden: true },
@@ -48,10 +67,17 @@ export default function Inventory(props) {
           {
             title: "Sport",
             field: "sports",
-            sorting: false,
             render: (rowData) => rowData.sports.map((val, index) => <SportsChip key={index} sport={val} />),
-            customFilterAndSearch: (term, rowData) =>
-              rowData.sports.map((val) => val.displayName).some((val) => val.toLowerCase().includes(term.toLowerCase()))
+            lookup: selectOptions,
+            customFilterAndSearch: (term, rowData) => {
+              if (Array.isArray(term)) {
+                if (term.length === 0) return true;
+                return term.some((selectedVal) => rowData.sports.map((val) => val.displayName).includes(selectedVal));
+              }
+              return rowData.sports
+                .map((val) => val.displayName)
+                .some((val) => val.toLowerCase().includes(term.toLowerCase()));
+            }
           },
           { title: "Price", field: "price", type: "currency", searchable: false, filtering: false },
           { title: "Quantity", field: "quantity", type: "numeric", searchable: false, filtering: false }
@@ -63,17 +89,7 @@ export default function Inventory(props) {
       .catch((err) => {
         updateLoading(false);
       });
-    SportsAPI.getSports().then((sports) => {
-      setSports(sports.map((sport) => sport.displayName));
-      setSportIdLookup(
-        sports.reduce((obj, sport) => {
-          obj[sport.displayName] = sport;
-          return obj;
-        }, {})
-      );
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }
 
   const mapInventory = (inventories) => {
     return inventories.map((inventory) => ({

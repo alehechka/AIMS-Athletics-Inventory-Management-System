@@ -2,6 +2,7 @@ import React from "react";
 import MaterialTable from "material-table";
 import SportsChip from "./Components/SportsChip";
 import ProfileDialog from "./Components/ProfileDialog";
+import Icon from "@material-ui/core/Icon";
 import { UsersAPI, SportsAPI } from "../../api";
 
 /**
@@ -102,8 +103,9 @@ export default function Users(props) {
               }
               return rowData.sports.map((val) => val.displayName).some((val) => val.toLowerCase().includes(term.toLowerCase()));
             },
-            cellStyle: { width: "100%" }
-          }
+            cellStyle: { width: "20%" }
+          },
+          {cellStyle: { width: "80%" }}
         ]);
         updateData(mapUsers(users));
         updateLoading(false);
@@ -246,10 +248,18 @@ export default function Users(props) {
           },
           {
             icon: "shopping_cart",
-            tooltip: "Transactions",
+            tooltip: "Check Out",
             onClick: (event, rowData) => {
-              props.showMessage("Redirecting to Transactions page...");
+              props.showMessage("Redirecting to Check Out page...");
               props.history.push(`/checkout?userId=${rowData.id}`);
+            }
+          },
+          {
+            icon: () => <Icon className="fas fa-clipboard-check"/>,
+            tooltip: "Check In",
+            onClick: (event, rowData) => {
+              props.showMessage("Redirecting to Check In page...");
+              props.history.push(`/checkin?userId=${rowData.id}`);
             }
           },
           {

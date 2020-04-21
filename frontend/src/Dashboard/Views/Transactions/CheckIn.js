@@ -10,12 +10,15 @@ import StepButton from "@material-ui/core/StepButton";
 import Grid from "@material-ui/core/Grid";
 import TransactionTable from "./TransactionTable";
 import CheckInCard from "./CheckInCard";
-import { UsersAPI, TransactionAPI } from "../../../api";
+import { UsersAPI, TransactionAPI, SportsAPI } from "../../../api";
 
 export default function CheckOut(props) {
   const parser = new URLSearchParams(props.location.search);
   const userId = parseInt(parser.get("userId"));
   const inventoryId = parseInt(parser.get("inventoryId"));
+
+  const [sports, setSports] = React.useState([]);
+  const [sportIdLookup, setSportIdLookup] = React.useState({});
 
   const [usersSelected, setUsersSelected] = React.useState([]);
   const [userColumns, updateUserColumns] = React.useState([]);
@@ -119,51 +122,77 @@ export default function CheckOut(props) {
 
   React.useEffect(() => {
     if (props.context.authorized) {
-      UsersAPI.getUsers(null, null, {
-        isAdmin: true,
-        isEmployee: true,
-        isCoach: true,
-        isAthlete: true,
-        withDetails: ["Equipment"]
-      }).then((users) => {
-        updateUserColumns([
-          { title: "ID", field: "id", hidden: true },
-          { title: "Sport", field: "sportsJson", hidden: true },
-          { title: "userSizes", field: "userSizes", hidden: true },
-          { title: "First Name", field: "firstName" },
-          { title: "Last Name", field: "lastName" },
-          {
-            title: "Sport(s)",
-            field: "sports",
-            render: (rowData) => rowData.sports.map((val, index) => <SportsChip key={index} sport={val} />),
-            customFilterAndSearch: (term, rowData) =>
-              rowData.sports
-                .map((val) => val.displayName)
-                .some((val) => val.toLowerCase().includes(term.toLowerCase())),
-            cellStyle: { width: "100%" }
-          }
-        ]);
-        const customData = users.map((user) => {
-          let customUser = {
-            id: user.id,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            sportsJson: JSON.stringify(user.sports),
-            sports: user.sports,
-            equipment: user.equipment,
-            tableData: { checked: user.id === userId }
-          };
-          if (customUser.tableData.checked) {
-            setUsersSelected([...usersSelected, customUser]);
-            setActiveStep(inventoryId ? 2 : 1);
-          }
-          return customUser;
-        });
-        updateUserData(customData);
-        updateUserLoading(false);
-      });
+      fetchData();
     }
-  }, [props.context.authorized, inventoryId, userId]);
+  }, [props.context.authorized, userId, inventoryId]);
+
+  async function fetchData() {
+    let selectOptions;
+    await SportsAPI.getSports().then((sports) => {
+      setSports(sports.map((sport) => sport.displayName));
+      setSportIdLookup(
+        sports.reduce((obj, sport) => {
+          obj[sport.displayName] = sport;
+          return obj;
+        }, {})
+      );
+      selectOptions = sports.reduce((obj, sport) => {
+        obj[sport.displayName] = sport.displayName;
+        console.log(obj);
+        return obj;
+      }, {});
+    });
+    UsersAPI.getUsers(null, null, {
+      isAdmin: true,
+      isEmployee: true,
+      isCoach: true,
+      isAthlete: true,
+      withDetails: ["Equipment"]
+    }).then((users) => {
+      updateUserColumns([
+        { title: "ID", field: "id", hidden: true },
+        { title: "Sport", field: "sportsJson", hidden: true },
+        { title: "userSizes", field: "userSizes", hidden: true },
+        { title: "First Name", field: "firstName" },
+        { title: "Last Name", field: "lastName" },
+        {
+          title: "Sport(s)",
+          field: "sports",
+          render: (rowData) => rowData.sports.map((val, index) => <SportsChip key={index} sport={val} />),
+          lookup: selectOptions,
+          customFilterAndSearch: (term, rowData) => {
+            if (Array.isArray(term)) {
+              if (term.length === 0) return true;
+              return term.some((selectedVal) => rowData.sports.map((val) => val.displayName).includes(selectedVal));
+            }
+            return rowData.sports
+              .map((val) => val.displayName)
+              .some((val) => val.toLowerCase().includes(term.toLowerCase()));
+          },
+          cellStyle: { width: "20%" }
+        },
+        { cellStyle: { width: "80%" } }
+      ]);
+      const customData = users.map((user) => {
+        let customUser = {
+          id: user.id,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          sportsJson: JSON.stringify(user.sports),
+          sports: user.sports,
+          equipment: user.equipment,
+          tableData: { checked: user.id === userId }
+        };
+        if (customUser.tableData.checked) {
+          setUsersSelected([...usersSelected, customUser]);
+          setActiveStep(inventoryId ? 2 : 1);
+        }
+        return customUser;
+      });
+      updateUserData(customData);
+      updateUserLoading(false);
+    });
+  }
 
   function getSteps() {
     return transactionData.length
@@ -235,7 +264,7 @@ export default function CheckOut(props) {
       return {
         ...transaction,
         items: transaction.items.concat(transaction.sharedItems)
-      }
+      };
     });
 
     TransactionAPI.checkIn(formattedTransactions)
