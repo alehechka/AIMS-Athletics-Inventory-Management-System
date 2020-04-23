@@ -123,11 +123,34 @@ export default function Admin(props) {
   const [sizesDialogOpen, setSizesDialogOpen] = React.useState(false);
   const [sizesDialogTitle, setSizesDialogTitle] = React.useState("Edit Sport");
   const [sizesDialogContent, setSizesDialogContent] = React.useState("Filler");
+
+  const [passwordDialogOpen, setPasswordDialogOpen] = React.useState(false);
+  const [passwordDialogTitle, setPasswordDialogTitle] = React.useState("Edit Password");
+  const [passwordDialogId, setPasswordDialogId] = React.useState(0);
+  const [passwordDialogValue, setPasswordDialogValue] = React.useState("");
   const closeSizesDialog = (editConfirmed) => {
     if (editConfirmed) {
     } else {
     }
     setSizesDialogOpen(false);
+  };
+  const closePasswordDialog = (editConfirmed) => {
+    if (editConfirmed) {
+      const password = passwordDialogValue;
+      if (password < 8 || password > 32) {
+        props.showMessage("Invalid Password Length", "warning");
+      }
+      else {
+        props.showMessage(`Changed Password Successfully for ${passwordDialogTitle}`, "success");
+        console.log(`ID: ${passwordDialogId} : ${passwordDialogValue}`);
+        setPasswordDialogOpen(false);
+        updateRoleLoading(false);
+      }
+    } else {
+      props.showMessage("Canceled Password Change", "info");
+      setPasswordDialogOpen(false);
+      updateRoleLoading(false);
+    }
   };
 
   const { getRole } = props.context.actions;
@@ -319,6 +342,15 @@ export default function Admin(props) {
             roleColumns={roleColumns}
             rolePageSize={rolePageSize}
             updateRolePageSize={updateRolePageSize}
+            passwordDialogOpen= {passwordDialogOpen}
+            setPasswordDialogOpen={setPasswordDialogOpen}
+            passwordDialogTitle={passwordDialogTitle}
+            setPasswordDialogTitle={setPasswordDialogTitle}
+            passwordDialogId={passwordDialogId}
+            setPasswordDialogId={setPasswordDialogId}
+            passwordDialogValue={passwordDialogValue}
+            setPasswordDialogValue={setPasswordDialogValue}
+            closePasswordDialog={closePasswordDialog}
           />
         </Grid>
         <Grid item xs={12}>

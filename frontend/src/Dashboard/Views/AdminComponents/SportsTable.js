@@ -11,7 +11,7 @@ export default function SportsTable(props) {
 
   const [sizesDialogOpen, closeSizesDialog] = [props.sizesDialogOpen, props.closeSizesDialog];
   const [sizesDialogTitle, setSizesDialogTitle] = [props.sizesDialogTitle, props.setSizesDialogTitle];
-  const [sizesDialogContent] = [props.sizesDialogContent, props];
+  const [sizesDialogContent] = [props.sizesDialogContent];
   return (
     <React.Fragment>
       <MaterialTable
