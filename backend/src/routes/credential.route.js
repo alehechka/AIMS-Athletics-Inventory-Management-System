@@ -231,6 +231,9 @@ credentialRouter.put("/", auth(["isAdmin"]), queryParams(["id"]), async (req, re
 
     foundCred.email = putCred["email"] || foundCred.email;
     foundCred.username = putCred["username"] || foundCred.username;
+    if(putCred.password) {
+      foundCred.password = await hashPassword(putCred["password"]);
+    }
     if (req.user.id !== foundCred.id) {
       //Cannot remove admin access from themselves
       foundCred.isAdmin = putCred.isAdmin === true || putCred.isAdmin === false ? putCred.isAdmin : foundCred.isAdmin;

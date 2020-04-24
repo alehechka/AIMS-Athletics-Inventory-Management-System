@@ -176,6 +176,7 @@ async function updateCredentials({
   id, //Required to make successful request
   email,
   username,
+  password,
   isAdmin,
   isEmployee,
   isCoach,
@@ -187,6 +188,7 @@ async function updateCredentials({
       {
         email,
         username,
+        password,
         isAdmin,
         isEmployee,
         isCoach,

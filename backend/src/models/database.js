@@ -307,7 +307,7 @@ const InventorySize = db.define(
     price: { type: Sequelize.DECIMAL, allowNull: true },
     quantity: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 0 },
     alertQuantity: { type: Sequelize.INTEGER, allowNull: true, defaultValue: 0 },
-    jerseyNumber: { type: Sequelize.INTEGER, allowNull: true }
+    jerseyNumbers: { type: Sequelize.JSON, allowNull: true, defaultValue: [] }
   },
   {
     timestamps: true
