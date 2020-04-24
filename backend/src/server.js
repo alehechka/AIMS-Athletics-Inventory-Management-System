@@ -12,6 +12,7 @@ const credentialRouter = require("./routes/credential.route");
 const inventoryRouter = require("./routes/inventory.route");
 const equipmentRouter = require("./routes/equipment.route");
 const transactionRouter = require("./routes/transaction.route");
+const dashboardRouter = require("./routes/dashboard.route");
 
 if(process.env.NODE_ENV !== "production") {
   require("dotenv").config();
@@ -63,6 +64,7 @@ app.use(baseRoute + 'inventory', inventoryRouter);
 app.use(baseRoute + 'equipment', equipmentRouter);
 app.use(baseRoute + 'transactions', transactionRouter);
 app.use(baseRoute + 'organizations', organizationRouter);
+app.use(baseRoute + 'dashboard', dashboardRouter);
 
 // This middleware adds the json header to every response
 app.use('*', (req, res, next) => {
@@ -77,7 +79,7 @@ app.use((req, res) => {
 
 // Setup a global error handler.
 app.use((err, req, res, next) => {
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV !== 'production') {
     console.error(`Global error handler: ${JSON.stringify(err.stack)}`);
   }
     res.status(500).json({

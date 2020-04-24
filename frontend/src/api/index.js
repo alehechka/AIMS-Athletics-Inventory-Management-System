@@ -5,6 +5,7 @@ import * as InventoryAPI from "./inventory";
 import * as EquipmentAPI from "./equipment";
 import * as OrganizationAPI from "./organization";
 import * as TransactionAPI from "./transactions";
+import * as DashboardAPI from "./dashboard";
 import { openDB } from "idb/with-async-ittr.js";
 import axios from "axios";
 import AxiosOffline from "axios-offline";
@@ -113,6 +114,7 @@ export {
   EquipmentAPI,
   TransactionAPI,
   OrganizationAPI,
+  DashboardAPI,
   createIndexedDB,
   changeFavicon,
   indexedDbExists,

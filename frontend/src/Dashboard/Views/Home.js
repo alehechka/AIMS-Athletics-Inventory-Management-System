@@ -3,6 +3,7 @@ import {
   UsersAPI,
   SportsAPI,
   CredentialAPI,
+  DashboardAPI,
   InventoryAPI,
   changeFavicon,
   EquipmentAPI,
@@ -135,6 +136,9 @@ export default function Home(props) {
       <button onClick={() => TransactionAPI.getTransactions({})}>Get Transactions</button>
       <button onClick={() => TransactionAPI.checkOut(transactions, "comment")}>Check out</button>
       <button onClick={() => TransactionAPI.checkIn(transactions2, "comment")}>Check in</button>
+      <br />
+      <br />
+      <button onClick={() => DashboardAPI.getSportEquipmentStats()}>Get Equipment Stats</button>
       <br />
       <br />
       <button onClick={() => changeFavicon("https://www.google.com/favicon.ico")}>Change Favicon</button>
