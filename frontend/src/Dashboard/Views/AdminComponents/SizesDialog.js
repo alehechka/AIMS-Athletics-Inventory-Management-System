@@ -9,6 +9,8 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Add from '@material-ui/icons/Add';
 import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton';
+import Select from 'react-select'
+
 
 import MaterialTable from 'material-table';
 
@@ -38,18 +40,35 @@ function SizeTextField(props) {
             </InputAdornment>
         }}
     />
-
-    )
+    );
 }
 export default function SizesDialog(props) {
     const [sizesDialogOpen, closeSizesDialog] = [props.sizesDialogOpen, props.closeSizesDialog];
     const [dialogTitle, dialogContent] = [props.dialogTitle, props.dialogContent];
     const [sizesData, setSizesData] = [props.sizesData, props.setSizesData];
-
+    const itemList = props.itemList;
+    const mapOption = (obj) => ({
+        value: obj.id,
+        label: obj.name,
+        sizes: obj.sizes
+    });
+    const options = itemList.map(item=> mapOption(item));
     const sportId = dialogContent.id;
     let columns = [
-        {title: "ID", hidden: true, editable: "never", searchable: false},
-        {title: "Item Name", field: "name", searchable: true},
+        {title: "ID", field: 'id', hidden: true, editable: "onAdd", searchable: false},
+        {title: "Item Name", field: "name", editable: "onAdd", searchable: true,
+            editComponent: props => <Select 
+                options={options} 
+                value={mapOption(props.rowData)}
+                onChange={(selected)=>{
+                    let data = {...props.rowData};
+                    data.id = selected.value;
+                    data.name = selected.label;
+                    data.sizes = selected.sizes;
+                    props.onRowDataChange(data);
+                }}
+                />
+        },
         {title: "Sizes", field: "sizes", searchable: false,
         render: rowData => rowData.sizes.map(size => <Chip label={size} key={size} style={{margin: "4px"}}/>),
         editComponent: props => (
@@ -88,11 +107,12 @@ export default function SizesDialog(props) {
                         onRowAdd: newData =>
                           new Promise((resolve, reject) => {
                             const newItem = {
-                                id: Math.random(),
+                                id: newData.id,
                                 name: newData.name,
                                 sizes: newData.sizes
-                            }
+                            };
                             setSizesData(sizesData.concat([newItem]));
+                            console.log(sportId, sizesData);
                             resolve();
                           }),
                         onRowUpdate: (newData, oldData) =>
@@ -101,13 +121,15 @@ export default function SizesDialog(props) {
                                 id: oldData.id,
                                 name: oldData.name,
                                 sizes: newData.sizes
-                            }
+                            };
                             setSizesData(sizesData.map(item => item.id === newData.id? newItem: item));
+                            console.log(sportId, sizesData);
                             resolve();
                           }),
                         onRowDelete: oldData =>
                           new Promise((resolve, reject) => {
                             setSizesData(sizesData.filter(item => item.id !== oldData.id));
+                            console.log(sportId, sizesData);
                             resolve();
                           }),
                       }}

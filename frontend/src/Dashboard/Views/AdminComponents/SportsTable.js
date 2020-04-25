@@ -14,7 +14,7 @@ export default function SportsTable(props) {
   const [sizesDialogTitle, setSizesDialogTitle] = [props.sizesDialogTitle, props.setSizesDialogTitle];
   const [sizesDialogContent] = [props.sizesDialogContent];
   const [sizesData, setSizesData] = [props.sizesData, props.setSizesData];
-
+  const itemList = props.itemList;
   return (
     <React.Fragment>
       <MaterialTable
@@ -107,6 +107,7 @@ export default function SportsTable(props) {
         closeSizesDialog={closeSizesDialog}
         sizesData={sizesData}
         setSizesData={setSizesData}
+        itemList={itemList}
       />
     </React.Fragment>
   );
