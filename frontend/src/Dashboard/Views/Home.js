@@ -101,6 +101,7 @@ function DevButtons(props) {
       <br />
       <br />
       <button onClick={() => InventoryAPI.getInventory(null, null, {})}>Get Inventory</button>
+      <button onClick={async () => console.log(await InventoryAPI.getSingleInventory(1))}>Get Single Inventory</button>
       <button
         onClick={() =>
           InventoryAPI.createInventory({

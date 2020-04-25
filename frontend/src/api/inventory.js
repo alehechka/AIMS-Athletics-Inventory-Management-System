@@ -66,6 +66,43 @@ async function saveInventoryToIndexedDB(inventory) {
   }
 }
 
+async function getSingleInventory(id) {
+  try {
+    return await getSingleInventoryIndexedDB(id);
+  } catch (err) {
+    return await getSingleInventoryBackend(id);
+  }
+}
+
+async function getSingleInventoryIndexedDB(id) {
+  try {
+    if (indexedDbExists()) {
+      const db = await openDB("AIMS", 1, {});
+      let dbInventory;
+      if (db.objectStoreNames.contains("inventory")) {
+        dbInventory = await db.getAllFromIndex("inventory", "id", parseInt(id));
+      }
+      db.close();
+      if (dbInventory.length) {
+        return dbInventory[0];
+      }
+    }
+    throw new Error("No entries in local storage.");
+  } catch (err) {
+    throw err;
+  }
+}
+
+async function getSingleInventoryBackend(id) {
+  return await api
+    .get(`/inventory`, {
+      params: { id }
+    })
+    .then((res) => {
+      return res.data;
+    });
+}
+
 //Creates inventory item
 async function createInventory({ name, description, surplus, sportSize, taxable, expendable, inventorySizes }) {
   /* inventorySizes: [
@@ -154,4 +191,4 @@ async function updateInventoryIndexedDB(inventory) {
   db.close();
 }
 
-export { getInventory, createInventory, updateInventory, getInventoryFromBackend };
+export { getInventory, createInventory, updateInventory, getInventoryFromBackend, getSingleInventory };
