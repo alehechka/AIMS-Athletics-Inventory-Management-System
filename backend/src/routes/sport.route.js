@@ -42,7 +42,17 @@ sportRouter.get("/", auth(), queryParams([], ["id"]), async (req, res, next) => 
         }
       ]
     });
-    res.json(req.query.id && sports.length ? sports[0] : sports);
+    let jsonSports = sports.map(sport => sport.toJSON());
+    res.json(
+      req.query.id && jsonSports.length
+        ? jsonSports[0]
+        : jsonSports.map((sport) => {
+            return {
+              ...sport,
+              sportSizes: sport.sportSizes.filter(size => size.sizes.length)
+            };
+          })
+    );
   } catch (err) {
     next(err);
   }
@@ -81,48 +91,56 @@ sportRouter.put("/", auth(["isAdmin"]), queryParams(["id"]), async (req, res, ne
 });
 
 sportRouter.put("/sizes", auth(["isAdmin"]), queryParams(["id"]), async (req, res, next) => {
-  const sizes = req.body.sizes
+  const sizes = req.body.sizes;
   try {
     let sportSizes = await SportSize.findAll({
       where: {
         sportId: req.query.id
       }
     });
-    let updateSizes = sizes.filter(size => {
-      return sportSizes.some(item => item.id === size.id);
+    let updateSizes = sizes.filter((size) => {
+      return sportSizes.some((item) => item.id === size.id);
     });
-    let addSizes = sizes.filter(size => !size.id);
-    let deleteSizes = sportSizes.filter(size => {
-      return !sizes.some(item => item.id === size.id);
+    let addSizes = sizes.filter((size) => !size.id);
+    let deleteSizes = sportSizes.filter((size) => {
+      return !sizes.some((item) => item.id === size.id);
     });
-    
-    for(let size of updateSizes) {
-      await SportSize.update({
-        name: size.name,
-        sizes: size.sizes
-      }, {
-        where: {
-          sportId: req.query.id,
-          id: size.id
+
+    for (let size of updateSizes) {
+      await SportSize.update(
+        {
+          name: size.name,
+          sizes: size.sizes
+        },
+        {
+          where: {
+            sportId: req.query.id,
+            id: size.id
+          }
         }
-      });
+      );
     }
-    for(let size of addSizes) {
+    for (let size of addSizes) {
       await SportSize.create({
         name: size.name,
         sizes: size.sizes,
         sportId: req.query.id
-      })
+      });
     }
-    for(let size of deleteSizes) {
-      await SportSize.destroy({
-        where: {
-          sportId: req.query.id,
-          id: size.id
+    for (let size of deleteSizes) {
+      await SportSize.update(
+        {
+          sizes: []
+        },
+        {
+          where: {
+            sportId: req.query.id,
+            id: size.id
+          }
         }
-      })
+      );
     }
-    res.json(await Sport.findOne({
+    let sport = await Sport.findOne({
       where: {
         id: req.query.id
       },
@@ -137,11 +155,14 @@ sportRouter.put("/sizes", auth(["isAdmin"]), queryParams(["id"]), async (req, re
           }
         }
       ]
-    }));
-  } catch(err) {
+    });
+    sport = sport.toJSON();
+    sport.sportSizes = sport.sportSizes.filter(size => size.sizes.length)
+    res.json(sport);
+  } catch (err) {
     next(err);
   }
-})
+});
 
 //GET /api/v#/sports/:id
 //Delete one sport by id
@@ -181,7 +202,7 @@ async function updateUserSports(userId, sports) {
           attributes: []
         }
       ]
-    }).map(sport => sport.id)
+    }).map((sport) => sport.id);
     let addSports = sports.filter((sport) => !userSports.includes(sport));
     let deleteSports = userSports.filter((sport) => !sports.includes(sport));
 
@@ -195,7 +216,7 @@ async function updateUserSports(userId, sports) {
       await UserSport.destroy({
         where: {
           userId,
-          sportId: sport,
+          sportId: sport
         }
       });
     }
@@ -217,7 +238,7 @@ async function updateUserSports(userId, sports) {
   } catch (err) {
     throw err;
   }
-};
+}
 
 async function getCoachSports(credentialId) {
   return await Sport.findAll({

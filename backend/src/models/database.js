@@ -262,7 +262,8 @@ const Inventory = db.define(
     taxable: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
     expendable: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
     totalQuantity: { type: Sequelize.VIRTUAL },
-    averagePrice: { type: Sequelize.VIRTUAL }
+    averagePrice: { type: Sequelize.VIRTUAL },
+    removed: { type: Sequelize.BOOLEAN, defaultValue: false }
   },
   {
     timestamps: true,

@@ -27,7 +27,8 @@ inventoryRouter.get(
           req.query.surplus && { surplus: req.query.surplus },
           req.query.sportSizeId && { sportSizeId: req.query.sportSizeId },
           req.query.taxable && { taxable: req.query.taxable },
-          req.query.expendable && { expendable: req.query.expendable }
+          req.query.expendable && { expendable: req.query.expendable },
+          { removed: false }
         ),
         attributes: {
           exclude: ["createdAt", "updatedAt", "sportSizeId", "organizationId"]
@@ -152,19 +153,20 @@ inventoryRouter.put("/", auth(["isAdmin", "isEmployee"]), queryParams(["id"]), a
       ]
     });
 
-    foundItem.name = putInventory.name;
-    foundItem.description = putInventory.description;
-    foundItem.surplus = putInventory.surplus;
-    foundItem.taxable = putInventory.taxable;
-    foundItem.expendable = putInventory.expendable;
-    foundItem.sportSizeId = putInventory.sportSizeId;
+    foundItem.name = putInventory.name || foundItem.name;
+    foundItem.description = putInventory.description || foundItem.description;
+    foundItem.surplus = putInventory.surplus === true || putInventory.surplus === false ? putInventory.surplus : foundItem.surplus;
+    foundItem.taxable = putInventory.taxable === true || putInventory.taxable === false ? putInventory.taxable : foundItem.taxable;
+    foundItem.expendable = putInventory.expendable === true || putInventory.expendable === false ? putInventory.expendable : foundItem.expendable;
+    foundItem.sportSizeId = putInventory.sportSizeId || foundItem.sportSizeId;
+    foundItem.removed = putInventory.removed === true || putInventory.removed === false ? putInventory.removed : foundItem.removed;
     await foundItem.save();
 
-    let addItems = putInventory.inventorySizes.filter((item) => !item.id);
-    let deleteItems = foundItem.inventorySizes.filter((item) => {
-      return putInventory.inventorySizes.filter((putItem) => putItem.id === item.id).length === 0;
-    });
-    let updateItems = putInventory.inventorySizes.filter((item) => item.id);
+    let addItems = putInventory.inventorySizes ? putInventory.inventorySizes.filter((item) => !item.id) : [];
+    // let deleteItems = foundItem.inventorySizes.filter((item) => {
+    //   return putInventory.inventorySizes.filter((putItem) => putItem.id === item.id).length === 0;
+    // });
+    let updateItems = putInventory.inventorySizes ? putInventory.inventorySizes.filter((item) => item.id) : [];
 
     for (let item of updateItems) {
       await InventorySize.update(
@@ -191,13 +193,13 @@ inventoryRouter.put("/", auth(["isAdmin", "isEmployee"]), queryParams(["id"]), a
         inventoryId: foundItem.id
       });
     }
-    for (let item of deleteItems) {
-      await InventorySize.destroy({
-        where: {
-          id: item.id
-        }
-      });
-    }
+    // for (let item of deleteItems) {
+    //   await InventorySize.destroy({
+    //     where: {
+    //       id: item.id
+    //     }
+    //   });
+    // }
     res.json(await foundItem.reload());
   } catch (err) {
     next(err);
