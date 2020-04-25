@@ -157,7 +157,9 @@ export default function Home(props) {
     search: true,
     filtering: true,
     exportButton: true,
-    exportAllData: true
+    exportAllData: true,
+    pageSize: 5,
+    pageSizeOptions: [5]
   };
   const convertStringToCurrency = (stringToConvert) => numeral(stringToConvert).format('($0.00a)');
 
@@ -173,8 +175,8 @@ export default function Home(props) {
   const [sportSpendingData, setSportSpendingData]= React.useState([]);
 
   const genderSpendingColumns = [
-    {title: "Gender", field: "gender", filtering: false,},
-    {title:"Sports", field: "sports"},
+    {title: "Gender", field: "gender", lookup: {"M": "Male", "F": "Female", "None": "Common"},},
+    {title:"Sports", field: "sports", filtering: false},
     {title: "Spending", field: "spending", type: 'numeric', filtering: false, defaultSort: "desc",
       render: rowData => convertStringToCurrency(rowData.spending),
     },
@@ -233,7 +235,7 @@ export default function Home(props) {
             <MaterialTable
               title="Spending by Gender"
               isLoading={equipmentStatsLoading}
-              options={{...defaultTableOptions, filtering: false}}
+              options={defaultTableOptions}
               data={genderSpendingData}
               columns={genderSpendingColumns}
             />
