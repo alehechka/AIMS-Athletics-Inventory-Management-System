@@ -1,5 +1,5 @@
 import React from "react";
-import { UsersAPI, SportsAPI, CredentialAPI, InventoryAPI} from "../../api";
+import { UsersAPI, SportsAPI, CredentialAPI} from "../../api";
 import FormControl from "@material-ui/core/FormControl";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -120,7 +120,6 @@ export default function Admin(props) {
   const [sportsColumns, updateSportsColumns] = React.useState([]);
   const [sportsPageSize, updateSportsPageSize] = React.useState(5);
 
-  const [itemList, setItemList] = React.useState([]); 
   const [sizesDialogOpen, setSizesDialogOpen] = React.useState(false);
   const [sizesDialogTitle, setSizesDialogTitle] = React.useState("Edit Sport");
   const [sizesDialogContent, setSizesDialogContent] = React.useState({});
@@ -259,90 +258,83 @@ export default function Admin(props) {
       updateRoleData(mapUsers(users));
       updateRoleLoading(false);
     });
-    InventoryAPI.getInventory(null, null, {}).then(items => {
-      setItemList(items.map(item=> ({
-        id: item.id,
-        name: item.name,
-        sizes: item.inventorySizes.map(sizeItem=> sizeItem.size)
-      })));
-      SportsAPI.getSports().then((res) => {
-        updateSportsColumns([
-          { name: "ID", field: "id", ...defaultOptions },
-          { title: "Name", field: "name", cellStyle: { width: "30%" } },
-          {
-            title: "Gender",
-            field: "gender",
-            cellStyle: { width: "30%" },
-            lookup: { M: "Male", F: "Female" },
-            editComponent: (props) => (
-              <FormControl required component="fieldset">
-                <RadioGroup
-                  row
-                  defaultValue="F"
-                  value={props.value}
-                  name="gender"
-                  onChange={(e) => props.onChange(e.target.value)}
-                >
-                  <FormControlLabel value="F" control={<Radio />} label="Female" />
-                  <FormControlLabel value="M" control={<Radio />} label="Male" />
-                </RadioGroup>
-              </FormControl>
-            )
-          },
-          {
-            title: "Sizes",
-            field: "sportSizes",
-            render: (rowData) => (
-              <Tooltip title="View Item Sizes">
-                <IconButton
-                  onClick={() => {
-                    setSizesDialogTitle("View Item Sizes");
-                    setSizesDialogOpen(true);
-                    setSizesDialogContent(rowData);
-                    const data = rowData.sportSizes.map(item => ({
-                      id: item.id,
-                      name: item.name,
-                      sizes: item.sizes
-                    }));
-                    setSizesData(data);
-                  }}
-                >
-                  <InfoIcon />
-                </IconButton>
-              </Tooltip>
-            ),
-            editable: "never",
-            filtering: false
-          },
-          {
-            title: "Icon",
-            field: "icon",
-            filtering: false,
-            render: (rowData) => <Icon className={rowData.icon}>{rowData.icon}</Icon>,
-            editComponent: (props) => (
-              <FormControl>
-                <Select defaultValue="people" value={props.value} onChange={(e) => props.onChange(e.target.value)}>
-                  {iconList.map((icon) => (
-                    <MenuItem value={icon.value}>
-                      <ListItemIcon>
-                        <Icon className={icon.value} style={{ marginRight: "3px" }}>
-                          {icon.value}
-                        </Icon>
-                        {icon.name}
-                      </ListItemIcon>
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            )
-          },
-          { title: "Default", field: "default", type: "boolean", editable: "never", searchable: false, filtering: false },
-          { title: "Display Name", field: "displayName", ...defaultOptions }
-        ]);
-        updateSportsData(res);
-        updateSportsLoading(false);
-      });
-      });
+    SportsAPI.getSports().then((res) => {
+      updateSportsColumns([
+        { name: "ID", field: "id", ...defaultOptions },
+        { title: "Name", field: "name", cellStyle: { width: "30%" } },
+        {
+          title: "Gender",
+          field: "gender",
+          cellStyle: { width: "30%" },
+          lookup: { M: "Male", F: "Female" },
+          editComponent: (props) => (
+            <FormControl required component="fieldset">
+              <RadioGroup
+                row
+                defaultValue="F"
+                value={props.value}
+                name="gender"
+                onChange={(e) => props.onChange(e.target.value)}
+              >
+                <FormControlLabel value="F" control={<Radio />} label="Female" />
+                <FormControlLabel value="M" control={<Radio />} label="Male" />
+              </RadioGroup>
+            </FormControl>
+          )
+        },
+        {
+          title: "Sizes",
+          field: "sportSizes",
+          render: (rowData) => (
+            <Tooltip title="View Item Sizes">
+              <IconButton
+                onClick={() => {
+                  setSizesDialogTitle("View Item Sizes");
+                  setSizesDialogOpen(true);
+                  setSizesDialogContent(rowData);
+                  const data = rowData.sportSizes.map(item => ({
+                    id: item.id,
+                    name: item.name,
+                    sizes: item.sizes
+                  }));
+                  setSizesData(data);
+                }}
+              >
+                <InfoIcon />
+              </IconButton>
+            </Tooltip>
+          ),
+          editable: "never",
+          filtering: false
+        },
+        {
+          title: "Icon",
+          field: "icon",
+          filtering: false,
+          render: (rowData) => <Icon className={rowData.icon}>{rowData.icon}</Icon>,
+          editComponent: (props) => (
+            <FormControl>
+              <Select defaultValue="people" value={props.value} onChange={(e) => props.onChange(e.target.value)}>
+                {iconList.map((icon) => (
+                  <MenuItem value={icon.value}>
+                    <ListItemIcon>
+                      <Icon className={icon.value} style={{ marginRight: "3px" }}>
+                        {icon.value}
+                      </Icon>
+                      {icon.name}
+                    </ListItemIcon>
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )
+        },
+        { title: "Default", field: "default", type: "boolean", editable: "never", searchable: false, filtering: false },
+        { title: "Display Name", field: "displayName", ...defaultOptions }
+      ]);
+      updateSportsData(res);
+      updateSportsLoading(false);
+    });
   }, [getRole]);
 
   const mapUsers = (users) => {
@@ -402,7 +394,6 @@ export default function Admin(props) {
             closeSizesDialog={closeSizesDialog}
             sizesData={sizesData}
             setSizesData={setSizesData}
-            itemList={itemList}
           />
         </Grid>
       </Grid>

@@ -9,7 +9,6 @@ import InputAdornment from '@material-ui/core/InputAdornment';
 import Add from '@material-ui/icons/Add';
 import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton';
-import Select from 'react-select'
 
 import MaterialTable from 'material-table';
 
@@ -46,29 +45,21 @@ export default function SizesDialog(props) {
     const [sizesDialogOpen, closeSizesDialog] = [props.sizesDialogOpen, props.closeSizesDialog];
     const [dialogTitle, dialogContent] = [props.dialogTitle, props.dialogContent];
     const [sizesData, setSizesData] = [props.sizesData, props.setSizesData];
-    const itemList = props.itemList;
-    const mapOption = (obj) => ({
-        value: obj.id,
-        label: obj.name,
-        sizes: obj.sizes
-    });
-    const options = itemList.map(item=> mapOption(item));
     const sportId = dialogContent.id;
 
     let columns = [
-        {title: "ID", field: 'id', hidden: true, editable: "onAdd", searchable: false},
-        {title: "Item Name", field: "name", editable: "onAdd", searchable: true,
-            editComponent: props => <Select 
-                options={options} 
-                value={mapOption(props.rowData)}
-                onChange={(selected)=>{
-                    let data = {...props.rowData};
-                    data.id = selected.value;
-                    data.name = selected.label;
-                    data.sizes = selected.sizes;
-                    props.onRowDataChange(data);
-                }}
-                />
+        {title: "ID", field: 'id', hidden: true, searchable: false},
+        {title: "Item Name", field: "name", searchable: true,
+        editComponent: props=>(
+            <TextField
+                variant="outlined"
+                margin="normal"
+                required
+                label="Item Name"
+                value={props.value}
+                onChange={e=> props.onChange(e.target.value)}
+            />
+        )
         },
         {title: "Sizes", field: "sizes", searchable: false,
         render: rowData => rowData.sizes.map(size => <Chip label={size} key={size} style={{margin: "4px"}}/>),
@@ -113,24 +104,24 @@ export default function SizesDialog(props) {
                                 sizes: newData.sizes
                             };
                             setSizesData(sizesData.concat([newItem]));
-                            console.log(sportId, sizesData);
+                            console.log(sportId, newItem);
                             resolve();
                           }),
                         onRowUpdate: (newData, oldData) =>
                           new Promise((resolve, reject) => {
                             const newItem = {
                                 id: oldData.id,
-                                name: oldData.name,
+                                name: newData.name,
                                 sizes: newData.sizes
                             };
                             setSizesData(sizesData.map(item => item.id === newData.id? newItem: item));
-                            console.log(sportId, sizesData);
+                            console.log(sportId, newItem);
                             resolve();
                           }),
                         onRowDelete: oldData =>
                           new Promise((resolve, reject) => {
-                            setSizesData(sizesData.filter(item => item.id !== oldData.id));
-                            console.log(sportId, sizesData);
+                            setSizesData(sizesData.filter(item => item.name !== oldData.name));
+                            console.log(sportId, sizesData.length);
                             resolve();
                           }),
                       }}
