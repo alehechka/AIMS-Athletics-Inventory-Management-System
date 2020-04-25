@@ -52,6 +52,8 @@ export default function Users(props) {
     isAthlete: renderType === "Athletes"
   };
   const deepCopy = (obj) => JSON.parse(JSON.stringify(obj));
+  
+  const blockUserEdit = props.context.credentials.role === "Coach";
 
   //material Table hooks
   const [isLoading, updateLoading] = React.useState(true);
@@ -259,7 +261,8 @@ export default function Users(props) {
             onClick: (event, rowData) => {
               props.showMessage("Redirecting to Profile page...");
               props.history.push(`/profile?userId=${rowData.id}`);
-            }
+            },
+            
           },
           {
             icon: "shopping_cart",
@@ -267,7 +270,8 @@ export default function Users(props) {
             onClick: (event, rowData) => {
               props.showMessage("Redirecting to Check Out page...");
               props.history.push(`/checkout?userId=${rowData.id}`);
-            }
+            },
+            disabled: blockUserEdit
           },
           {
             icon: () => <Icon className="fas fa-clipboard-check"/>,
@@ -275,7 +279,8 @@ export default function Users(props) {
             onClick: (event, rowData) => {
               props.showMessage("Redirecting to Check In page...");
               props.history.push(`/checkin?userId=${rowData.id}`);
-            }
+            },
+            disabled: blockUserEdit
           },
           {
             icon: "create",
@@ -294,7 +299,8 @@ export default function Users(props) {
                 setDialogOpen(true);
                 setDialogTitle("Edit " + renderType);
               });
-            }
+            },
+            disabled: blockUserEdit
           },
           {
             icon: "add",
@@ -306,7 +312,8 @@ export default function Users(props) {
               setSport([]);
               setDialogOpen(true);
               setDialogTitle("Add " + renderType);
-            }
+            },
+            disabled: blockUserEdit
           },
           {
             icon: "update",
