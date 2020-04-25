@@ -1,4 +1,4 @@
-import { api } from "./index";
+import { api, UsersAPI } from "./index";
 
 //Gets all transactions based on provided filters
 async function getTransactions({ issuedBy, issuedTo, returned, createdBegin, createdEnd, sports }, page, limit) {
@@ -37,6 +37,7 @@ async function checkOut(transactions, comment) {
       }
     )
     .then((res) => {
+      UsersAPI.getUsersFromBackend(null, null, {});
       return res.data;
     });
 }
@@ -65,6 +66,7 @@ async function checkIn(transactions, comment) {
       }
     )
     .then((res) => {
+      UsersAPI.getUsersFromBackend(null, null, {});
       return res.data;
     });
 }

@@ -345,7 +345,8 @@ const Transaction = db.define(
   {
     amount: { type: Sequelize.INTEGER, allowNull: false },
     returned: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
-    comment: { type: Sequelize.STRING, allowNull: true }
+    comment: { type: Sequelize.STRING, allowNull: true },
+    price: { type: Sequelize.VIRTUAL }
   },
   {
     timestamps: true

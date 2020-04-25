@@ -2,7 +2,7 @@
 
 const express = require("express");
 const Sequelize = require("sequelize");
-const { Transaction, User, Equipment, InventorySize, Inventory, SportSize } = require("../models/database");
+const { Transaction, User, Equipment, InventorySize, Inventory, SportSize, addFullNameToUsers } = require("../models/database");
 const auth = require("../middleware/auth");
 const queryParams = require("../middleware/queryParams");
 const { getCoachSports } = require("./sport.route");
@@ -49,19 +49,19 @@ transactionRouter.post("/checkOut", auth(["isAdmin", "isEmployee", "isCoach"]), 
         inventorySize.quantity -= item.amount;
         await inventorySize.save();
         //Create transaction
-        createdTransactions.push(
-          await Transaction.create({
-            amount: item.amount,
-            comment,
-            equipmentId: equipment.id,
-            issuedBy: issuedBy.id,
-            issuedTo: transaction.issuedTo,
-            organizationId: req.user.organizationId
-          })
-        );
+        await Transaction.create({
+          amount: item.amount,
+          comment,
+          equipmentId: equipment.id,
+          issuedBy: issuedBy.id,
+          issuedTo: transaction.issuedTo,
+          organizationId: req.user.organizationId
+        }).then((transaction) => {
+          createdTransactions.push(transaction.id);
+        });
       }
     }
-    res.json(createdTransactions);
+    res.json(await getTransactions(req.user, { transactionIDs: createdTransactions }));
   } catch (err) {
     next(err);
   }
@@ -99,21 +99,21 @@ transactionRouter.post("/checkIn", auth(["isAdmin", "isEmployee", "isCoach"]), a
           inventorySize.quantity += item.amount;
           await inventorySize.save();
           //Create transaction
-          createdTransactions.push(
-            await Transaction.create({
-              amount: item.amount,
-              comment,
-              returned: true,
-              equipmentId: equipment.id,
-              issuedBy: issuedBy.id,
-              issuedTo: transaction.issuedTo,
-              organizationId: req.user.organizationId
-            })
-          );
+          await Transaction.create({
+            amount: item.amount,
+            comment,
+            returned: true,
+            equipmentId: equipment.id,
+            issuedBy: issuedBy.id,
+            issuedTo: transaction.issuedTo,
+            organizationId: req.user.organizationId
+          }).then((transaction) => {
+            createdTransactions.push(transaction.id);
+          });
         }
       }
     }
-    res.json(createdTransactions);
+    res.json(await getTransactions(req.user, { transactionIDs: createdTransactions }));
   } catch (err) {
     next(err);
   }
@@ -124,10 +124,20 @@ transactionRouter.post("/checkIn", auth(["isAdmin", "isEmployee", "isCoach"]), a
 transactionRouter.get(
   "/",
   auth(["isAdmin", "isEmployee", "isCoach"]),
-  queryParams([], ["returned", "createdBegin", "createdEnd"]),
+  queryParams([], ["returned", "createdBegin", "createdEnd", "sports[]", "issuedTo", "issuedBy", "transactionIDs[]"]),
   async (req, res, next) => {
     try {
-      res.json(await getTransactions(req.user, {}));
+      res.json(
+        await getTransactions(req.user, {
+          returned: req.query.returned,
+          createdBegin: req.query.createdBegin,
+          createdEnd: req.query.createdEnd,
+          sports: req.query["sports[]"],
+          issuedTo: req.query.issuedTo,
+          issuedBy: req.query.issuedBy,
+          transactionIDs: req.query["transactionIDs[]"]
+        })
+      );
     } catch (err) {
       next(err);
     }
@@ -169,7 +179,7 @@ transactionRouter.get(
 
 async function getTransactions(
   user,
-  { page, limit, issuedBy, issuedTo, returned, createdBegin, createdEnd = new Date(), sports }
+  { page, limit, issuedBy, issuedTo, returned, createdBegin, createdEnd = new Date(), sports, transactionIDs }
 ) {
   try {
     let coachSports = [];
@@ -188,7 +198,8 @@ async function getTransactions(
         issuedTo && { issuedTo },
         returned && { returned },
         createdBegin && { createdAt: { [Sequelize.Op.gte]: createdBegin } },
-        { createdAt: { [Sequelize.Op.lte]: createdEnd } }
+        { createdAt: { [Sequelize.Op.lte]: createdEnd } },
+        transactionIDs && Sequelize.or({ id: transactionIDs })
       ),
       attributes: {
         exclude: ["equipmentId", "issuedBy", "issuedTo", "organizationId"]
@@ -236,6 +247,11 @@ async function getTransactions(
         }
       ]
     });
+    for(let tran of transactions) {
+      tran.price = tran.amount * tran.equipment.inventorySize.price;
+      tran.IssuedTo = addFullNameToUsers(tran.IssuedTo)
+      tran.IssuedBy = addFullNameToUsers(tran.IssuedBy)
+    }
     return sports || user.highestAccess.isCoach
       ? transactions.filter((transaction) => {
           return transaction.equipment.inventorySize.inventory;
