@@ -80,6 +80,69 @@ sportRouter.put("/", auth(["isAdmin"]), queryParams(["id"]), async (req, res, ne
   }
 });
 
+sportRouter.put("/sizes", auth(["isAdmin"]), queryParams(["id"]), async (req, res, next) => {
+  const sizes = req.body.sizes
+  try {
+    let sportSizes = await SportSize.findAll({
+      where: {
+        sportId: req.query.id
+      }
+    });
+    let updateSizes = sizes.filter(size => {
+      return sportSizes.some(item => item.id === size.id);
+    });
+    let addSizes = sizes.filter(size => !size.id);
+    let deleteSizes = sportSizes.filter(size => {
+      return !sizes.some(item => item.id === size.id);
+    });
+    
+    for(let size of updateSizes) {
+      await SportSize.update({
+        name: size.name,
+        sizes: size.sizes
+      }, {
+        where: {
+          sportId: req.query.id,
+          id: size.id
+        }
+      });
+    }
+    for(let size of addSizes) {
+      await SportSize.create({
+        name: size.name,
+        sizes: size.sizes,
+        sportId: req.query.id
+      })
+    }
+    for(let size of deleteSizes) {
+      await SportSize.destroy({
+        where: {
+          sportId: req.query.id,
+          id: size.id
+        }
+      })
+    }
+    res.json(await Sport.findOne({
+      where: {
+        id: req.query.id
+      },
+      attributes: {
+        exclude: ["organizationId"]
+      },
+      include: [
+        {
+          model: SportSize,
+          attributes: {
+            exclude: ["sportId"]
+          }
+        }
+      ]
+    }));
+  } catch(err) {
+    next(err);
+  }
+})
+
 //GET /api/v#/sports/:id
 //Delete one sport by id
 // sportRouter.delete("/", auth(["isAdmin"]), queryParams(["id"]), async (req, res, next) => {

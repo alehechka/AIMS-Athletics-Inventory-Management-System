@@ -67,7 +67,7 @@ async function getSport(id) {
 //Allows an admin to create a sport
 async function createSport({ name, gender, icon }) {
   return await api.post(`/sports`, { name, gender, icon }).then((res) => {
-    if(indexedDbExists()) {
+    if (indexedDbExists()) {
       insertSportIndexedDB(res.data);
     }
     return res.data;
@@ -77,7 +77,7 @@ async function createSport({ name, gender, icon }) {
 //Allows an admin to update a sport
 async function updateSport({ id, name, gender, icon }) {
   return await api.put(`/sports`, { name, gender, icon }, { params: { id } }).then((res) => {
-    if(indexedDbExists()) {
+    if (indexedDbExists()) {
       updateSportIndexedDB(res.data);
     }
     return res.data;
@@ -123,4 +123,20 @@ async function updateUserSports(userId, sports) {
   });
 }
 
-export { getSports, getSport, createSport, updateSport, updateUserSports, getSportsFromBackend };
+async function updateSportSizes(sportId, sportSizes) {
+  sportSizes = sportSizes.map((size) => {
+    return {
+      id: size.id,
+      name: size.name,
+      sizes: size.sizes
+    };
+  });
+  return await api.put(`/sports/sizes`, { sizes: sportSizes }, { params: { id: sportId } }).then((res) => {
+    if(indexedDbExists()) {
+      updateSportIndexedDB(res.data);
+    }
+    return res.data;
+  })
+}
+
+export { getSports, getSport, createSport, updateSport, updateUserSports, getSportsFromBackend, updateSportSizes };
