@@ -122,16 +122,14 @@ export default function Admin(props) {
 
   const [sizesDialogOpen, setSizesDialogOpen] = React.useState(false);
   const [sizesDialogTitle, setSizesDialogTitle] = React.useState("Edit Sport");
-  const [sizesDialogContent, setSizesDialogContent] = React.useState("Filler");
+  const [sizesDialogContent, setSizesDialogContent] = React.useState({});
+  const [sizesData, setSizesData] = React.useState({});
 
   const [passwordDialogOpen, setPasswordDialogOpen] = React.useState(false);
   const [passwordDialogTitle, setPasswordDialogTitle] = React.useState("Edit Password");
   const [passwordDialogId, setPasswordDialogId] = React.useState(0);
   const [passwordDialogValue, setPasswordDialogValue] = React.useState("");
-  const closeSizesDialog = (editConfirmed) => {
-    if (editConfirmed) {
-    } else {
-    }
+  const closeSizesDialog = () => {
     setSizesDialogOpen(false);
   };
   const closePasswordDialog = (editConfirmed) => {
@@ -285,6 +283,12 @@ export default function Admin(props) {
                   setSizesDialogTitle("View Item Sizes");
                   setSizesDialogOpen(true);
                   setSizesDialogContent(rowData);
+                  const data = rowData.sportSizes.map(item => ({
+                    id: item.id,
+                    name: item.name,
+                    sizes: item.sizes
+                  }));
+                  setSizesData(data);
                 }}
               >
                 <InfoIcon />
@@ -379,6 +383,8 @@ export default function Admin(props) {
             sizesDialogOpen={sizesDialogOpen}
             setSizesDialogOpen={setSizesDialogOpen}
             closeSizesDialog={closeSizesDialog}
+            sizesData={sizesData}
+            setSizesData={setSizesData}
           />
         </Grid>
       </Grid>

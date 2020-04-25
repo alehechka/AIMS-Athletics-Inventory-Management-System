@@ -8,10 +8,13 @@ export default function SportsTable(props) {
   const [sportsData, updateSportsData] = [props.sportsData, props.updateSportsData];
   const sportsColumns = props.sportsColumns;
   const [sportsPageSize, updateSportsPageSize] = [props.sportsPageSize, props.updateSportsPageSize];
+  
 
   const [sizesDialogOpen, closeSizesDialog] = [props.sizesDialogOpen, props.closeSizesDialog];
   const [sizesDialogTitle, setSizesDialogTitle] = [props.sizesDialogTitle, props.setSizesDialogTitle];
   const [sizesDialogContent] = [props.sizesDialogContent];
+  const [sizesData, setSizesData] = [props.sizesData, props.setSizesData];
+
   return (
     <React.Fragment>
       <MaterialTable
@@ -102,6 +105,8 @@ export default function SportsTable(props) {
         dialogContent={sizesDialogContent}
         sizesDialogOpen={sizesDialogOpen}
         closeSizesDialog={closeSizesDialog}
+        sizesData={sizesData}
+        setSizesData={setSizesData}
       />
     </React.Fragment>
   );

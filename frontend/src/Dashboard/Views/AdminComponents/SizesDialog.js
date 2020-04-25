@@ -4,69 +4,119 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Chip from '@material-ui/core/Chip';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import Add from '@material-ui/icons/Add';
+import TextField from '@material-ui/core/TextField';
+import IconButton from '@material-ui/core/IconButton';
 
+import MaterialTable from 'material-table';
+
+function SizeTextField(props) {
+    const [newSize, setNewSize] = React.useState("");
+    const onChange = props.onChange;
+    const array = props.array;
+    return (<TextField
+        variant="outlined"
+        margin="normal"
+        required
+        label="Add Size"
+        value={newSize}
+        onChange={e=> setNewSize(e.target.value)}
+        InputProps= {{
+            endAdornment:
+            <InputAdornment position="end">
+              <IconButton
+                onClick={() => {
+                    onChange(array.concat([newSize]));
+                    setNewSize("");
+                }}
+                edge="end"
+              >
+               <Add/>
+              </IconButton>
+            </InputAdornment>
+        }}
+    />
+
+    )
+}
 export default function SizesDialog(props) {
     const [sizesDialogOpen, closeSizesDialog] = [props.sizesDialogOpen, props.closeSizesDialog];
-    const [dialogTitle, setDialogTitle, dialogContent] = [props.dialogTitle, props.setDialogTitle, props.dialogContent];
-    const isEditDialog = dialogTitle.includes("Edit");
-    
-    let render = dialogContent;
+    const [dialogTitle, dialogContent] = [props.dialogTitle, props.dialogContent];
+    const [sizesData, setSizesData] = [props.sizesData, props.setSizesData];
+
     const sportId = dialogContent.id;
-    if (dialogTitle === "Edit Sport Sizes") {
-        render = "1";
-        const sportSizes = dialogContent.sportSizes;
-        console.log(sportId, sportSizes);
-    }
-    else if (dialogTitle === "View Item Sizes") {
-        const sportSizes = dialogContent.sportSizes;
-        let itemsRender = "There are no inventory items with sizes attached to this sport";
-        if (sportSizes.length !== 0){
-            itemsRender = sportSizes.map((val)=>(
-                <ExpansionPanel key ={`${val.id}Panel`} defaultExpanded>
-                    <ExpansionPanelSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    >
-                        {val.name}
-                    </ExpansionPanelSummary>
-                    <ExpansionPanelDetails>
-                        <div>
-                            {val.sizes.map(size=> (
-                                <Chip label={size} key ={`${val.id}${size}`} style ={{margin: "8px"}}/>
-                            ))}
-                        </div>
-                    </ExpansionPanelDetails>
-                </ExpansionPanel>
-            ));
+    let columns = [
+        {title: "ID", hidden: true, editable: "never", searchable: false},
+        {title: "Item Name", field: "name", searchable: true},
+        {title: "Sizes", field: "sizes", searchable: false,
+        render: rowData => rowData.sizes.map(size => <Chip label={size} key={size} style={{margin: "4px"}}/>),
+        editComponent: props => (
+            <React.Fragment>
+                {props.value?props.value.map(size =>
+                    <Chip label={size} key={size} style={{margin: "4px"}} onDelete ={(e) => {
+                        props.onChange(props.value.filter(val => val !== size));
+                    }}/>)
+                :""}
+                <SizeTextField
+                    array={props.value? props.value:[]}
+                    onChange={props.onChange}
+                />
+            </React.Fragment>
+          )
         }
-        render = (
-            <div>
-                <Button
-                    onClick={() => setDialogTitle("Edit Sport Sizes")}
-                >
-                    Edit
-                </Button>
-                {itemsRender}
-            </div>);
-    }
+    ];
     return(
-        <Dialog open={sizesDialogOpen} onClose={closeSizesDialog} disableBackdropClick fullWidth>
+        <Dialog open={sizesDialogOpen} onClose={closeSizesDialog} disableBackdropClick maxWidth={"lg"} fullWidth>
             <DialogTitle>{dialogTitle} for {dialogContent.displayName}</DialogTitle>
             <DialogContent>
-                <div>
-                    {render}
+                <div style={{ width: "100%",}}>
+                <MaterialTable
+                    title="Item Sizes"
+                    isLoading={false}
+                    columns={columns}
+                    data={sizesData}
+                    options={{
+                        pageSize: 5,
+                        pageSizeOptions: [5],
+                        headerStyle: {fontWeight: 'bold'},
+                        actionsColumnIndex: -1,
+                        tableLayout: "auto"
+                    }}
+                    editable={{
+                        onRowAdd: newData =>
+                          new Promise((resolve, reject) => {
+                            const newItem = {
+                                id: Math.random(),
+                                name: newData.name,
+                                sizes: newData.sizes
+                            }
+                            setSizesData(sizesData.concat([newItem]));
+                            resolve();
+                          }),
+                        onRowUpdate: (newData, oldData) =>
+                          new Promise((resolve, reject) => {
+                            const newItem = {
+                                id: oldData.id,
+                                name: oldData.name,
+                                sizes: newData.sizes
+                            }
+                            setSizesData(sizesData.map(item => item.id === newData.id? newItem: item));
+                            resolve();
+                          }),
+                        onRowDelete: oldData =>
+                          new Promise((resolve, reject) => {
+                            setSizesData(sizesData.filter(item => item.id !== oldData.id));
+                            resolve();
+                          }),
+                      }}
+                />
                 </div>
             </DialogContent>
             <DialogActions>
-                <Button onClick={()=> closeSizesDialog(false)} color="primary">
+                <Button onClick={()=> closeSizesDialog()} color="primary">
                     Cancel
-                </Button>
-                <Button onClick={() => closeSizesDialog(true)} color="primary" style = {!isEditDialog? {"display": "none"}: {}}>
-                    Confirm
                 </Button>
             </DialogActions>
         </Dialog>
