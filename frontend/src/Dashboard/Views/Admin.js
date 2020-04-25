@@ -130,7 +130,16 @@ export default function Admin(props) {
   const [passwordDialogTitle, setPasswordDialogTitle] = React.useState("Edit Password");
   const [passwordDialogId, setPasswordDialogId] = React.useState(0);
   const [passwordDialogValue, setPasswordDialogValue] = React.useState("");
-  const closeSizesDialog = () => {
+  const closeSizesDialog = (editConfirmed) => {
+    if (editConfirmed) {
+      const sportId = sizesDialogContent.id;
+      const sportName = sizesDialogContent.displayName;
+      SportsAPI.updateSportSizes(sportId, sizesData).then((res) => {
+        props.showMessage(`Updated sport sizes for ${sportName}`, "success");
+      });
+    } else {
+      props.showMessage("Changes not saved", "info");
+    }
     setSizesDialogOpen(false);
   };
   const closePasswordDialog = (editConfirmed) => {

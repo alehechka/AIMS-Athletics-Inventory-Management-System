@@ -11,6 +11,7 @@
     "axios": "^0.19.2",
     "axios-offline": "^1.5.2",
     "fg-loadcss": "^2.1.0",
+    "filefy": "^0.1.10",
     "idb": "^5.0.2",
     "js-cookie": "^2.2.1",
     "material-table": "^1.57.2",

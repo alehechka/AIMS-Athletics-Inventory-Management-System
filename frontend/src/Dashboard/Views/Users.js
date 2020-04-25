@@ -4,6 +4,7 @@ import SportsChip from "./Components/SportsChip";
 import ProfileDialog from "./Components/ProfileDialog";
 import Icon from "@material-ui/core/Icon";
 import { UsersAPI, SportsAPI } from "../../api";
+import { CsvBuilder } from 'filefy';
 
 /**
  * Contains the material table which lets the user edit staff entries.
@@ -89,8 +90,9 @@ export default function Users(props) {
         updateColumns([
           { title: "ID", field: "id", hidden: true },
           { title: "Sport", field: "sportsJson", hidden: true },
-          { title: "First Name", field: "firstName" },
-          { title: "Last Name", field: "lastName" },
+          { title: "Sports", field: "sportText", export: true, hidden: true,},
+          { title: "First Name", field: "firstName", export: true},
+          { title: "Last Name", field: "lastName", export: true},
           {
             title: "Sport(s)",
             field: "sports",
@@ -103,7 +105,8 @@ export default function Users(props) {
               }
               return rowData.sports.map((val) => val.displayName).some((val) => val.toLowerCase().includes(term.toLowerCase()));
             },
-            cellStyle: { width: "20%" }
+            cellStyle: { width: "20%" },
+            export: false
           },
           {cellStyle: { width: "80%" }}
         ]);
@@ -122,7 +125,8 @@ export default function Users(props) {
       firstName: user.firstName,
       lastName: user.lastName,
       sportsJson: JSON.stringify(user.sports),
-      sports: user.sports
+      sports: user.sports,
+      sportText: user.sports.map(sport => sport.displayName).join(", ")
     }));
   };
 
@@ -167,7 +171,8 @@ export default function Users(props) {
         firstName: inputs.firstName,
         lastName: inputs.lastName,
         sportsJson: JSON.stringify(newSportsJson),
-        sports: newSportsJson
+        sports: newSportsJson,
+        sportText: newSportsJson.map(sport => sport.displayName).join(", ")
       };
       const newUser = deepCopy(inputs);
       Object.keys(newUser).map((key) => {
@@ -235,7 +240,17 @@ export default function Users(props) {
           search: true,
           filtering: true,
           actionsColumnIndex: -1,
-          tableLayout: "auto"
+          tableLayout: "auto",
+          exportButton: true,
+          exportCsv: () => {
+            const filterColumns = columns.filter(columnDef=> columnDef.export);
+            const filterData = data.map(rowData => filterColumns.map(columnDef=> rowData[columnDef.field]));
+            new CsvBuilder((renderType) + '.csv')
+              .setDelimeter(",")
+              .setColumns(filterColumns.map(columnDef => columnDef.title))
+              .addRows(filterData)
+              .exportFile();
+          }
         }}
         actions={[
           {

@@ -10,7 +10,6 @@ import Add from '@material-ui/icons/Add';
 import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton';
 import Select from 'react-select'
-import { SportsAPI } from '../../../api';
 
 import MaterialTable from 'material-table';
 
@@ -55,13 +54,6 @@ export default function SizesDialog(props) {
     });
     const options = itemList.map(item=> mapOption(item));
     const sportId = dialogContent.id;
-
-    async function saveSportSizes() {
-        SportsAPI.updateSportSizes(sportId, sizesData).then((res) => {
-            // TODO: add snackbar
-            closeSizesDialog();
-        })
-    }
 
     let columns = [
         {title: "ID", field: 'id', hidden: true, editable: "onAdd", searchable: false},
@@ -146,10 +138,10 @@ export default function SizesDialog(props) {
                 </div>
             </DialogContent>
             <DialogActions>
-                <Button onClick={()=> closeSizesDialog()} color="primary">
+                <Button onClick={()=> closeSizesDialog(false)} color="primary">
                     Cancel
                 </Button>
-                <Button onClick={()=> saveSportSizes()} color="primary" variant="contained">
+                <Button onClick={()=> closeSizesDialog(true)} color="primary" variant="contained">
                     Save
                 </Button>
             </DialogActions>
