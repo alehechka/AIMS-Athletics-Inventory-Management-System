@@ -9,8 +9,11 @@ import {
   EquipmentAPI,
   TransactionAPI
 } from "../../api";
+import MaterialTable from 'material-table';
+import Grid from "@material-ui/core/Grid";
+const numeral = require('numeral');
 
-export default function Home(props) {
+function DevButtons(props) {
   const user = {
     id: 1,
     firstName: "Adam"
@@ -62,9 +65,11 @@ export default function Home(props) {
       ]
     }
   ];
-  return (
-    <div>
-      <h1>Home</h1>
+  const [hideButtons, setHideButtons] = React.useState(true);
+  return(
+  <div>
+      <button onClick={() => setHideButtons(!hideButtons)}>Dev Buttons</button>
+      <div style={hideButtons?{display:"none"}:{}}>
       <button onClick={() => UsersAPI.getUsers(null, null, {withDetails:["UserSize","Equipment"]})}>Get Users</button>
       <button onClick={() => UsersAPI.getSingleUser(7)}>Get Single User</button>
       <button onClick={() => UsersAPI.getCurrentUser()}>Get Current</button>
@@ -143,5 +148,98 @@ export default function Home(props) {
       <br />
       <button onClick={() => changeFavicon("https://www.google.com/favicon.ico")}>Change Favicon</button>
     </div>
+    </div>
+  );
+}
+export default function Home(props) {
+  const defaultTableOptions = {
+    search: true,
+    filtering: true,
+    exportButton: true,
+    exportAllData: true
+  };
+  const convertStringToCurrency = (stringToConvert) => numeral(stringToConvert).format('($0.00a)');
+
+  const [equipmentStatsLoading, setEquipmentStatsLoading] = React.useState(true);
+  const [sportLookupOptions, setSportLookupOptions] = React.useState({});
+
+  const sportSpendingColumns = [
+    {title: "Sport", field: "sport", lookup: sportLookupOptions},
+    {title: "Spending", field: "spending", type: 'numeric', filtering: false, defaultSort: "desc",
+      render: rowData => convertStringToCurrency(rowData.spending),
+    },
+  ];
+  const [sportSpendingData, setSportSpendingData]= React.useState([]);
+
+  const genderSpendingColumns = [
+    {title: "Gender", field: "gender", filtering: false,},
+    {title:"Sports", field: "sports"},
+    {title: "Spending", field: "spending", type: 'numeric', filtering: false, defaultSort: "desc",
+      render: rowData => convertStringToCurrency(rowData.spending),
+    },
+  ];
+  const [genderSpendingData, setGenderSpendingData]= React.useState([]);
+
+  React.useEffect(() => {
+    SportsAPI.getSports().then((sports) => {
+      const selectOptions = sports.reduce((obj, sport) => {
+        obj[sport.displayName] = sport.displayName;
+        return obj;
+      }, {});
+      setSportLookupOptions(selectOptions);
+    });
+    DashboardAPI.getSportEquipmentStats().then(stats=>{
+      let newSportSpendingData = stats.map(sportStat=> ({
+        sport: sportStat.sport.displayName,
+        spending: sportStat.totalCheckedOut
+      }));
+      setSportSpendingData(newSportSpendingData);
+
+      let newGenderSpendingData = stats.map(sportStat=> ({
+        sport: sportStat.sport.name,
+        gender: sportStat.sport.gender,
+        spending: sportStat.totalCheckedOut, 
+      })).reduce((acc, item)=> {
+          const group = item.gender || "None";
+          acc[group] = acc[group] || [];
+          acc[group].push(item);
+          return acc;
+      },{});
+      newGenderSpendingData = Object.entries(newGenderSpendingData).map(([key, arr])=>({
+        gender: key,
+        sports: arr.map(sport=> sport.sport).join(", "),
+        spending: arr.map(sport=> sport.spending).reduce((a,b)=>a+b, 0)
+      }));
+      setGenderSpendingData(newGenderSpendingData);
+
+      setEquipmentStatsLoading(false);
+    });
+  },[]);
+  return(
+    <React.Fragment>
+      <div style={{ maxWidth: "100%", marginLeft: "10px", marginRight: "10px", marginBottom: "10px" }}>
+        <Grid container spacing={3}>
+          <Grid item xs={6}>
+            <MaterialTable
+              title="Spending by Sport"
+              isLoading={equipmentStatsLoading}
+              options={defaultTableOptions}
+              data={sportSpendingData}
+              columns={sportSpendingColumns}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <MaterialTable
+              title="Spending by Gender"
+              isLoading={equipmentStatsLoading}
+              options={{...defaultTableOptions, filtering: false}}
+              data={genderSpendingData}
+              columns={genderSpendingColumns}
+            />
+          </Grid>
+        </Grid>
+      </div>
+      <DevButtons/>
+    </React.Fragment>
   );
 }
