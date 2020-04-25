@@ -146,7 +146,7 @@ class Login extends React.Component {
           this.props.showMessage("Invalid Credentials", "error", 5000);
           setTimeout(
             this.props.showMessage(
-              "Did you forget your password? \n Click on Forgot password to reset your password.",
+              "Did you forget your password? \n Ask the Admin to change your password.",
               "warning",
               "20000"
             ),
@@ -206,7 +206,7 @@ class Login extends React.Component {
               label="Remember me"
             />
             <RouterLink to="/reset">
-              <Link variant="body1" style={{ float: "right", marginTop: "8px" }}>
+              <Link variant="body1" style={{ float: "right", marginTop: "8px", display: "none"}}>
                 Forgot password?
               </Link>
             </RouterLink>

@@ -22,7 +22,7 @@ export default function RolesTable(props) {
   return (
     <React.Fragment>
       <MaterialTable
-        title="Roles"
+        title="Security"
         isLoading={isRoleLoading}
         columns={roleColumns}
         data={roleData}

@@ -1,5 +1,5 @@
 import React from "react";
-import { UsersAPI, SportsAPI } from "../../api";
+import { UsersAPI, SportsAPI, CredentialAPI } from "../../api";
 import FormControl from "@material-ui/core/FormControl";
 import FormGroup from "@material-ui/core/FormGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
@@ -141,10 +141,19 @@ export default function Admin(props) {
         props.showMessage("Invalid Password Length", "warning");
       }
       else {
-        props.showMessage(`Changed Password Successfully for ${passwordDialogTitle}`, "success");
-        console.log(`ID: ${passwordDialogId} : ${passwordDialogValue}`);
-        setPasswordDialogOpen(false);
-        updateRoleLoading(false);
+        const req = {
+          id: passwordDialogId,
+          password: passwordDialogValue
+        };
+        CredentialAPI.updateCredentials(req).then(res => {
+          props.showMessage(`Changed Password Successfully for ${passwordDialogTitle}`, "success");
+          console.log(`ID: ${res.email} : ${passwordDialogValue}`);
+        }).catch(err => {
+          props.showMessage(`Failed to update Password for ${passwordDialogTitle}. ${err}`, "error");
+        }).finally(()=> {
+          setPasswordDialogOpen(false);
+          updateRoleLoading(false);
+        });
       }
     } else {
       props.showMessage("Canceled Password Change", "info");

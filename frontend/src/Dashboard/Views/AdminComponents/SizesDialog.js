@@ -36,7 +36,7 @@ export default function SizesDialog(props) {
                     <ExpansionPanelDetails>
                         <div>
                             {val.sizes.map(size=> (
-                                <Chip label={size} style ={{margin: "8px"}}/>
+                                <Chip label={size} key ={`${val.id}${size}`} style ={{margin: "8px"}}/>
                             ))}
                         </div>
                     </ExpansionPanelDetails>
