@@ -262,7 +262,7 @@ async function getUsers(
         },
         {
           model: Credential,
-          attributes: user.isAdmin ? { exclude: ["organizationId", "password"] } : ["email", "username"],
+          attributes: { exclude: ["organizationId", "password"] },
           where:
             isAdmin || isEmployee || isCoach || isAthlete
               ? Sequelize.or(

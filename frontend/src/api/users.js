@@ -128,6 +128,7 @@ async function getUsersFromIndexedDB(page, limit, { gender, sports, isAdmin, isE
       db.close();
       if (dbUsers.length) {
         return dbUsers.filter((user) => {
+          console.log(user)
           return (
             (isAdmin && user.credential.isAdmin === isAdmin) ||
             (isEmployee && user.credential.isEmployee === isEmployee) ||

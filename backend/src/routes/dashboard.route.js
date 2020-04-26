@@ -49,15 +49,26 @@ dashboardRouter.get(
         ) {
           sportEquipment[index].quantityCheckedOut += item.count;
           sportEquipment[index].totalCheckedOut += (item.inventorySize.price * item.count);
+          if(!sportEquipment[index].users.includes(item.userId)) {
+            sportEquipment[index].users.push(item.userId);
+          }
         } else {
           sportEquipment.push({
             sport: addDisplayNameToSports(item.inventorySize.inventory.sport),
             quantityCheckedOut: item.count,
-            totalCheckedOut: item.inventorySize.price * item.count
+            totalCheckedOut: item.inventorySize.price * item.count,
+            users: [item.userId]
           });
         }
       }
-
+      sportEquipment = sportEquipment.map(item => {
+        return {
+          ...item,
+          numberOfUsers: item.users.length,
+          averageEquipmentPerUser: (item.quantityCheckedOut / item.users.length),
+          averagePricePerUser: (item.totalCheckedOut / item.users.length)
+        }
+      })
       res.json(sportEquipment);
     } catch (err) {
       next(err);
