@@ -271,7 +271,6 @@ export default function Users(props) {
               props.showMessage("Redirecting to Check Out page...");
               props.history.push(`/checkout?userId=${rowData.id}`);
             },
-            disabled: blockUserEdit
           },
           {
             icon: () => <Icon className="fas fa-clipboard-check"/>,
@@ -280,7 +279,6 @@ export default function Users(props) {
               props.showMessage("Redirecting to Check In page...");
               props.history.push(`/checkin?userId=${rowData.id}`);
             },
-            disabled: blockUserEdit
           },
           {
             icon: "create",

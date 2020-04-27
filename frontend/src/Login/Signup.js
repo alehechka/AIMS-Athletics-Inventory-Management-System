@@ -30,16 +30,14 @@ import { OrganizationAPI } from "../api";
  * password1Valid - bool - state variable keeping track of password length
  * password2Valid - bool - state variable keeping track of password matching
  *
- * Props passed down from app.js
- *
- * showmessage - custom function to enqueue snackbar
- *
- * Props passed down from Snackbar provider.
- *
- * enqueuesnackbar - function - shows a snackbar.
- * closesnackbar - function - closes a snackbar.
  */
 class Signup extends React.Component {
+  /**
+   * Initializes react state.
+   * 
+   * @param {Object} props - passed down from app.js
+   * @param {showMessage} props.showMessage - helper function to display snackbar messages
+   */
   constructor(props) {
     super(props);
     this.state = {
@@ -56,7 +54,10 @@ class Signup extends React.Component {
       organization: null
     };
   }
-
+  /**
+   * Initializes the Organizations available.
+   * 
+   */
   async componentDidMount() {
     this.setState({ organizations: await OrganizationAPI.getOrganizations() });
   }
@@ -64,7 +65,7 @@ class Signup extends React.Component {
   /**
    * Updates the organization variable
    *
-   * @param e event triggered if textbox changes
+   * @param {Object} e - event triggered if textbox changes
    */
   handleOrganizationChange = (e) => {
     const organization = e.target.value;
@@ -74,7 +75,7 @@ class Signup extends React.Component {
   /**
    * Updates the username state variable
    *
-   * @param e event triggered if textbox changes
+   * @param {Object} e - event triggered if textbox changes
    */
   handleUsernameChange = (e) => {
     const username = e.target.value;
@@ -85,7 +86,7 @@ class Signup extends React.Component {
   /**
    * Updates the email state variable and checks if @ is present
    *
-   * @param e event triggered if textbox changes
+   * @param {Object} e - event triggered if textbox changes
    */
   handleEmailChange = (e) => {
     const email = e.target.value;
@@ -95,7 +96,7 @@ class Signup extends React.Component {
   /**
    * Updates the password state variable and checks its length
    *
-   * @param e event triggered if textbox changes
+   * @param {Object} e - event triggered if textbox changes
    */
 
   handlePassword1Change = (e) => {
@@ -107,7 +108,7 @@ class Signup extends React.Component {
   /**
    * Updates the password2 state variable and checks if theyre equal
    *
-   * @param e event triggered if textbox changes
+   * @param {Object} e - event triggered if textbox changes
    */
 
   handlePassword2Change = (e) => {
@@ -118,12 +119,11 @@ class Signup extends React.Component {
     });
   };
   /**
-   * TODO:
    * username, Email password are sent to the API.
    *
    * the server returns a JWT which is stored in state variable if values are valid.
    *
-   * @param e event triggered when form is submitted.
+   * @param {Object} e - event triggered when form is submitted.
    */
   handleSubmit = async (e) => {
     e.preventDefault();

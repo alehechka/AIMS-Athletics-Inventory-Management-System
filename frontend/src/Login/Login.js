@@ -21,16 +21,14 @@ import { Link as RouterLink } from "react-router-dom";
  * invalid - bool - state variable keeping track of invalid attempts by user
  * noOfAttempts - int - number of login attempts made by the user
  *
- * Props passed down from app.js
- *
- * showmessage - custom function to enqueue snackbar
- *
- * Props passed down from Snackbar provider.
- *
- * enqueuesnackbar - function - shows a snackbar.
- * closesnackbar - function - closes a snackbar.
  */
 class Login extends React.Component {
+  /**
+   * Initializes react state.
+   * 
+   * @param {Object} props - passed down from app.js
+   * @param {showMessage} props.showMessage - helper function to display snackbar messages
+   */
   constructor(props) {
     super(props);
     this.state = {
@@ -43,8 +41,8 @@ class Login extends React.Component {
     };
   }
   /**
-   * parses query string params and displays relevant messages
-   *
+   * query Params - Deprecated
+   * parses query string params and displays relevant messages.
    */
   componentDidMount() {
     const queryParams = window.location.search;
@@ -61,7 +59,9 @@ class Login extends React.Component {
       this.props.showMessage("Sent Password Reset Instructions to: " + email);
     }
   }
-
+  /**
+   * Redirects user to home page if user authorized.
+   */
   componentDidUpdate() {
     if(this.props.context.authorized) {
       this.props.history.push("/");
@@ -70,16 +70,15 @@ class Login extends React.Component {
   /**
    * Updates the email state variable
    *
-   * @param e event triggered if textbox changes
+   * @param {Object} e - event triggered if textbox changes
    */
-
   handleEmailChange = (e) => {
     this.setState(Object.assign(this.state, { email: e.target.value }));
   };
   /**
    * Updates the password state variable
    *
-   * @param e event triggered if textbox changes
+   * @param {Object} e - event triggered if textbox changes
    */
 
   handlePasswordChange = (e) => {
@@ -88,7 +87,7 @@ class Login extends React.Component {
   /**
    * Updates the Remember state variable
    *
-   * @param e event triggered if checkbox changes
+   * @param {Object} e - event triggered if checkbox changes
    */
 
   handleRememberChange = (e) => {
@@ -100,7 +99,7 @@ class Login extends React.Component {
    *
    * the server returns a JWT which is stored in a cookie if credentials are valid.
    *
-   * @param e event triggered when form is submitted.
+   * @param {Object} e - event triggered when form is submitted.
    */
   handleSubmit = async (e) => {
     e.preventDefault();

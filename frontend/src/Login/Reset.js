@@ -14,22 +14,18 @@ import { withSnackbar } from 'notistack';
 //const apiUrl = "http://localhost:5000/api/v1";
 
 /**
- * TODO - This Component contains the password reset page along with reset logic.
+ * TODO - This Component contains the password reset page along with reset logic. [Deprecated]
  * 
  * State variables:
  * email - string - email of the user 
- * 
- * 
- * Props passed down from app.js
- * 
- * showmessage - custom function to enqueue snackbar
- * 
- * Props passed down from Snackbar provider.
- * 
- * enqueuesnackbar - function - shows a snackbar.
- * closesnackbar - function - closes a snackbar.  
  */
 class Reset extends React.Component {
+  /**
+   * Initializes react state.
+   * 
+   * @param {Object} props - passed down from app.js
+   * @param {showMessage} props.showMessage - helper function to display snackbar messages
+   */
   constructor(props) {
     super(props);
     this.state = {
@@ -39,7 +35,7 @@ class Reset extends React.Component {
    /**
    * Updates the email state variable
    * 
-   * @param e event triggered if textbox changes
+   * @param {Object} e - event triggered if textbox changes
    */ 
   handleEmailChange =(e) =>{
     this.setState(Object.assign(this.state, {email: e.target.value}));
@@ -50,7 +46,7 @@ class Reset extends React.Component {
    * 
    * redirect back to login page if email valid.
    * 
-   * @param e event triggered when form is submitted.
+   * @param {Object} e - event triggered when form is submitted.
    */
   handleSubmit = async (e) => {
     e.preventDefault();

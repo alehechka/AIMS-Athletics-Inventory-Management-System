@@ -168,18 +168,24 @@ export default function Home(props) {
 
   const sportSpendingColumns = [
     {title: "Sport", field: "sport", lookup: sportLookupOptions},
-    {title: "Spending", field: "spending", type: 'numeric', filtering: false, defaultSort: "desc",
+    {title: "Users", field: "numberOfUsers", type: 'numeric', filtering: false},
+    {title: "Spending", field: "spending", type: 'numeric', filtering: false,
       render: rowData => convertStringToCurrency(rowData.spending),
     },
+    {title: "Average Spend", field: "averagePricePerUser", type: 'numeric', filtering: false, defaultSort: "desc",
+      render: rowData => convertStringToCurrency(rowData.averagePricePerUser)},
   ];
   const [sportSpendingData, setSportSpendingData]= React.useState([]);
 
   const genderSpendingColumns = [
     {title: "Gender", field: "gender", lookup: {"M": "Male", "F": "Female", "None": "Common"},},
-    {title:"Sports", field: "sports", filtering: false},
-    {title: "Spending", field: "spending", type: 'numeric', filtering: false, defaultSort: "desc",
+    {title: "Sports", field: "sports", filtering: false},
+    {title: "Users", field: "numberOfUsers", type: 'numeric', filtering: false},
+    {title: "Spending", field: "spending", type: 'numeric', filtering: false,
       render: rowData => convertStringToCurrency(rowData.spending),
     },
+    {title: "Average Spend", field: "averagePricePerUser", type: 'numeric', filtering: false, defaultSort: "desc",
+      render: rowData => convertStringToCurrency(rowData.averagePricePerUser)},
   ];
   const [genderSpendingData, setGenderSpendingData]= React.useState([]);
 
@@ -194,7 +200,9 @@ export default function Home(props) {
     DashboardAPI.getSportEquipmentStats().then(stats=>{
       let newSportSpendingData = stats.map(sportStat=> ({
         sport: sportStat.sport.displayName,
-        spending: sportStat.totalCheckedOut
+        spending: sportStat.totalCheckedOut,
+        averagePricePerUser: sportStat.averagePricePerUser,
+        numberOfUsers: sportStat.numberOfUsers,
       }));
       setSportSpendingData(newSportSpendingData);
 
@@ -202,6 +210,9 @@ export default function Home(props) {
         sport: sportStat.sport.name,
         gender: sportStat.sport.gender,
         spending: sportStat.totalCheckedOut, 
+        averagePricePerUser: sportStat.averagePricePerUser,
+        numberOfUsers: sportStat.numberOfUsers,
+        users: sportStat.users,
       })).reduce((acc, item)=> {
           const group = item.gender || "None";
           acc[group] = acc[group] || [];
@@ -211,7 +222,12 @@ export default function Home(props) {
       newGenderSpendingData = Object.entries(newGenderSpendingData).map(([key, arr])=>({
         gender: key,
         sports: arr.map(sport=> sport.sport).join(", "),
-        spending: arr.map(sport=> sport.spending).reduce((a,b)=>a+b, 0)
+        spending: arr.map(sport=> sport.spending).reduce((a,b)=>a+b, 0),
+        numberOfUsers: arr.map(sport=> sport.users).reduce((a, b) => [...new Set([...a ,...b])], []).length
+      }));
+      newGenderSpendingData = newGenderSpendingData.map(genderData=>({
+        ...genderData,
+        averagePricePerUser: genderData.spending / genderData.numberOfUsers,
       }));
       setGenderSpendingData(newGenderSpendingData);
 

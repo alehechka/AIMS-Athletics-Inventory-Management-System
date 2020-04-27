@@ -10,7 +10,7 @@ import { withSnackbar } from 'notistack';
 import { CredentialAPI } from "../api";
 
 /**
- * This Component contains the password reset page.
+ * This Component contains the password reset page. [Deprecated]
  * 
  * State variables:
  * credentials - json - stores the json response from sign up request.
@@ -21,16 +21,14 @@ import { CredentialAPI } from "../api";
  * password1Valid - bool - state variable keeping track of password length
  * password2Valid - bool - state variable keeping track of password matching
  * 
- * Props passed down from app.js
- * 
- * showmessage - custom function to enqueue snackbar
- * 
- * Props passed down from Snackbar provider.
- * 
- * enqueuesnackbar - function - shows a snackbar.
- * closesnackbar - function - closes a snackbar.  
  */
 class NewPassword extends React.Component {
+    /**
+     * Initializes react state.
+     * 
+     * @param {Object} props - passed down from app.js
+     * @param {showMessage} props.showMessage - helper function to display snackbar messages
+     */
     constructor(props) {
         super(props);
 
@@ -50,7 +48,7 @@ class NewPassword extends React.Component {
     /**
      * Updates the password state variable and checks its length
      * 
-     * @param e event triggered if textbox changes
+     * @param {Object} e - event triggered if textbox changes
      */ 
     handlePassword1Change =(e) =>{
         this.setState(Object.assign(this.state, {password1: e.target.value}));
@@ -61,7 +59,7 @@ class NewPassword extends React.Component {
     /**
      * Updates the password2 state variable and checks if theyre equal
      * 
-     * @param e event triggered if textbox changes
+     * @param {Object} e - event triggered if textbox changes
      */ 
     handlePassword2Change =(e) =>{
         this.setState(Object.assign(this.state, {password2: e.target.value}));
@@ -73,7 +71,7 @@ class NewPassword extends React.Component {
      * new password along with authCode sent to the API.
      * 
      * 
-     * @param e event triggered when form is submitted.
+     * @param {Object} e - event triggered when form is submitted.
      */
     handleSubmit = async (e) => {
         e.preventDefault();
