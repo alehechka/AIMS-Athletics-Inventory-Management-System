@@ -7,7 +7,11 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Button from '@material-ui/core/Button';
 import TextField from "@material-ui/core/TextField";
 import { CredentialAPI, UsersAPI } from "../../../api";
-
+/**
+ * Contains the Role table and update password dialog logic.
+ * 
+ * @param {Object} props - passed down from Admin
+ */
 export default function RolesTable(props) {
   const [isRoleLoading, updateRoleLoading] = [props.isRoleLoading, props.updateRoleLoading];
   const [roleData, updateRoleData] = [props.roleData, props.updateRoleData];

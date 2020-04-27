@@ -3,6 +3,11 @@ import MaterialTable from "material-table";
 import { SportsAPI } from "../../../api";
 import SizesDialog from "./SizesDialog";
 
+/**
+ * Displays the sport table along with dialog to edit userSizes.
+ * 
+ * @param {Object} props - passed down from Admin 
+ */
 export default function SportsTable(props) {
   const [isSportsLoading, updateSportsLoading] = [props.isSportsLoading, props.updateSportsLoading];
   const [sportsData, updateSportsData] = [props.sportsData, props.updateSportsData];

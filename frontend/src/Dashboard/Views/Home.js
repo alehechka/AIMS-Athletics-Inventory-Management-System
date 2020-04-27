@@ -13,6 +13,10 @@ import MaterialTable from 'material-table';
 import Grid from "@material-ui/core/Grid";
 const numeral = require('numeral');
 
+/**
+ * TODO: Remove Function
+ * @param {} props 
+ */
 function DevButtons(props) {
   const user = {
     id: 1,
@@ -152,6 +156,13 @@ function DevButtons(props) {
     </div>
   );
 }
+/**
+ * Conatins the dashboard layout and tables displaying relevant data.
+ * 
+ * @param {Object} props - props passed down from Dashboard
+ * @param {Function} props.showMessage - Helper function to display snackbar message.
+ * @param {Object} props.context - Context variable containing all relevant user information. 
+ */
 export default function Home(props) {
   const defaultTableOptions = {
     search: true,
@@ -161,6 +172,11 @@ export default function Home(props) {
     pageSize: 5,
     pageSizeOptions: [5]
   };
+  /**
+   * Uses the numeral package to convert string in currency format.
+   * 
+   * @param {String} stringToConvert - string to be converted to currency format
+   */
   const convertStringToCurrency = (stringToConvert) => numeral(stringToConvert).format('($0.00a)');
 
   const [equipmentStatsLoading, setEquipmentStatsLoading] = React.useState(true);
@@ -188,7 +204,12 @@ export default function Home(props) {
       render: rowData => convertStringToCurrency(rowData.averagePricePerUser)},
   ];
   const [genderSpendingData, setGenderSpendingData]= React.useState([]);
-
+  
+  /**
+   * Emulates the ComponentDidMount lifecycle function.
+   *  
+   * Queries the backend for data and formats it to represented in tables.
+   */
   React.useEffect(() => {
     SportsAPI.getSports().then((sports) => {
       const selectOptions = sports.reduce((obj, sport) => {

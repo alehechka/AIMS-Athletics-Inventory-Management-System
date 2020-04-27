@@ -17,15 +17,6 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 
-/***
- * Contains the logic for admin page.
- *
- * Hooks:
- * Loading - displays a loading icon when backend is queried/modified.
- * data - contains table data
- * columns - contains column information [unchanged for now]
- * pagesize - updates default pageSize for table
- */
 const iconList = [
   {
     name: "Admin",
@@ -108,6 +99,19 @@ const iconList = [
     value: "sports_volleyball"
   }
 ];
+/***
+ * Contains the logic for admin page containing sport and role tables.
+ *
+ * Hooks:
+ * Loading - displays a loading icon when backend is queried/modified.
+ * data - contains table data
+ * columns - contains column information [unchanged for now]
+ * pagesize - updates default pageSize for table
+ * 
+ * @param {Object} props - props passed down from Dashboard
+ * @param {Function} props.showMessage - Helper function to display snackbar message.
+ * @param {Object} props.context - Context variable containing all relevant user information. 
+ */
 export default function Admin(props) {
   //material Table hooks
   const [isRoleLoading, updateRoleLoading] = React.useState(true);
@@ -129,6 +133,11 @@ export default function Admin(props) {
   const [passwordDialogTitle, setPasswordDialogTitle] = React.useState("Edit Password");
   const [passwordDialogId, setPasswordDialogId] = React.useState(0);
   const [passwordDialogValue, setPasswordDialogValue] = React.useState("");
+  /**
+   * Updates sportsizes and closes dialog box based on user input.
+   * 
+   * @param {Boolean} editConfirmed - True if user clicked confirm else false.
+   */
   const closeSizesDialog = (editConfirmed) => {
     if (editConfirmed) {
       const sportId = sizesDialogContent.id;
@@ -141,6 +150,11 @@ export default function Admin(props) {
     }
     setSizesDialogOpen(false);
   };
+  /**
+   * Updates user password.
+   * 
+   * @param {Boolean} editConfirmed - True if user clicked confirm else false.
+   */
   const closePasswordDialog = (editConfirmed) => {
     if (editConfirmed) {
       const password = passwordDialogValue;
@@ -336,7 +350,11 @@ export default function Admin(props) {
       updateSportsLoading(false);
     });
   }, [getRole]);
-
+  /**
+   * Maps users array to array of objects to be displayed in material table.
+   * 
+   * @param {Object[]} users - User object to be mapped to another Object 
+   */
   const mapUsers = (users) => {
     return users.map((user) => {
       return {

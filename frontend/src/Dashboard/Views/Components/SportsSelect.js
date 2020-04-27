@@ -45,11 +45,9 @@ function getStyles(name, sport, theme) {
 /**
  * Special Multi select for sports
  * 
- * Props Passed down from ProfileDialog:
- * sport - list of sports selected in form
- * sports - object containing all sports available
- * 
- * @param {*} props props passed down from Staff
+ * @param {Object} props - props passed down from ProfileDialog
+ * @param {String[]} props.sport - the option selected by user
+ * @param {String[]} props.sports - the options that a user can select
  */
 export default function SportsSelect(props) {
   const classes = useStyles();

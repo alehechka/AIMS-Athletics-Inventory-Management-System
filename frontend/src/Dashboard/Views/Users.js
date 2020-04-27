@@ -1,13 +1,13 @@
 import React from "react";
 import MaterialTable from "material-table";
 import SportsChip from "./Components/SportsChip";
-import ProfileDialog from "./Components/ProfileDialog";
+import ProfileDialog from "./UserComponents/ProfileDialog";
 import Icon from "@material-ui/core/Icon";
 import { UsersAPI, SportsAPI } from "../../api";
 import { CsvBuilder } from 'filefy';
 
 /**
- * Contains the material table which lets the user edit staff entries.
+ * Contains the material table which lets the user edit athletes/staff entries.
  *
  * Hooks:
  * Loading - displays a loading icon when backend is queried/modified.
@@ -21,9 +21,10 @@ import { CsvBuilder } from 'filefy';
  * sports - object containing all sports available
  * sportIdLookup - Lookup for Sport Objects
  *
- * Props:
- * showMessage Displays a snackbar
- * @param {*} props props passed down from dashboard
+ * @param {Object} props - props passed down from Dashboard
+ * @param {Function} props.showMessage - Helper function to display snackbar message.
+ * @param {Object} props.context - Context variable containing all relevant user information.
+ * @param {String} props.type - "Staff" or "Athlete". Page render changes based on this value.
  */
 export default function Users(props) {
   const renderType = props.type;
@@ -51,6 +52,10 @@ export default function Users(props) {
     isCoach: false,
     isAthlete: renderType === "Athletes"
   };
+  /**
+   * Performs a deep copy of the object.
+   * @param {Object} obj - Object to be deep copied 
+   */
   const deepCopy = (obj) => JSON.parse(JSON.stringify(obj));
   
   const blockUserEdit = props.context.credentials.role === "Coach";
@@ -120,7 +125,10 @@ export default function Users(props) {
 
     
   }, [renderType]);
-
+  /**
+   * Maps users array to array of objects to be displayed in material table.
+   * @param {Object[]} users - User object to be mapped to another Object 
+   */
   const mapUsers = (users) => {
     return users.map((user) => ({
       id: user.id,
@@ -136,7 +144,7 @@ export default function Users(props) {
    * One function which handles all state changes in add/edit user form
    * Sports select statement is excluded
    *
-   * @param {} event executed when a input is changed
+   * @param {Object} event - executed when a input is changed
    */
   const changeInput = (event) => {
     const key = event.target.name;
@@ -149,7 +157,7 @@ export default function Users(props) {
   };
   /**
    * handles changes in sports select input
-   * @param {*} event
+   * @param {Object} event - executed when sportsselect is changed
    */
   const handleSportChange = (event) => {
     setSport(event.target.value);
@@ -157,7 +165,7 @@ export default function Users(props) {
   /**
    * Closes Dialog Box and sends the updated data to the backend
    *
-   * @param {*} type true if user clicked on confirm else false
+   * @param {Boolean} type true if user clicked on confirm else false
    */
   const closeDialog = (type) => {
     setDialogOpen(false);

@@ -16,7 +16,7 @@ import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import SportsSelect from './SportsSelect';
+import SportsSelect from '../Components/SportsSelect';
 
 import Grid from '@material-ui/core/Grid';
 
@@ -31,7 +31,18 @@ import Grid from '@material-ui/core/Grid';
  * sports - object containing all sports available
  * sportIdLookup - Lookup for Sport Objects
  * 
- * @param {*} props props passed down from Staff
+ * @param {Object} props - props passed down from Users
+ * @param {Function} props.showMessage - Helper function to display snackbar message.
+ * @param {Object} props.context - Context variable containing all relevant user information.
+ * @param {String} props.renderType - "Staff" or "Athlete". Page render changes based on this value.
+ * @param {Boolean} props.dialogOpen - Determines dialog Open state
+ * @param {Function} props.closeDialog - Closes dialog
+ * @param {String} props.dialogTitle - sets dialog title
+ * @param {Object} props.inputs - input value to be filled in form
+ * @param {Function} props.changeInput - changes the values in input state
+ * @param {String[]} props.sport - the option selected by user
+ * @param {String[]} props.sports - the options that a user can select
+ * @param {Function} props.handleSportChange - changes the current user option
  */
 export default function ProfileDialog(props) {
     const renderType = props.renderType;

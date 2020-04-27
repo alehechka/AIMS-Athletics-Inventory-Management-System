@@ -27,7 +27,7 @@ class NewPassword extends React.Component {
      * Initializes react state.
      * 
      * @param {Object} props - passed down from app.js
-     * @param {showMessage} props.showMessage - helper function to display snackbar messages
+     * @param {Function} props.showMessage - helper function to display snackbar messages
      */
     constructor(props) {
         super(props);

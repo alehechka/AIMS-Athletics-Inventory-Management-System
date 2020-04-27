@@ -12,6 +12,13 @@ import IconButton from '@material-ui/core/IconButton';
 
 import MaterialTable from 'material-table';
 
+/**
+ * Helper TextField that lets users add a new chip.
+ * 
+ * @param {Object} props - passed down from SizesDialog box.
+ * @param {String[]} props.array - array containing the sizes to be edited.
+ * @param {Function} props.onChange - function to be executed on button click.
+ */
 function SizeTextField(props) {
     const [newSize, setNewSize] = React.useState("");
     const onChange = props.onChange;
@@ -40,7 +47,11 @@ function SizeTextField(props) {
     />
     );
 }
-
+/**
+ * This component lets users add/edit/delete userSizes.
+ * 
+ * @param {Object} props - Passed down from Sports Table
+ */
 export default function SizesDialog(props) {
     const [sizesDialogOpen, closeSizesDialog] = [props.sizesDialogOpen, props.closeSizesDialog];
     const [dialogTitle, dialogContent] = [props.dialogTitle, props.dialogContent];
