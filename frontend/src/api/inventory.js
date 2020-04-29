@@ -104,7 +104,7 @@ async function getSingleInventoryBackend(id) {
 }
 
 //Creates inventory item
-async function createInventory({ name, description, surplus, sportSize, taxable, expendable, inventorySizes }) {
+async function createInventory({ name, description, surplus, sportId, sportSize, taxable, expendable, inventorySizes, color }) {
   /* inventorySizes: [
         {
             size: "string",
@@ -121,8 +121,10 @@ async function createInventory({ name, description, surplus, sportSize, taxable,
       surplus,
       taxable,
       expendable,
+      sportId,
       sportSizeId,
-      inventorySizes
+      inventorySizes,
+      color
     })
     .then((res) => {
       if (indexedDbExists()) {
@@ -136,7 +138,7 @@ async function createInventory({ name, description, surplus, sportSize, taxable,
 //Any inventorySize objects removed from the array will be deleted
 //Any inventroySize objects with NO ID will be created
 //Any inventorySize objects with an ID will be updated
-async function updateInventory({ id, name, description, surplus, sportSize, taxable, expendable, inventorySizes }) {
+async function updateInventory({ id, name, description, surplus, sportId, sportSize, taxable, expendable, inventorySizes, color }) {
   /* inventorySizes: [
           {
               id: integer
@@ -156,8 +158,10 @@ async function updateInventory({ id, name, description, surplus, sportSize, taxa
         surplus,
         taxable,
         expendable,
+        sportId,
         sportSizeId,
-        inventorySizes
+        inventorySizes, 
+        color
       },
       { params: { id } }
     )

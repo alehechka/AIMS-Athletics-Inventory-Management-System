@@ -263,7 +263,9 @@ const Inventory = db.define(
     expendable: { type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false },
     totalQuantity: { type: Sequelize.VIRTUAL },
     averagePrice: { type: Sequelize.VIRTUAL },
-    removed: { type: Sequelize.BOOLEAN, defaultValue: false }
+    removed: { type: Sequelize.BOOLEAN, defaultValue: false },
+    jerseyNumbers: { type: Sequelize.VIRTUAL },
+    alertQuantity: { type: Sequelize.VIRTUAL },
   },
   {
     timestamps: true,
@@ -307,7 +309,7 @@ const InventorySize = db.define(
     barcode: { type: Sequelize.STRING, allowNull: true },
     price: { type: Sequelize.DECIMAL, allowNull: true },
     quantity: { type: Sequelize.INTEGER, allowNull: false, defaultValue: 0 },
-    alertQuantity: { type: Sequelize.INTEGER, allowNull: true, defaultValue: 0 },
+    alertQuantity: { type: Sequelize.INTEGER, allowNull: true },
     jerseyNumbers: { type: Sequelize.JSON, allowNull: true, defaultValue: [] }
   },
   {

@@ -69,6 +69,16 @@ inventoryRouter.get(
       });
       for (let inventory of inventories) {
         inventory.sport = await addDisplayNameToSports(inventory.sport);
+        inventory.alertQuantity = false;
+        inventory.jerseyNumbers = false;
+        for (let invSize of inventory.inventorySizes) {
+          if (invSize.alertQuantity !== null) {
+            inventory.alertQuantity = true;
+          }
+          if (invSize.jerseyNumbers.length) {
+            inventory.jerseyNumbers = true;
+          }
+        }
       }
       res.json(req.query.id && inventories.length ? inventories[0] : inventories);
     } catch (err) {
@@ -89,7 +99,9 @@ inventoryRouter.post("/", auth(["isAdmin", "isEmployee"]), async (req, res, next
       taxable: postInventory.taxable,
       expendable: postInventory.expendable,
       organizationId: req.user.organizationId,
-      sportSizeId: postInventory.sportSizeId
+      sportId: postInventory.sportId,
+      sportSizeId: postInventory.sportSizeId,
+      color: postInventory.color
     });
     for (let inventorySize of postInventory.inventorySizes) {
       await InventorySize.create({
@@ -100,27 +112,34 @@ inventoryRouter.post("/", auth(["isAdmin", "isEmployee"]), async (req, res, next
         inventoryId: inventory.id
       });
     }
-    res.status(201).json(
-      await Inventory.findOne({
-        where: { id: inventory.id },
-        attributes: {
-          exclude: ["createdAt", "updatedAt", "sportSizeId", "organizationId"]
+
+    let createdItem = await Inventory.findOne({
+      where: { id: inventory.id },
+      attributes: {
+        exclude: ["createdAt", "updatedAt", "sportSizeId", "organizationId"]
+      },
+      include: [
+        {
+          model: InventorySize,
+          attributes: { exclude: ["createdAt", "updatedAt", "inventoryId"] }
         },
-        include: [
-          {
-            model: InventorySize,
-            attributes: { exclude: ["createdAt", "updatedAt", "inventoryId"] }
+        {
+          model: Sport,
+          attributes: { exclude: ["organizationId"] }
+        },
+        {
+          model: SportSize,
+          attributes: {
+            exclude: ["sportId"]
           },
-          {
-            model: SportSize,
-            attributes: {
-              exclude: ["sportId"]
-            },
-            include: [{ model: Sport, attributes: { exclude: ["organizationId"] } }]
-          }
-        ]
-      })
-    );
+          include: [{ model: Sport, attributes: { exclude: ["organizationId"] } }]
+        }
+      ]
+    })
+
+    createdItem.sport = await addDisplayNameToSports(createdItem.sport);
+
+    res.status(201).json(createdItem);
   } catch (err) {
     next(err);
   }
@@ -144,6 +163,10 @@ inventoryRouter.put("/", auth(["isAdmin", "isEmployee"]), queryParams(["id"]), a
           attributes: { exclude: ["createdAt", "updatedAt", "inventoryId"] }
         },
         {
+          model: Sport,
+          attributes: { exclude: ["organizationId"] }
+        },
+        {
           model: SportSize,
           attributes: {
             exclude: ["sportId"]
@@ -153,13 +176,17 @@ inventoryRouter.put("/", auth(["isAdmin", "isEmployee"]), queryParams(["id"]), a
       ]
     });
 
+    foundItem.sport = await addDisplayNameToSports(foundItem.sport);
+
     foundItem.name = putInventory.name || foundItem.name;
     foundItem.description = putInventory.description || foundItem.description;
     foundItem.surplus = putInventory.surplus === true || putInventory.surplus === false ? putInventory.surplus : foundItem.surplus;
     foundItem.taxable = putInventory.taxable === true || putInventory.taxable === false ? putInventory.taxable : foundItem.taxable;
     foundItem.expendable = putInventory.expendable === true || putInventory.expendable === false ? putInventory.expendable : foundItem.expendable;
+    foundItem.sportId = putInventory.sportId || foundItem.sportId;
     foundItem.sportSizeId = putInventory.sportSizeId || foundItem.sportSizeId;
     foundItem.removed = putInventory.removed === true || putInventory.removed === false ? putInventory.removed : foundItem.removed;
+    foundItem.color = putInventory.color || foundItem.color;
     await foundItem.save();
 
     let addItems = putInventory.inventorySizes ? putInventory.inventorySizes.filter((item) => !item.id) : [];

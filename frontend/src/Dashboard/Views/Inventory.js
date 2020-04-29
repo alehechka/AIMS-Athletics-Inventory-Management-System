@@ -3,7 +3,6 @@ import MaterialTable from "material-table";
 import { SportsAPI, InventoryAPI } from "../../api";
 import SportsChip from "./Components/SportsChip";
 import InventoryDialog from "./Components/InventoryDialog";
-import Icon from "@material-ui/core/Icon";
 import { CsvBuilder } from 'filefy';
 
 /**
@@ -33,18 +32,21 @@ export default function Inventory(props) {
   const initialValues = {
     name: "",
     color: "",
-    jerseyNumber: "",
+    jerseyNumbers: false,
     description: "",
-    surplus: "",
-    taxable: "",
-    expendable: "",
-    sport: "",
+    surplus: false,
+    taxable: false,
+    expendable: false,
+    sportId: "",
     sportSize: "",
-    alertQuantity: ""
+    alertQuantity: false,
+    inventorySizes: [],
   };
   const deepCopy = (obj) => JSON.parse(JSON.stringify(obj));
 
   const blockInventoryEdit = props.context.credentials.role === "Coach";
+
+  const [defaultSport, setDefaultSport] = React.useState({});
 
   //material Table hooks
   const [isLoading, updateLoading] = React.useState(true);
@@ -79,9 +81,11 @@ export default function Inventory(props) {
   async function fetchData() {
     let selectOptions;
     await SportsAPI.getSports().then((sports) => {
+      const defSport = sports.filter(sport=>sport.default)[0]
       setSportObjects(sports);
-      setSportObject(sports.filter(sport => sport.default)[0]);
-      setSportSizes(sports.filter(sport => sport.default)[0].sportSizes);
+      setDefaultSport(defSport)
+      setSportObject(defSport);
+      setSportSizes(defSport.sportSizes);
       setSports(sports.map((sport) => sport.displayName));
       setSportIdLookup(
         sports.reduce((obj, sport) => {
@@ -154,12 +158,7 @@ export default function Inventory(props) {
    */
   const changeInput = (event) => {
     const key = event.target.name;
-    let value = event.target.value;
-    //special handler for checkbox button
-    // Needs to be finished and linked up with InventoryDialog
-    if (key === true) {
-      value = value === "expendable";
-    }
+    let value = event.target.type === "checkbox" ? event.target.checked : event.target.value;
     setInputs({ ...inputs, [key]: value });
   };
   /**
@@ -177,36 +176,10 @@ export default function Inventory(props) {
   const closeDialog = (type) => {
     setDialogOpen(false);
     if (type) {
-      const sportIds = sport.filter((name) => !sportIdLookup[name].default).map((name) => sportIdLookup[name].id);
-      const newSportsJson = sport.map((sportName) => ({
-        id: sportIdLookup[sportName].id,
-        displayName: sportIdLookup[sportName].displayName,
-        gender: sportIdLookup[sportName].gender,
-        icon: sportIdLookup[sportName].icon
-      }));
-      const updatedInventory = {
-        name: inputs.name,
-        description: inputs.description,
-        sportsJson: JSON.stringify(newSportsJson),
-        sports: newSportsJson,
-        sportText: newSportsJson.map(sport => sport.displayName).join(", ")
-      };
-      const newInventory = deepCopy(inputs);
-      Object.keys(newInventory).map((key) => {
-        if (newInventory[key] === "") {
-          delete newInventory[key];
-        }
-        return null;
-      });
-      newInventory.schoolId = props.context.organization.id;
-      newInventory.sports = sportIds;
       if (dialogTitle.includes("Edit")) {
-        updatedInventory.id = inputs.id;
-        newInventory.id = inputs.id;
-        InventoryAPI.updateInventory(newInventory)
+        InventoryAPI.updateInventory({...inputs, sportId: sportObject.id, sportSize})
           .then((res) => {
-            updatedInventory.id = res.id;
-            updateData(data.map((row) => (row.id === updatedInventory.id ? updatedInventory : row)));
+            updateData(data.map((row) => (row.id === res.id ? mapInventory([res])[0] : row)));
             updateLoading(false);
             props.showMessage(dialogTitle + " Done");
           })
@@ -218,20 +191,9 @@ export default function Inventory(props) {
         if (inputs.role !== "Athlete") {
           inputs["is" + inputs.role] = true;
         }
-        InventoryAPI.createInventory(
-          inputs.name,
-          inputs.description,
-          inputs.averagePrice,
-          inputs.totalQuantity,
-          inputs.surplus,
-          inputs.taxable,
-          inputs.expendable,
-          inputs.sportSizeId,
-          newInventory
-        )
+        InventoryAPI.createInventory({...inputs, sportId: sportObject.id, sportSize})
           .then((res) => {
-            updatedInventory.id = res.id;
-            updateData([...data, updatedInventory]);
+            updateData([...data, mapInventory([res])[0]]);
             updateLoading(false);
             props.showMessage(dialogTitle + " Done");
           })
@@ -273,6 +235,14 @@ export default function Inventory(props) {
         }}
         actions={[
           {
+            icon: "shopping_cart",
+            tooltip: "Transactions",
+            onClick: (event, rowData) => {
+              props.showMessage("Redirecting to Transactions page...");
+              props.history.push(`/checkout?inventoryId=${rowData.id}`);
+            }
+          },
+          {
             icon: "create",
             tooltip: "Edit Inventory Item",
             onClick: (event, rowData) => {
@@ -300,20 +270,15 @@ export default function Inventory(props) {
             }
           },
           {
-            icon: "shopping_cart",
-            tooltip: "Transactions",
-            onClick: (event, rowData) => {
-              props.showMessage("Redirecting to Transactions page...");
-              props.history.push(`/checkout?inventoryId=${rowData.id}`);
-            }
-          },
-          {
             icon: "add",
             tooltip: "Add To Inventory",
             isFreeAction: true,
             onClick: (event, rowData) => {
               updateLoading(true);
-              setInputs(deepCopy(initialValues));
+              setInputs(deepCopy({...initialValues, sportId: defaultSport.id}));
+              setSportObject(defaultSport);
+              setSportSizes(defaultSport.sportSizes);
+              setSportSize({});
               setSport([]);
               setDialogOpen(true);
               setDialogTitle("Add Item To Inventory");
