@@ -26,7 +26,7 @@ import { CsvBuilder } from 'filefy';
  * @param {*} props props passed down from dashboard
  */
 export default function Inventory(props) {
-  
+
   const renderType = props.type;
 
   //List of default values to fill in the form
@@ -40,12 +40,12 @@ export default function Inventory(props) {
     expendable: "",
     sport: "",
     sportSize: "",
-	alertQuantity: ""
+    alertQuantity: ""
   };
   const deepCopy = (obj) => JSON.parse(JSON.stringify(obj));
-  
+
   const blockInventoryEdit = props.context.credentials.role === "Coach";
-  
+
   //material Table hooks
   const [isLoading, updateLoading] = React.useState(true);
   const [data, updateData] = React.useState([]);
@@ -55,12 +55,16 @@ export default function Inventory(props) {
   //Dialog hooks
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const [dialogTitle, setDialogTitle] = React.useState("Add");
-  
+
   //Form Hooks
   const [inputs, setInputs] = React.useState(deepCopy(initialValues));
   const [sport, setSport] = React.useState([]);
   const [sports, setSports] = React.useState([]);
   const [sportIdLookup, setSportIdLookup] = React.useState({});
+  const [sportSizes, setSportSizes] = React.useState([]);
+  const [sportSize, setSportSize] = React.useState({});
+  const [sportObjects, setSportObjects] = React.useState([]);
+  const [sportObject, setSportObject] = React.useState({});
 
   /**
    * Emulates ComponentDidMount lifecycle function
@@ -75,6 +79,9 @@ export default function Inventory(props) {
   async function fetchData() {
     let selectOptions;
     await SportsAPI.getSports().then((sports) => {
+      setSportObjects(sports);
+      setSportObject(sports.filter(sport => sport.default)[0]);
+      setSportSizes(sports.filter(sport => sport.default)[0].sportSizes);
       setSports(sports.map((sport) => sport.displayName));
       setSportIdLookup(
         sports.reduce((obj, sport) => {
@@ -91,11 +98,11 @@ export default function Inventory(props) {
       .then((inventories) => {
         updateColumns([
           { title: "Item ID", field: "id", hidden: true },
-		  { title: "Sport", field: "sportsJson", hidden: true },
-          { title: "Sports", field: "sportText", export: true, hidden: true,},
+          { title: "Sport", field: "sportsJson", hidden: true },
+          { title: "Sports", field: "sportText", export: true, hidden: true, },
           { title: "Name", field: "name", export: true, cellStyle: { width: "35%" } },
-          { title: "Description", field: "description",  export: true, cellStyle: { width: "65%" } },
-          { title: "Barcode", field: "barcode",  export: true, hidden: true },
+          { title: "Description", field: "description", export: true, cellStyle: { width: "65%" } },
+          { title: "Barcode", field: "barcode", export: true, hidden: true },
           {
             title: "Sport",
             field: "sports",
@@ -111,8 +118,8 @@ export default function Inventory(props) {
                 .some((val) => val.toLowerCase().includes(term.toLowerCase()));
             }
           },
-          { title: "Price", field: "price", type: "currency", searchable: false, filtering: false,  export: true },
-          { title: "Quantity", field: "quantity", type: "numeric", searchable: false, filtering: false,  export: true }
+          { title: "Price", field: "price", type: "currency", searchable: false, filtering: false, export: true },
+          { title: "Quantity", field: "quantity", type: "numeric", searchable: false, filtering: false, export: true }
         ]);
 
         updateData(mapInventory(inventories));
@@ -129,11 +136,11 @@ export default function Inventory(props) {
       name: inventory.name,
       description: inventory.description,
       barcode: inventory.barcode,
-	  // Need to fix Json, which will fix most the problems with edit and add
-	  //sportsJson: JSON.stringify(inventory.sports),
+      // Need to fix Json, which will fix most the problems with edit and add
+      //sportsJson: JSON.stringify(inventory.sports),
       //sports: inventory.sports,
       //sportText: inventory.sports.map(sport => sport.displayName).join(", "),
-	  sports: [inventory.sport],
+      sports: [inventory.sport],
       price: inventory.averagePrice,
       quantity: inventory.totalQuantity
     }));
@@ -149,7 +156,7 @@ export default function Inventory(props) {
     const key = event.target.name;
     let value = event.target.value;
     //special handler for checkbox button
-	// Needs to be finished and linked up with InventoryDialog
+    // Needs to be finished and linked up with InventoryDialog
     if (key === true) {
       value = value === "expendable";
     }
@@ -214,8 +221,8 @@ export default function Inventory(props) {
         InventoryAPI.createInventory(
           inputs.name,
           inputs.description,
-		  inputs.averagePrice,
-		  inputs.totalQuantity,
+          inputs.averagePrice,
+          inputs.totalQuantity,
           inputs.surplus,
           inputs.taxable,
           inputs.expendable,
@@ -253,10 +260,10 @@ export default function Inventory(props) {
           filtering: true,
           actionsColumnIndex: -1,
           tableLayout: "auto",
-		  exportButton: true,
+          exportButton: true,
           exportCsv: () => {
-            const filterColumns = columns.filter(columnDef=> columnDef.export);
-            const filterData = data.map(rowData => filterColumns.map(columnDef=> rowData[columnDef.field]));
+            const filterColumns = columns.filter(columnDef => columnDef.export);
+            const filterData = data.map(rowData => filterColumns.map(columnDef => rowData[columnDef.field]));
             new CsvBuilder('InventoryReport.csv')
               .setDelimeter(",")
               .setColumns(filterColumns.map(columnDef => columnDef.title))
@@ -271,22 +278,28 @@ export default function Inventory(props) {
             onClick: (event, rowData) => {
               InventoryAPI.getSingleInventory(rowData.id).then((data) => {
                 updateLoading(true);
-                //Remove all Null entries in json
-                Object.keys(data).map((key) => {
-                  data[key] = data[key] ? data[key] : "";
-                  return null;
-                });
-                setInputs(deepCopy(data));
-				// rowSportsJson causing issues and preventing update
-                
-				//const rowSportsJson = JSON.parse(rowData.sportsJson);
-                //setSport(rowSportsJson.map((sport) => sport.displayName));
+                setInputs(data);
+                setSportObject(sportObjects.filter(sport => sport.id === data.sport.id)[0]);
+                let sizes = [];
+                for (let sport of sportObjects) {
+                  if (sport.id === data.sport.id) {
+                    setSportObject(sport);
+                    if (!sport.default) {
+                      sizes = sizes.concat(sport.sportSizes);
+                    }
+                  }
+                  if (sport.default) {
+                    sizes = sizes.concat(sport.sportSizes);
+                  }
+                }
+                setSportSizes(sizes);
+                setSportSize(sportSizes.filter(size => size.id === data.sportSize.id)[0])
                 setDialogOpen(true);
                 setDialogTitle("Edit Inventory Item");
               });
             }
           },
-		  {
+          {
             icon: "shopping_cart",
             tooltip: "Transactions",
             onClick: (event, rowData) => {
@@ -294,7 +307,7 @@ export default function Inventory(props) {
               props.history.push(`/checkout?inventoryId=${rowData.id}`);
             }
           },
-		  {
+          {
             icon: "add",
             tooltip: "Add To Inventory",
             isFreeAction: true,
@@ -306,12 +319,12 @@ export default function Inventory(props) {
               setDialogTitle("Add Item To Inventory");
             }
           },
-		  {
+          {
             icon: "delete",
             tooltip: "Remove From Inventory",
             onClick: (event, rowData) => {
               props.showMessage("Removing item from Inventory Page.");
-			  //Needs to call removed funtion so items are actually removed
+              //Needs to call removed funtion so items are actually removed
             }
           },
           {
@@ -335,7 +348,7 @@ export default function Inventory(props) {
           }
         ]}
       />
-	  <InventoryDialog
+      <InventoryDialog
         {...props}
         renderType={renderType}
         dialogOpen={dialogOpen}
@@ -343,8 +356,13 @@ export default function Inventory(props) {
         dialogTitle={dialogTitle}
         inputs={inputs}
         changeInput={changeInput}
-        sport={sport}
-        sports={sports}
+        sportObject={sportObject}
+        setSportObject={setSportObject}
+        sportObjects={sportObjects}
+        sportSizes={sportSizes}
+        setSportSizes={setSportSizes}
+        sportSize={sportSize}
+        setSportSize={setSportSize}
         handleSportChange={handleSportChange}
       />
     </div>

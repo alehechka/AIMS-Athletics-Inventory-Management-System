@@ -6,18 +6,15 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import FormControl from '@material-ui/core/FormControl';
 import Checkbox from '@material-ui/core/Checkbox';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormLabel from '@material-ui/core/FormLabel';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from "@material-ui/core/InputLabel";
 import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SportsSelect from './SportsSelect';
+import MaterialTable from "material-table";
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 
 import Grid from '@material-ui/core/Grid';
 
@@ -34,28 +31,50 @@ import Grid from '@material-ui/core/Grid';
  * 
  * @param {*} props props passed down from Staff
  */
-export default function ProfileDialog(props) {
-    const renderType = props.renderType;
+export default function InventoryDialog(props) {
     const [dialogOpen, closeDialog] = [props.dialogOpen, props.closeDialog];
     const [inputs, changeInput] = [props.inputs, props.changeInput];
-    const [sport, sports, handleSportChange] = [props.sport, props.sports, props.handleSportChange];
-	const [state, setState] = React.useState({
-		surplus: false,
-		taxable: false,
-		expendable: false,
-		alertQuantity: false,
-	 });
-	 const handleChange = (event) => {
-		setState({ ...state, [event.target.name]: event.target.checked });
-	 };
+    const [sportObjects, sportObject, setSportObject] = [props.sportObjects, props.sportObject, props.setSportObject];
+    const [sportSizes, sportSize, setSportSize, setSportSizes] = [props.sportSizes, props.sportSize, props.setSportSize, props.setSportSizes];
+    const [state, setState] = React.useState({
+        surplus: false,
+        taxable: false,
+        expendable: false,
+        alertQuantity: false,
+        jerseyNumbers: false
+    });
+    const handleChange = (event) => {
+        setState({ ...state, [event.target.name]: event.target.checked });
+    };
 
     const dialogTitle = props.dialogTitle;
     const isEditDialog = dialogTitle.includes("Edit");
-    return(
+
+    const handleSportChange = (e) => {
+        const sport = e.target.value;
+        setSportObject(sport);
+        let sizes = sportObjects.filter(sp => sp.default)[0].sportSizes;
+        if(!sport.default) {
+            sizes = sizes.concat(sport.sportSizes);
+        }
+        setSportSizes(sizes);
+    }
+
+    const sizeColumns = [
+        { title: "ID", field: "id", hidden: true},
+        { title: "Size", field: "size", },
+        { title: "Barcode", field: "barcode" },
+        { title: "Price", field: "price", type: "currency" },
+        { title: "Quantity", field: "quantity", type: "numeric" },
+        { title: "Alert Quantity", field: "alertQuantity", hidden: !state.alertQuantity },
+        { title: "Jersey Numbers", field: "jerseyNumbers", hidden: !state.jerseyNumbers}
+    ];
+
+    return (
         <Dialog open={dialogOpen} onClose={closeDialog} disableBackdropClick>
             <DialogTitle>{dialogTitle}</DialogTitle>
             <DialogContent>
-                <Grid container spacing={2}>
+                <Grid container spacing={2} alignItems="center">
                     <Grid item xs={6}>
                         <TextField
                             variant="outlined"
@@ -66,12 +85,19 @@ export default function ProfileDialog(props) {
                             label="Name"
                             name="name"
                             autoComplete="Name"
-                            value= {inputs.name}
-                            onChange= {changeInput}
+                            value={inputs.name}
+                            onChange={changeInput}
                             autoFocus
-                        />  
+                        />
                     </Grid>
-                    <Grid item xs={8}>
+                    <Grid item xs={4} >
+                        <FormControlLabel
+                            control={<Checkbox checked={state.jerseyNumbers} onChange={handleChange} name="jerseyNumbers" color="primary" />}
+                            label="Jersey Numbers"
+                            labelPlacement="end"
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
                         <TextField
                             variant="outlined"
                             required
@@ -80,82 +106,87 @@ export default function ProfileDialog(props) {
                             label="Description"
                             name="description"
                             autoComplete="Description"
-                            value= {inputs.description}
-                            onChange= {changeInput}
-                        />  
-                    </Grid>
-					<Grid item xs={3} sm={6}>
-                        <TextField
-                            variant="outlined"
-                            required
-                            fullWidth
-                            id="averagePrice"
-                            label="Price"
-                            name="averagePrice"
-                            autoComplete="AveragePrice"
-                            value= {inputs.averagePrice}
-                            onChange= {changeInput}
-                        />  
-                    </Grid>
-					<Grid item xs={3} sm={6}>
-                        <TextField
-                            variant="outlined"
-                            required
-                            fullWidth
-                            id="totalQuantity"
-                            label="Quantity"
-                            name="totalQuantity"
-                            autoComplete="Quantity"
-                            value= {inputs.totalQuantity}
-                            onChange= {changeInput}
-                        />  
-                    </Grid>
-					<Grid item xs={3} sm={2}>
-                        <FormControlLabel
-							control={<Checkbox checked={state.surplus} onChange={handleChange} name="surplus" color="primary"/>}
-							label="Surplus"
-							labelPlacement="top"
-						/>  
-                    </Grid>
-					<Grid item xs={3} sm={2}>
-                        <FormControlLabel
-							control={<Checkbox checked={state.taxable} onChange={handleChange} name="taxable" color="primary"/>}
-							label="Taxable"
-							labelPlacement="top"
-						/>  
-                    </Grid>
-					<Grid item xs={3} sm={8}>
-                        <FormControlLabel
-							control={<Checkbox checked={state.expendable} onChange={handleChange} name="expendable" color="primary"/>}
-							label="Expendable"
-							labelPlacement="top"
-						/>  
-                    </Grid>
-					<Grid item xs = {4} sm={3}>
-                        <SportsSelect
-                            sport = {sport}
-                            sports = {sports}
-                            handleSportChange = {handleSportChange}
+                            value={inputs.description}
+                            onChange={changeInput}
                         />
                     </Grid>
-                    <Grid item xs = {3} sm={3}>
-                        <SportsSelect
-                            sport = {sport}
-                            sports = {sports}
-                            handleSportChange = {handleSportChange}
+                    <Grid item xs={4}>
+                        <FormControlLabel
+                            control={<Checkbox checked={state.surplus} onChange={handleChange} name="surplus" color="primary" />}
+                            label="Surplus"
+                            labelPlacement="end"
                         />
                     </Grid>
-					<Grid item xs={3} sm={3}>
+                    <Grid item xs={4}>
                         <FormControlLabel
-							control={<Checkbox checked={state.alertQuantity} onChange={handleChange} name="alertQuantity" color="primary"/>}
-							label="Alert Quantity"
-							labelPlacement="top"
-						/>  
+                            control={<Checkbox checked={state.taxable} onChange={handleChange} name="taxable" color="primary" />}
+                            label="Taxable"
+                            labelPlacement="end"
+                        />
+                    </Grid>
+                    <Grid item xs={4}>
+                        <FormControlLabel
+                            control={<Checkbox checked={state.expendable} onChange={handleChange} name="expendable" color="primary" />}
+                            label="Expendable"
+                            labelPlacement="end"
+                        />
+                    </Grid>
+                    <Grid item xs={4}>
+                        <FormControl variant="outlined" margin="normal" required fullWidth>
+                            <InputLabel id="sport-label">Sport</InputLabel>
+                            <Select
+                                id="sport"
+                                labelId="sport-label"
+                                label="Sport"
+                                value={sportObject} onChange={handleSportChange}
+                            >
+                                {sportObjects.map(sport =>
+                                    <MenuItem key={sport.id} value={sport}>
+                                        {sport.name}
+                                    </MenuItem>
+                                )}
+                            </Select>
+                        </FormControl>
+                    </Grid>
+                    <Grid item xs={4}>
+                        <FormControl variant="outlined" margin="normal" required fullWidth>
+                            <InputLabel id="size-label">Size</InputLabel>
+                            <Select
+                                id="size"
+                                labelId="size-label"
+                                label="Size"
+                                value={sportSize} onChange={(e) => setSportSize(e.target.value)}
+                            >
+                                {sportSizes.map(size =>
+                                    <MenuItem key={size.id} value={size}>
+                                        {size.name}
+                                    </MenuItem>
+                                )}
+                            </Select>
+                        </FormControl>
+                    </Grid>
+                    <Grid item xs={4}>
+                        <FormControlLabel
+                            control={<Checkbox checked={state.alertQuantity} onChange={handleChange} name="alertQuantity" color="primary" />}
+                            label="Alert Quantity"
+                            labelPlacement="end"
+                        />
                     </Grid>
                 </Grid>
+                <MaterialTable 
+                    title="Sizes"
+                    columns={sizeColumns}
+                    data={inputs.inventorySizes}
+                    option={{
+                        search: false,
+                        filtering: false,
+                        actionsColumnIndex: -1,
+                        tableLayout: "auto",
+                    }}
+                />
             </DialogContent>
             <DialogActions>
-                <Button onClick={()=> closeDialog(false)} color="primary">
+                <Button onClick={() => closeDialog(false)} color="primary">
                     Cancel
                 </Button>
                 <Button onClick={() => closeDialog(true)} color="primary">
