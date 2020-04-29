@@ -117,7 +117,7 @@ class Login extends React.Component {
     await context.actions
       .login(email, password, remember)
       .then((res) => {
-        this.props.showMessage("Logging in...", "success", 2000);
+        
 
         // //redirect to current link
         // let url = window.location.href.replace(window.location.search, "");

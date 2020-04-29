@@ -148,15 +148,15 @@ class Signup extends React.Component {
       await context.actions
         .signup(email, username, password, organization)
         .then((res) => {
+          this.props.history.push("profile/?email=" + email);
           this.props.showMessage(`You have successfully signed up ${username}, Redirecting...!`);
-          setTimeout(() => this.props.history.push("profile/?email=" + email), 3000);
         })
         .catch((error) => {
+          this.props.history.push("/login/?email=" + email);
           this.props.showMessage(
             `An account holder already exists for this information. Redirecting to login...!`,
             "error"
           );
-          setTimeout(() => this.props.history.push("/login/?email=" + email), 5000);
         });
     } else {
       this.props.showMessage("Please ensure all fields are non-empty and error-free.", "warning");
