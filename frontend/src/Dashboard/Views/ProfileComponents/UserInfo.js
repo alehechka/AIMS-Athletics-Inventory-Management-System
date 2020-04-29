@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Grid from "@material-ui/core/Grid";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
@@ -9,10 +9,8 @@ import MenuItem from "@material-ui/core/MenuItem";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import Divider from "@material-ui/core/Divider";
 import FormControl from "@material-ui/core/FormControl";
-import Radio from "@material-ui/core/Radio";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import FormLabel from "@material-ui/core/FormLabel";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
+import InputLabel from "@material-ui/core/InputLabel";
+import UserSportDropdown from "./UserSportDropdown";
 
 function UserInfoCard(props) {
   const {
@@ -121,7 +119,7 @@ function UserInfoCard(props) {
             <TextField
               variant="outlined"
               margin="normal"
-              type = "number"
+              type="number"
               fullWidth
               id="zip"
               label="Zip"
@@ -149,7 +147,7 @@ function UserInfoCard(props) {
                 fullWidth
                 id="lockerCode"
                 label="Locker Code"
-                value={lockerCode[0]/*.match(/.{2}/g).join("-")*/}
+                value={lockerCode[0] /*.match(/.{2}/g).join("-")*/}
                 onChange={(e) => lockerCode[1](e.target.value)}
                 disabled={!(props.credentials.isAdmin || props.credentials.isEmployee)}
               ></TextField>
@@ -163,20 +161,7 @@ function UserInfoCard(props) {
 }
 
 function UserPhysicalCard(props) {
-  const { username, height, weight, gender, sizes } = props;
-  const hockeySizes = sizes[0]; // Loading dummy data for now
-  const [head, setHead] = useState(hockeySizes ? hockeySizes.head : "");
-  const [shirt, setShirt] = useState(hockeySizes ? hockeySizes.shirt : "");
-  const [pants, setPants] = useState(hockeySizes ? hockeySizes.pants : "");
-  const [socks, setSocks] = useState(hockeySizes ? hockeySizes.socks : "");
-  const [shoes, setShoes] = useState(hockeySizes ? hockeySizes.shoes : "");
-
-  // const updateSizes = (event) =>{
-  //   sizes[1]([{
-  //     ...sizes[0],
-  //     [event.target.name]: event.target.value
-  //   }])
-  // };
+  const { username, height, weight, gender, sports, userSizes } = props;
 
   return (
     <Card variant="outlined">
@@ -185,7 +170,16 @@ function UserPhysicalCard(props) {
           Physical Information for {username}
         </Typography>
         <Grid container spacing={1}>
-          <Grid item xs={3}>
+          <Grid item xs={4}>
+            <FormControl required component="fieldset" style={{ width: "100%", paddingTop: "5%" }}>
+              <InputLabel id="genderLabel">Gender</InputLabel>
+              <Select labelId="genderLabel" id="gender" value={gender[0]} onChange={(e) => gender[1](e.target.value)}>
+                <MenuItem value={"M"}>Male</MenuItem>
+                <MenuItem value={"F"}>Female</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={4}>
             <TextField
               variant="outlined"
               margin="normal"
@@ -196,7 +190,7 @@ function UserPhysicalCard(props) {
               value={height[0]}
             />
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={4}>
             <TextField
               variant="outlined"
               margin="normal"
@@ -207,15 +201,6 @@ function UserPhysicalCard(props) {
               value={weight[0]}
             />
           </Grid>
-          <Grid item xs={3}>
-            <FormControl required component="fieldset">
-              <FormLabel component="legend">Gender</FormLabel>
-              <RadioGroup row value={gender[0]} name="role" onChange={(e) => gender[1](e.target.value)}>
-                <FormControlLabel value="M" label="Male" control={<Radio />} />
-                <FormControlLabel value="F" label="Female" control={<Radio />} />
-              </RadioGroup>
-            </FormControl>
-          </Grid>
         </Grid>
         <br />
         <Divider />
@@ -224,34 +209,12 @@ function UserPhysicalCard(props) {
           <Typography variant="h5" gutterBottom>
             Size Information for {username}
           </Typography>
-          <Select id="head" value={head} onChange={setHead}>
-            <MenuItem value={"S"}>Small</MenuItem>
-            <MenuItem value={"M"}>Medium</MenuItem>
-            <MenuItem value={"L"}>Large</MenuItem>
-            <MenuItem value={"XL"}>Extra Large</MenuItem>
-          </Select>
-          <FormHelperText>Head Size</FormHelperText>
-          <Select id="shirt" value={shirt} onChange={setShirt}>
-            <MenuItem value={"S"}>Small</MenuItem>
-            <MenuItem value={"M"}>Medium</MenuItem>
-            <MenuItem value={"L"}>Large</MenuItem>
-            <MenuItem value={"XL"}>Extra Large</MenuItem>
-          </Select>
-          <FormHelperText>Shirt Size</FormHelperText>
-          <TextField id="pants" value={pants} onChange={setPants}></TextField>
-          <FormHelperText>Pant Size</FormHelperText>
-          <Select id="socks" value={socks} onChange={setSocks}>
-            <MenuItem value={"5-12"}>5-12</MenuItem>
-            <MenuItem value={"13-20"}>13-20</MenuItem>
-          </Select>
-          <FormHelperText>Sock Size</FormHelperText>
-          <Select id="shoes" value={shoes} onChange={setShoes}>
-            {[...Array(21).keys()].map((size) => (
-              <MenuItem value={size}>{size}</MenuItem>
-            ))}
-          </Select>
-          <FormHelperText>Shoe Size</FormHelperText>
         </div>
+        <Grid container spacing={1}>
+          <Grid item xs={12}>
+            <UserSportDropdown sports={sports} userSizes={userSizes} />
+          </Grid>
+        </Grid>
       </CardContent>
     </Card>
   );

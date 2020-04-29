@@ -65,7 +65,8 @@ export default function UserTabs(props) {
     height,
     weight,
     gender,
-    sizes
+    sports,
+    userSizes
   } = props;
 
   const handleChange = (event, newValue) => {
@@ -104,7 +105,8 @@ export default function UserTabs(props) {
             height={height}
             weight={weight}
             gender={gender}
-            sizes={sizes}
+            sports={sports}
+            userSizes={userSizes}
           ></UserPhysicalCard>
         </TabPanel>
         {props.children}

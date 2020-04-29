@@ -25,13 +25,13 @@ import { UsersAPI } from "../../api";
 
 export default function Profile(props) {
   const parser = new URLSearchParams(props.location.search);
-  const userId = parser.get("userId");
-  const [user, updateUser] = useState({});
+  const [userId, setUserId] = useState(parser.get("userId"));
+  const [user, setUser] = useState({});
   const [equipment, setEquipment] = useState([]);
   const firstName = useState("");
   const lastName = useState("");
   const email = useState("");
-  const username = useState("");
+  const username = user?.credential?.username;
   const address = useState("");
   const city = useState("");
   const state = useState("");
@@ -43,10 +43,10 @@ export default function Profile(props) {
   const role = useState("");
   const lockerNumber = useState("");
   const lockerCode = useState("");
-  const sizes = useState([]);
+  const sports = useState([]);
+  const userSizes = useState([]);
 
   useEffect(() => {
-    setUserData({});
     if (userId) {
       UsersAPI.getSingleUser(userId).then((user) => {
         setUserData(user);
@@ -62,11 +62,11 @@ export default function Profile(props) {
   }, [props.location.search, userId]);
 
   const setUserData = (user) => {
-    updateUser({ user });
+    setUser(user);
+    setUserId(user.id);
     firstName[1](user.firstName);
     lastName[1](user.lastName);
     email[1](user?.credential?.email);
-    username[1](user?.credential?.username);
     address[1](user.address);
     city[1](user.city);
     state[1](user.state);
@@ -77,71 +77,37 @@ export default function Profile(props) {
     weight[1](user.weight);
     lockerNumber[1](user.lockerNumber);
     lockerCode[1](user.lockerCode);
-    sizes[1](user.userSizes);
+    sports[1](user.sports);
+    userSizes[1](user.userSizes);
     setEquipment(user.equipment);
     role[1](props.context.actions.getRole(user.credential));
   };
 
   const onSubmit = (event) => {
-    props.showMessage("Updating user...");
-    if (userId) {
-      UsersAPI.updateUser({
-        id: userId,
-        ...user,
-        firstName: firstName[0],
-        lastName: lastName[0],
-        address: address[0],
-        city: city[0],
-        state: state[0],
-        zip: zip[0],
-        phone: phone[0],
-        gender: gender[0],
-        height: height[0],
-        weight: weight[0],
-        lockerNumber: lockerNumber[0],
-        lockerCode: lockerCode[0],
-        userSizes: sizes[0]
-      })
-        .then((res) => {
-          setUserData(res);
-          setEquipment(res.equipment);
-          props.showMessage("Information Successfully Updated!");
-        })
-        .catch((err) => {
-          props.showMessage("Information failed to save.", "error");
-        });
-    } else {
-      UsersAPI.updateCurrentUser({
-        ...user,
-        firstName: firstName[0],
-        lastName: lastName[0],
-        address: address[0],
-        city: city[0],
-        state: state[0],
-        zip: zip[0],
-        phone: phone[0],
-        gender: gender[0],
-        height: height[0],
-        weight: weight[0],
-        lockerNumber: lockerNumber[0],
-        lockerCode: lockerCode[0],
-        userSizes: sizes[0]
-      })
-        .then((res) => {
-          setUserData(res);
-          setEquipment(res.equipment);
-          props.showMessage("Information Successfully Updated!");
-        })
-        .catch((err) => {
-          props.showMessage("Information failed to save.", "error");
-        });
-    }
+    UsersAPI.updateUser({
+      id: user.id,
+      schoolId: user.School,
+      firstName: firstName[0],
+      lastName: lastName[0],
+      address: address[0],
+      city: city[0],
+      state: state[0],
+      zip: zip[0],
+      phone: phone[0],
+      gender: gender[0],
+      height: height[0],
+      weight: weight[0],
+      lockerNumber: lockerNumber[0],
+      lockerCode: lockerCode[0],
+      userSizes: userSizes[0]
+    });
+    props.showMessage("Information Successfully Updated!");
   };
 
   return (
     <div style={{ maxWidth: "100%", marginLeft: "10px", marginRight: "10px", marginBottom: "10px" }}>
       <Grid container spacing={3}>
-        <Grid item xs="auto">
+        <Grid item xs={7}>
           <UserTabs
             credentials={props.context.credentials}
             firstName={firstName}
@@ -159,7 +125,8 @@ export default function Profile(props) {
             height={height}
             weight={weight}
             gender={gender}
-            sizes={sizes}
+            sports={sports[0]}
+            userSizes={userSizes}
           >
             <div>
               <Button variant="contained" type="submit" color="primary" onClick={onSubmit} style={{ float: "right" }}>
@@ -168,8 +135,8 @@ export default function Profile(props) {
             </div>
           </UserTabs>
         </Grid>
-        <Grid item xs="auto">
-          <UserItemCard firstName={firstName} equipment={equipment} />
+        <Grid item xs={5}>
+          <UserItemCard firstName={user?.firstName} equipment={equipment} />
         </Grid>
       </Grid>
     </div>
