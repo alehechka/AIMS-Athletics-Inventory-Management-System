@@ -1,7 +1,22 @@
+Cypress.Commands.add("initPage", (items) => { 
+    cy.clearCookies();
+    cy.window().then((win) => {
+        win.sessionStorage.clear()
+    });
+    cy.visit('/');
+});
 Cypress.Commands.add("clearItems", (items) => { 
     for (const itemName of items){
         cy.get(itemName).clear();
     }
+});
+Cypress.Commands.add("testNoRedirect", (fromURL) => { 
+    cy.visit(fromURL);
+    cy.location('pathname').should('eq', fromURL);
+});
+Cypress.Commands.add("testRedirect", (fromURL, toURL) => { 
+    cy.visit(fromURL);
+    cy.location('pathname').should('eq', toURL);
 });
 Cypress.Commands.add("loginClear", () => { 
     cy.clearItems(["#email", "#password"])

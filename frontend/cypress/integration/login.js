@@ -1,4 +1,10 @@
 describe('Login Process', () => {
+    before(()=>{
+        cy.initPage();
+    });
+    after(()=>{
+        cy.initPage();
+    })
     beforeEach(()=> {
         cy.server();
         cy.route('http://localhost:5000/api/v1/credentials/*').as('getCreds');
@@ -30,4 +36,5 @@ describe('Login Process', () => {
             .its("creds")
             .should('exist');
     });
+   
   });
