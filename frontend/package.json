@@ -30,7 +30,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "prod": "serve -s build",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "cypress": "cypress open"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -48,6 +49,7 @@
     ]
   },
   "devDependencies": {
+    "cypress": "^4.5.0",
     "prettier": "^1.19.1",
     "serve": "^11.3.0"
   }

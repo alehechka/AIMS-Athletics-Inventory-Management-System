@@ -165,7 +165,7 @@ function Navbar(props) {
               </Tooltip>
             </Badge>
             <Tooltip title="Logout">
-              <IconButton onClick={handleDialogOpen} color="inherit">
+              <IconButton onClick={handleDialogOpen} id="logout" color="inherit">
                 <PowerSettingsNewIcon />
               </IconButton>
             </Tooltip>
@@ -219,6 +219,7 @@ function Navbar(props) {
             }}
             color="secondary"
             autoFocus
+            id="logoutConfirm"
           >
             Yes
           </Button>

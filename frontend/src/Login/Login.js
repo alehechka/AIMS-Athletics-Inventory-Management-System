@@ -209,7 +209,7 @@ class Login extends React.Component {
                 Forgot password?
               </Link>
             </RouterLink>
-            <Button type="submit" fullWidth variant="contained" color="primary">
+            <Button type="submit" id="login" fullWidth variant="contained" color="primary">
               Log In
             </Button>
             <RouterLink to="/signup">
