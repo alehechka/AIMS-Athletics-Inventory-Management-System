@@ -31,6 +31,11 @@ Cypress.Commands.add("loginType", (email, password) => {
     cy.typeAndCheck("#email", email);
     cy.typeAndCheck("#password", password);
 });
+Cypress.Commands.add("checkHelperTextExistence", (id, value, helperTextExists) => { 
+    cy.clearItems([id]);
+    cy.typeAndCheck(id, value);
+    cy.get(`${id}-helper-text`).should(`${helperTextExists?"":"not."}exist`);
+});
 Cypress.Commands.add("login", (email, password) => {
     cy.server();
     cy.route('POST', 'http://localhost:5000/api/v1/credentials/*').as('getCredsPOST');
