@@ -27,6 +27,7 @@ function UserInfoCard(props) {
     lockerNumber,
     lockerCode
   } = props;
+
   return (
     <Card variant="outlined">
       <CardContent>

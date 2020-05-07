@@ -23,19 +23,11 @@ const useStyles = makeStyles((theme) => ({
 export default function UserSportDropdown(props) {
   const classes = useStyles();
   const { sports, userSizes } = props;
-  const [open, setOpen] = React.useState(new Array(sports?.length).fill(false));
-  const savedSizes = userSizes[0];
-
-  const handleClick = (idx) => {
-    let newOpen = open;
-    newOpen[idx] = !open[idx];
-    setOpen(newOpen);
-  };
 
   const updateSizes = (event, id) => {
     let sizes = userSizes[0];
     let changedIdx = sizes.findIndex((size) => {
-      return size.sportSizeId == id;
+      return size.sportSizeId === id;
     });
     if (changedIdx !== -1) {
       sizes[changedIdx].size = event.target.value;
@@ -47,29 +39,24 @@ export default function UserSportDropdown(props) {
 
   return (
     <div>
-      {sports?.map((sport) => {
+      {sports.map((sport) => {
         return (
-          <ExpansionPanel>
+          <ExpansionPanel key={sport.id}>
             <ExpansionPanelSummary expandIcon={<ExpandMore />} aria-controls="panel1a-content" id="panel1a-header">
               <Typography className={classes.heading}>{sport.displayName}</Typography>
             </ExpansionPanelSummary>
             <ExpansionPanelDetails>
-              {sport.sportSizes?.map((sizeObj) => {
+              {sport.sportSizes.map((sizeObj) => {
+                let idx = userSizes[0].findIndex((s) => {
+                  return s.sportSizeId === sizeObj.id;
+                });
                 return (
-                  <FormControl style={{ width: "100%" }}>
+                  <FormControl key={sizeObj.id} style={{ width: "100%" }}>
                     <InputLabel>{sizeObj.name}</InputLabel>
-                    <Select
-                      id={1}
-                      value={
-                        savedSizes.filter((s) => {
-                          return s.sportSizeId == sizeObj.id;
-                        })[0]?.size
-                      }
-                      onChange={(e) => updateSizes(e, sizeObj.id)}
-                    >
+                    <Select onChange={(e) => updateSizes(e, sizeObj.id)} value={userSizes[0][idx].size}>
                       {sizeObj.sizes.map((size) => {
                         return (
-                          <MenuItem key={sizeObj.id} value={size}>
+                          <MenuItem key={size} value={size}>
                             {size}
                           </MenuItem>
                         );

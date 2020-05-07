@@ -48,7 +48,7 @@ export default function Profile(props) {
 
   useEffect(() => {
     if (userId) {
-      UsersAPI.getSingleUser(userId).then((user) => {
+      UsersAPI.getSingleUserFromBackend(userId).then((user) => {
         setUserData(user);
         setEquipment(user.equipment);
       });
