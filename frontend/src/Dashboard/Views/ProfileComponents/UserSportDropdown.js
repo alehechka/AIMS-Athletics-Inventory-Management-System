@@ -20,12 +20,28 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+/***
+ * Handles display and changing of user Size information.
+ * Each sport has it's own collapsible ExpansionPanel and Select fields.
+ * All sizes are editable by the user.
+ *
+ * @param {Object} props - props passed down from Profile
+ * @param {Function} props.showMessage - Helper function to display snackbar message.
+ * @param {Object} props.context - Context variable containing all relevant user information.
+ */
 export default function UserSportDropdown(props) {
   const classes = useStyles();
   const { sports, userSizes } = props;
 
   const [, updateState] = React.useState();
 
+  /**
+   * Finds the index of the changed size in userSizes and updates accordingly.
+   * If the updated size is not in userSized, it is added.
+   *
+   * @param {Event} event - Event passed from Select components
+   * @param {Number} id - sportSizeId passed from sports->sportSizes.id
+   */
   const updateSizes = (event, id) => {
     let sizes = userSizes[0];
     let changedIdx = sizes.findIndex((size) => {

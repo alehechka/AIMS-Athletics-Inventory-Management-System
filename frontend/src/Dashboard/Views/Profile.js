@@ -5,24 +5,17 @@ import UserItemCard from "./ProfileComponents/UserItems";
 import Button from "@material-ui/core/Button";
 import { UsersAPI } from "../../api";
 
-/**
- * This component contains the UI logic for Profile.
+/***
+ * Contains the logic for Profile page containing basic user information
  *
- * State variables:
- * None
+ * Children:
+ *    UserTabs
+ *    UserItemCard
  *
- * Prop variables passed down from App.js(through dashboard):
- * email - string- email address of the authorized user.
- * username - string - username of the authorized user.
- * role - string - role of the authorized user.
- * showmessage - custom function to enqueue snackbar.
- *
- * Props passed down from Snackbar provider.
- *
- * enqueuesnackbar - function - shows a snackbar.
- * closesnackbar - function - closes a snackbar.
+ * @param {Object} props - props passed down from Navbar or Users screen
+ * @param {Function} props.showMessage - Helper function to display snackbar message.
+ * @param {Object} props.context - Context variable containing all relevant user information.
  */
-
 export default function Profile(props) {
   const parser = new URLSearchParams(props.location.search);
   const [userId, setUserId] = useState(parser.get("userId"));
@@ -61,6 +54,13 @@ export default function Profile(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.location.search, userId]);
 
+  /**
+   * Updates current User object and all relevant data fields.
+   * Fields are detached from user object so that erroneous changes are not
+   * made to the user and the time to display update is minimized.
+   *
+   * @param {User} user - User object for updating data
+   */
   const setUserData = (user) => {
     setUser(user);
     setUserId(user.id);
@@ -83,6 +83,12 @@ export default function Profile(props) {
     role[1](props.context.actions.getRole(user.credential));
   };
 
+  /**
+   * Handles form submission to update user information in the database
+   * and displays confirmation window.
+   *
+   * @param {Event} event - Submit event from button click
+   */
   const onSubmit = (event) => {
     UsersAPI.updateUser({
       id: user.id,

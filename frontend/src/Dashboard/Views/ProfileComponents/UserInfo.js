@@ -6,12 +6,20 @@ import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
-import FormHelperText from "@material-ui/core/FormHelperText";
 import Divider from "@material-ui/core/Divider";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import UserSportDropdown from "./UserSportDropdown";
 
+/***
+ * Contains all the basic information about the user, e.g. name, address,
+ * role, locker information, etc.
+ *
+ *
+ * @param {Object} props - props passed down from UserTabs
+ * @param {Function} props.showMessage - Helper function to display snackbar message.
+ * @param {Object} props.context - Context variable containing all relevant user information.
+ */
 function UserInfoCard(props) {
   const {
     username,
@@ -161,6 +169,17 @@ function UserInfoCard(props) {
   );
 }
 
+/***
+ * Contains the Size and physical information components of the
+ * Profile page. Height, Weight and Gender are editable.
+ *
+ * Children:
+ *    UserSportDropdown
+ *
+ * @param {Object} props - props passed down from UserTabs
+ * @param {Function} props.showMessage - Helper function to display snackbar message.
+ * @param {Object} props.context - Context variable containing all relevant user information.
+ */
 function UserPhysicalCard(props) {
   const { username, height, weight, gender, sports, userSizes } = props;
 

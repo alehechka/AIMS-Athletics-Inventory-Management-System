@@ -9,6 +9,15 @@ import Card from "@material-ui/core/Card";
 import Box from "@material-ui/core/Box";
 import { UserInfoCard, UserPhysicalCard } from "./UserInfo";
 
+/***
+ * Outer component of the tab panel that contains the basic user
+ * information and the physical/size information.
+ *
+ *
+ * @param {Object} props - props passed down from Profile
+ * @param {Function} props.showMessage - Helper function to display snackbar message.
+ * @param {Object} props.context - Context variable containing all relevant user information.
+ */
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -32,6 +41,11 @@ TabPanel.propTypes = {
   value: PropTypes.any.isRequired
 };
 
+/**
+ * Helper function for tab switching
+ *
+ * @param {Number} index - value representing which tab is active
+ */
 function a11yProps(index) {
   return {
     id: `simple-tab-${index}`,
@@ -39,6 +53,11 @@ function a11yProps(index) {
   };
 }
 
+/**
+ * Defines style for TabPanel
+ *
+ * @param {Object} theme - defines classes for TabPanel display
+ */
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -46,6 +65,18 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+/***
+ * Defines container layout for subcomponents of the tab panel on the Profile screen.
+ *
+ * Children:
+ *    UserInfoCard
+ *    UserPhysicalCard
+ *
+ *
+ * @param {Object} props - props passed down from Profile
+ * @param {Function} props.showMessage - Helper function to display snackbar message.
+ * @param {Object} props.context - Context variable containing all relevant user information.
+ */
 export default function UserTabs(props) {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
@@ -69,6 +100,12 @@ export default function UserTabs(props) {
     userSizes
   } = props;
 
+  /**
+   * Updates current User object and all relevant data fields.
+   *
+   * @param {Event} user - Click event
+   * @param {Number} newValue - Index of tab to open
+   */
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -77,7 +114,7 @@ export default function UserTabs(props) {
     <div className={classes.root}>
       <Card container spacing={3}>
         <AppBar position="static">
-          <Tabs value={value} onChange={handleChange} aria-label="simple tabs example">
+          <Tabs value={value} onChange={handleChange} aria-label="simple tab panel">
             <Tab label="Basic Info" {...a11yProps(0)} />
             <Tab label="Size Info" {...a11yProps(1)} />
           </Tabs>
