@@ -3,7 +3,6 @@ import MaterialTable from "material-table";
 import { SportsAPI, InventoryAPI } from "../../api";
 import SportsChip from "./Components/SportsChip";
 import InventoryDialog from "./Components/InventoryDialog";
-import { CsvBuilder } from 'filefy';
 
 /**
  * Contains the material table which lets the user edit staff entries.
@@ -103,10 +102,10 @@ export default function Inventory(props) {
         updateColumns([
           { title: "Item ID", field: "id", hidden: true },
           //{ title: "Sport", field: "sportsJson", hidden: true },
-          { title: "Sports", field: "sportText", export: true, hidden: true, },
-          { title: "Name", field: "name", export: true, cellStyle: { width: "35%" } },
-          { title: "Description", field: "description", export: true, cellStyle: { width: "65%" } },
-          { title: "Barcode", field: "barcode", export: true, hidden: true },
+          { title: "Sports", field: "sportText", hidden: true, },
+          { title: "Name", field: "name", cellStyle: { width: "35%" } },
+          { title: "Description", field: "description", cellStyle: { width: "65%" } },
+          { title: "Barcode", field: "barcode", hidden: true },
           {
             title: "Sport",
             field: "sports",
@@ -121,10 +120,9 @@ export default function Inventory(props) {
                 .map((val) => val.displayName)
                 .some((val) => val.toLowerCase().includes(term.toLowerCase()));
             },
-			export: true,
           },
-          { title: "Price", field: "price", type: "currency", searchable: false, filtering: false, export: true },
-          { title: "Quantity", field: "quantity", type: "numeric", searchable: false, filtering: false, export: true }
+          { title: "Price", field: "price", type: "currency", searchable: false, filtering: false, },
+          { title: "Quantity", field: "quantity", type: "numeric", searchable: false, filtering: false, }
         ]);
 
         updateData(mapInventory(inventories));
@@ -144,11 +142,7 @@ export default function Inventory(props) {
       name: inventory.name,
       description: inventory.description,
       barcode: inventory.barcode,
-      // Need to fix Json, which will fix most the problems with edit and add
-      //sportsJson: JSON.stringify(inventory.sports),
-      //sports: inventory.sports,
       sports: [inventory.sport],
-	  //sportText: inventory.sports.map(sport => sport.displayName).join(", "),
       price: inventory.averagePrice,
       quantity: inventory.totalQuantity
     }));
@@ -226,17 +220,8 @@ export default function Inventory(props) {
           filtering: true,
           actionsColumnIndex: -1,
           tableLayout: "auto",
-          exportButton: true,
-          exportCsv: () => {
-            const filterColumns = columns.filter(columnDef => columnDef.export);
-            const filterData = data.map(rowData => filterColumns.map(columnDef => rowData[columnDef.field]));
-            new CsvBuilder('InventoryReport.csv')
-              .setDelimeter(",")
-              .setColumns(filterColumns.map(columnDef => columnDef.title))
-              .addRows(filterData)
-              .exportFile();
           }
-        }}
+        }
         actions={[
           {
             icon: "shopping_cart",
