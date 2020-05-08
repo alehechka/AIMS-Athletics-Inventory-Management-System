@@ -24,6 +24,8 @@ export default function UserSportDropdown(props) {
   const classes = useStyles();
   const { sports, userSizes } = props;
 
+  const [, updateState] = React.useState();
+
   const updateSizes = (event, id) => {
     let sizes = userSizes[0];
     let changedIdx = sizes.findIndex((size) => {
@@ -35,6 +37,7 @@ export default function UserSportDropdown(props) {
       sizes.push({ size: event.target.value, sportSizeId: id });
     }
     userSizes[1](sizes);
+    updateState({});
   };
 
   return (
@@ -53,7 +56,7 @@ export default function UserSportDropdown(props) {
                 return (
                   <FormControl key={sizeObj.id} style={{ width: "100%" }}>
                     <InputLabel>{sizeObj.name}</InputLabel>
-                    <Select onChange={(e) => updateSizes(e, sizeObj.id)} value={userSizes[0][idx].size}>
+                    <Select onChange={(e) => updateSizes(e, sizeObj.id)} value={userSizes[0][idx]?.size}>
                       {sizeObj.sizes.map((size) => {
                         return (
                           <MenuItem key={size} value={size}>
