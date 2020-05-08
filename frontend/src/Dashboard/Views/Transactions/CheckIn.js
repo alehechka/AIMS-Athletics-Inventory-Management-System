@@ -11,14 +11,22 @@ import Grid from "@material-ui/core/Grid";
 import TransactionTable from "./TransactionTable";
 import CheckInCard from "./CheckInCard";
 import { UsersAPI, TransactionAPI, SportsAPI } from "../../../api";
+/***
+ * Contains the logic for admin page containing sport and role tables.
+ *
+ * Hooks:
+ * Loading - displays a loading icon when backend is queried/modified.
+ * data - contains table data
+ * columns - contains column information 
+ * 
+ * @param {Object} props - props passed down from Dashboard
+ */
+export default function CheckIn(props) {
 
-export default function CheckOut(props) {
   const parser = new URLSearchParams(props.location.search);
+
   const userId = parseInt(parser.get("userId"));
   const inventoryId = parseInt(parser.get("inventoryId"));
-
-  const [sports, setSports] = React.useState([]);
-  const [sportIdLookup, setSportIdLookup] = React.useState({});
 
   const [usersSelected, setUsersSelected] = React.useState([]);
   const [userColumns, updateUserColumns] = React.useState([]);
@@ -34,6 +42,10 @@ export default function CheckOut(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [usersSelected]);
 
+    /**
+   * Called when a new user is added to a transaction
+   * Refactors the list of shared and unique items
+   */
   function updateTransactions() {
     var listOfItemIds = usersSelected.map((user) => {
       return user.equipment.map((transaction) => {
@@ -81,7 +93,10 @@ export default function CheckOut(props) {
     //console.log(transactions);
   }
 
-  //Need to split into function for shared and unique list
+   /**
+   * Allows for a single transaction to be changed
+   * Change implies that the amount has been updated
+   **/
   function updateSingleTransaction(tranIndex, itemIndex, key, value, uniqiue) {
     if (uniqiue) {
       setTransactions((prev) => {
@@ -95,6 +110,12 @@ export default function CheckOut(props) {
       });
     }
   }
+
+  /**
+   * Helper function for returning a list containing the common elements
+   * @param {Object} arrays - combined array of unique and shared items
+   * @returns {Array} values - array of items that are common between the arrays
+   */
 
   function getCommonElements(arrays) {
     if (arrays.length === 0) {
@@ -126,6 +147,10 @@ export default function CheckOut(props) {
     }
   }, [props.context.authorized, userId, inventoryId]);
 
+  /**
+   * loads data from the backend to populate the tables for users and inventory
+   * @async
+   */
   async function fetchData() {
     let selectOptions;
     await SportsAPI.getSports().then((sports) => {
@@ -138,7 +163,7 @@ export default function CheckOut(props) {
       );
       selectOptions = sports.reduce((obj, sport) => {
         obj[sport.displayName] = sport.displayName;
-        console.log(obj);
+        //console.log(obj);
         return obj;
       }, {});
     });
@@ -194,12 +219,21 @@ export default function CheckOut(props) {
     });
   }
 
+  /**
+   * Helper function for getting page titles for the stepper
+   * @returns step title
+   */
   function getSteps() {
     return transactionData.length
       ? ["Select Users", "Edit Transactions", "View Transactions"]
       : ["Select Users", "Edit Transactions"];
   }
 
+  /**
+   * Gets the content to be rendered for the current step
+   * @param {Integer} stepIndex - index of the current step
+   * @returns the react component to be rendered for the current step
+   */
   function getStepContent(stepIndex) {
     switch (stepIndex) {
       case 0:
@@ -241,22 +275,38 @@ export default function CheckOut(props) {
   const [activeStep, setActiveStep] = React.useState(step);
   const steps = getSteps();
 
+  /**
+   * Handles the logic for getting the next step
+   */
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
+  /**
+   * Handles the logic for getting the previous setp
+   */
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
+  /**
+   * Handles the logic for the current step
+   * @param {*} step - current step
+   */
   const handleStep = (step) => () => {
     setActiveStep(step);
   };
 
+  /**
+   * Handles the logic for the rest button setting the active step to 0
+   */
   const handleReset = () => {
     setActiveStep(0);
   };
 
+  /**
+   * Submits the current transactions and advances to the next step
+   */
   const handleSubmit = () => {
     props.showMessage("Submitting order...", "info");
 
@@ -352,9 +402,6 @@ export default function CheckOut(props) {
               )}
             </Grid>
           </Grid>
-          <Button variant="contained" color="primary" onClick={() => console.log(transactions)}>
-            Test
-          </Button>
         </div>
       )}
     </div>
