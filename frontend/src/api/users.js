@@ -328,4 +328,4 @@ async function insertUserIndexedDB(user) {
   db.close();
 }
 
-export { createUser, getUsers, getUsersFromBackend, getSingleUser, getCurrentUser, updateCurrentUser, updateUser };
+export { createUser, getUsers, getUsersFromBackend, getSingleUser, getCurrentUser, updateCurrentUser, updateUser, getSingleUserFromBackend };

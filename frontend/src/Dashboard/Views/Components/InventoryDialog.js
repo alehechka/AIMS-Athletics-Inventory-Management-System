@@ -239,7 +239,7 @@ export default function InventoryDialog(props) {
           title="Sizes"
           columns={sizeColumns}
           data={inputs.inventorySizes}
-          option={{
+          options={{
             search: false,
             filtering: false,
             actionsColumnIndex: -1,
