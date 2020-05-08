@@ -31,9 +31,8 @@ import { BrowserRouter as Router, Switch, Route, withRouter, Redirect } from "re
  */
 class Dashboard extends React.Component {
   /**
-   * Redirects to the profile view
+   * Renders the view based on path.
    */
-
   render() {
     const { pathname } = this.props.location;
     const { context } = this.props;

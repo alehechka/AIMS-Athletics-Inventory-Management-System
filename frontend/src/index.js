@@ -10,6 +10,11 @@ import { Provider } from "./Context";
 
 //Adds dismiss button button to snackbars
 const notistackRef = React.createRef();
+/**
+ * Lets users close a snackbar.
+ * 
+ * @param {String} key Reference to snackbar element
+ */
 const onClickDismiss = (key) => () => {
   notistackRef.current.closeSnackbar(key);
 };

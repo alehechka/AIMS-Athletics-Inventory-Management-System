@@ -47,7 +47,9 @@ class App extends React.Component {
       autoHideDuration: duration
     });
   };
-
+  /**
+   * Renders the main component based on auth.
+   */
   render() {
     return (
       <Router>
