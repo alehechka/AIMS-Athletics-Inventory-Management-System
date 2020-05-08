@@ -153,20 +153,6 @@ export default function CheckIn(props) {
    */
   async function fetchData() {
     let selectOptions;
-    await SportsAPI.getSports().then((sports) => {
-      setSports(sports.map((sport) => sport.displayName));
-      setSportIdLookup(
-        sports.reduce((obj, sport) => {
-          obj[sport.displayName] = sport;
-          return obj;
-        }, {})
-      );
-      selectOptions = sports.reduce((obj, sport) => {
-        obj[sport.displayName] = sport.displayName;
-        //console.log(obj);
-        return obj;
-      }, {});
-    });
     UsersAPI.getUsers(null, null, {
       isAdmin: true,
       isEmployee: true,
