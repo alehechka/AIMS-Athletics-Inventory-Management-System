@@ -16,6 +16,14 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import TextField from "@material-ui/core/TextField";
 
+/**
+ * Components for displaying the check out card
+ * @param {Object} user - User to be displayed
+ * @param {Object} items - List of items to be checked out to user
+ * @param {Number} tranIndex - Index of the transcaction
+ * @param {Function} updateSingleTransaction - Function for updating singular transaction
+ * @returns {Component} returns the component to be rendered
+ */
 export default function CheckOutCard({ user, items, tranIndex, updateSingleTransaction }) {
   return (
     <Card style={{ marginBottom: "5px" }} variant="outlined">

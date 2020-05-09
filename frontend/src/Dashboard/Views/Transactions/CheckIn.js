@@ -217,7 +217,7 @@ export default function CheckIn(props) {
 
   /**
    * Gets the content to be rendered for the current step
-   * @param {Integer} stepIndex - index of the current step
+   * @param {Number} stepIndex - index of the current step
    * @returns the react component to be rendered for the current step
    */
   function getStepContent(stepIndex) {
@@ -277,7 +277,7 @@ export default function CheckIn(props) {
 
   /**
    * Handles the logic for the current step
-   * @param {*} step - current step
+   * @param {Number} step - current step
    */
   const handleStep = (step) => () => {
     setActiveStep(step);

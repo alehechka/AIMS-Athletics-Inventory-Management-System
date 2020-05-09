@@ -13,6 +13,15 @@ import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import ListSubheader from "@material-ui/core/ListSubheader";
 
+/**
+ * Components for displaying the check in card
+ * @param {Object} user - User to be displayed
+ * @param {Object} items - List of unique items for the displayed user
+ * @param {Object} sharedItems - List of items common between all users
+ * @param {Number} tranIndex - Index of the transcaction
+ * @param {Function} updateSingleTransaction - Function for updating singular transaction
+ * @returns {Component} returns the component to be rendered
+ */
 export default function CheckInCard({ user, items, sharedItems, tranIndex, updateSingleTransaction }) {
   return (
     <Card style={{ marginBottom: "5px" }} variant="outlined">

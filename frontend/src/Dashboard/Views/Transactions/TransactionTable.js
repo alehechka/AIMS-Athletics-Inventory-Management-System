@@ -1,6 +1,11 @@
 import React from "react";
 import MaterialTable from "material-table";
 
+/**
+ * Component for rendering the transaction table which displays all transactions
+ * @param {Object} transactionData - Data for the transactions that were completed
+ * @param {Boolean} isTransactionLoading - boolean for determing if the data is loading or not
+ */
 export default function TransactionTable({transactionData, isTransactionLoading}) {
   const transactionColumns = [
     { title: "ID", field: "id", hidden: true },

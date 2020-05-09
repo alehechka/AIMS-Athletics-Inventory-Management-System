@@ -12,6 +12,16 @@ import CheckOutCard from "./CheckOutCard";
 import { InventoryAPI, UsersAPI, TransactionAPI, SportsAPI } from "../../../api";
 import SportsChip from "../Components/SportsChip";
 
+/***
+ * Contains the logic for admin page containing sport and role tables.
+ *
+ * Hooks:
+ * Loading - displays a loading icon when backend is queried/modified.
+ * data - contains table data
+ * columns - contains column information 
+ * 
+ * @param {Object} props - props passed down from Dashboard
+ */
 export default function CheckOut(props) {
   const parser = new URLSearchParams(props.location.search);
   const userId = parseInt(parser.get("userId"));
@@ -34,6 +44,9 @@ export default function CheckOut(props) {
   const [isTransactionLoading, setTransactionLoading] = React.useState(true);
   const [transactionData, setTransactionData] = React.useState([]);
 
+    /**
+   * Called when a new user is added to a transaction
+   */
   function updateTransactions() {
     setTransactions(
       usersSelected.map((user) => {
@@ -58,6 +71,11 @@ export default function CheckOut(props) {
     );
   }
 
+  
+   /**
+   * Allows for a single transaction to be changed
+   * Change implies that the amount has been updated
+   **/
   function updateSingleTransaction(tranIndex, itemIndex, key, value) {
     setTransactions((prev) => {
       prev[tranIndex].items[itemIndex][key] = value;
@@ -78,6 +96,11 @@ export default function CheckOut(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [usersSelected, inventorySelected]);
 
+  
+  /**
+   * loads data from the backend to populate the tables for users and inventory
+   * @async
+   */
   async function fetchData() {
     let selectOptions;
     await SportsAPI.getSports().then((sports) => {
@@ -193,12 +216,21 @@ export default function CheckOut(props) {
     });
   }
 
+    /**
+   * Helper function for getting page titles for the stepper
+   * @returns step title
+   */
   function getSteps() {
     return transactionData.length
       ? ["Select Users", "Select Inventory", "Edit Transactions", "View Transactions"]
       : ["Select Users", "Select Inventory", "Edit Transactions"];
   }
 
+    /**
+   * Gets the content to be rendered for the current step
+   * @param {Number} stepIndex - index of the current step
+   * @returns the react component to be rendered for the current step
+   */
   function getStepContent(stepIndex) {
     switch (stepIndex) {
       case 0:
@@ -267,22 +299,39 @@ export default function CheckOut(props) {
   const [activeStep, setActiveStep] = React.useState(step);
   const steps = getSteps();
 
+    /**
+   * Handles the logic for getting the next step
+   */
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
 
+  
+  /**
+   * Handles the logic for getting the previous setp
+   */
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
+    /**
+   * Handles the logic for the current step
+   * @param {Number} step - current step
+   */
   const handleStep = (step) => () => {
     setActiveStep(step);
   };
 
+   /**
+   * Handles the logic for the rest button setting the active step to 0
+   */
   const handleReset = () => {
     setActiveStep(0);
   };
 
+    /**
+   * Submits the current transactions and advances to the next step
+   */
   const handleSubmit = () => {
     props.showMessage("Submitting order...", "info");
     TransactionAPI.checkOut(transactions)
