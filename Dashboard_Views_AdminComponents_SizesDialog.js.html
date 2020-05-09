@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Dashboard/Views/AdminComponents/SizesDialog.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Dashboard/Views/AdminComponents/SizesDialog.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React from 'react';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from '@material-ui/core/Button';
+import Chip from '@material-ui/core/Chip';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import Add from '@material-ui/icons/Add';
+import TextField from '@material-ui/core/TextField';
+import IconButton from '@material-ui/core/IconButton';
+
+import MaterialTable from 'material-table';
+
+/**
+ * Helper TextField that lets users add a new chip.
+ * 
+ * @param {Object} props - passed down from SizesDialog box.
+ * @param {String[]} props.array - array containing the sizes to be edited.
+ * @param {Function} props.onChange - function to be executed on button click.
+ */
+function SizeTextField(props) {
+    const [newSize, setNewSize] = React.useState("");
+    const onChange = props.onChange;
+    const array = props.array;
+    return (&lt;TextField
+        variant="outlined"
+        margin="normal"
+        required
+        label="Add Size"
+        value={newSize}
+        onChange={e=> setNewSize(e.target.value)}
+        InputProps= {{
+            endAdornment:
+            &lt;InputAdornment position="end">
+              &lt;IconButton
+                onClick={() => {
+                    onChange(array.concat([newSize]));
+                    setNewSize("");
+                }}
+                edge="end"
+              >
+               &lt;Add/>
+              &lt;/IconButton>
+            &lt;/InputAdornment>
+        }}
+    />
+    );
+}
+/**
+ * This component lets users add/edit/delete userSizes.
+ * 
+ * @param {Object} props - Passed down from Sports Table
+ */
+export default function SizesDialog(props) {
+    const [sizesDialogOpen, closeSizesDialog] = [props.sizesDialogOpen, props.closeSizesDialog];
+    const [dialogTitle, dialogContent] = [props.dialogTitle, props.dialogContent];
+    const [sizesData, setSizesData] = [props.sizesData, props.setSizesData];
+    const sportId = dialogContent.id;
+
+    let columns = [
+        {title: "ID", field: 'id', hidden: true, searchable: false},
+        {title: "Item Name", field: "name", searchable: true,
+        editComponent: props=>(
+            &lt;TextField
+                variant="outlined"
+                margin="normal"
+                required
+                label="Item Name"
+                value={props.value}
+                onChange={e=> props.onChange(e.target.value)}
+            />
+        )
+        },
+        {title: "Sizes", field: "sizes", searchable: false,
+        render: rowData => rowData.sizes.map(size => &lt;Chip label={size} key={size} style={{margin: "4px"}}/>),
+        editComponent: props => (
+            &lt;React.Fragment>
+                {props.value?props.value.map(size =>
+                    &lt;Chip label={size} key={size} style={{margin: "4px"}} onDelete ={(e) => {
+                        props.onChange(props.value.filter(val => val !== size));
+                    }}/>)
+                :""}
+                &lt;SizeTextField
+                    array={props.value? props.value:[]}
+                    onChange={props.onChange}
+                />
+            &lt;/React.Fragment>
+          )
+        }
+    ];
+    return(
+        &lt;Dialog open={sizesDialogOpen} onClose={closeSizesDialog} disableBackdropClick maxWidth={"lg"} fullWidth>
+            &lt;DialogTitle>{dialogTitle} for {dialogContent.displayName}&lt;/DialogTitle>
+            &lt;DialogContent>
+                &lt;div style={{ width: "100%",}}>
+                &lt;MaterialTable
+                    title="Item Sizes"
+                    isLoading={false}
+                    columns={columns}
+                    data={sizesData}
+                    options={{
+                        pageSize: 5,
+                        pageSizeOptions: [5],
+                        headerStyle: {fontWeight: 'bold'},
+                        actionsColumnIndex: -1,
+                        tableLayout: "auto"
+                    }}
+                    editable={{
+                        onRowAdd: newData =>
+                          new Promise((resolve, reject) => {
+                            const newItem = {
+                                id: newData.id,
+                                name: newData.name,
+                                sizes: newData.sizes
+                            };
+                            setSizesData(sizesData.concat([newItem]));
+                            console.log(sportId, newItem);
+                            resolve();
+                          }),
+                        onRowUpdate: (newData, oldData) =>
+                          new Promise((resolve, reject) => {
+                            const newItem = {
+                                id: oldData.id,
+                                name: newData.name,
+                                sizes: newData.sizes
+                            };
+                            setSizesData(sizesData.map(item => item.id === newData.id? newItem: item));
+                            console.log(sportId, newItem);
+                            resolve();
+                          }),
+                        onRowDelete: oldData =>
+                          new Promise((resolve, reject) => {
+                            setSizesData(sizesData.filter(item => item.name !== oldData.name));
+                            console.log(sportId, sizesData.length);
+                            resolve();
+                          }),
+                      }}
+                />
+                &lt;/div>
+            &lt;/DialogContent>
+            &lt;DialogActions>
+                &lt;Button onClick={()=> closeSizesDialog(false)} color="primary">
+                    Cancel
+                &lt;/Button>
+                &lt;Button onClick={()=> closeSizesDialog(true)} color="primary" variant="contained">
+                    Save
+                &lt;/Button>
+            &lt;/DialogActions>
+        &lt;/Dialog>
+    );
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="App.html">App</a></li><li><a href="Dashboard.html">Dashboard</a></li><li><a href="Login.html">Login</a></li><li><a href="NewPassword.html">NewPassword</a></li><li><a href="Reset.html">Reset</a></li><li><a href="Signup.html">Signup</a></li></ul><h3>Global</h3><ul><li><a href="global.html#a11yProps">a11yProps</a></li><li><a href="global.html#changePassword">changePassword</a></li><li><a href="global.html#getCredentials">getCredentials</a></li><li><a href="global.html#getCurrentEquipment">getCurrentEquipment</a></li><li><a href="global.html#getEquipment">getEquipment</a></li><li><a href="global.html#getOrganizations">getOrganizations</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#Navbar">Navbar</a></li><li><a href="global.html#onClickDismiss">onClickDismiss</a></li><li><a href="global.html#signup">signup</a></li><li><a href="global.html#SizeTextField">SizeTextField</a></li><li><a href="global.html#updateCredentials">updateCredentials</a></li><li><a href="global.html#updateCurrentCredentials">updateCurrentCredentials</a></li><li><a href="global.html#useStyles">useStyles</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Fri May 08 2020 21:07:43 GMT-0500 (Central Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Context.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Context.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { Component } from "react";
+import { CredentialAPI, changeFavicon, UsersAPI, InventoryAPI, SportsAPI, createIndexedDB } from "./api";
+
+const Context = React.createContext();
+
+export class Provider extends Component {
+  state = {
+    credentials: JSON.parse(localStorage.getItem("creds")) || JSON.parse(sessionStorage.getItem("creds")) || null,
+    organization: JSON.parse(localStorage.getItem("org")) || JSON.parse(sessionStorage.getItem("org")) || null,
+    authorized: localStorage.getItem("creds") || sessionStorage.getItem("creds") ? true : false,
+    loadingCredentials: true
+  };
+
+  componentDidMount() {
+    createIndexedDB();
+    if (!(this.state.credentials &amp;&amp; this.state.organization)) {
+      CredentialAPI.getCredentials()
+        .then((res) => {
+          this.setCredentials(res, true);
+        })
+        .catch((err) => {
+          this.setCredentials(null, false);
+        });
+    } else {
+      this.setCredentials({ ...this.state.credentials, organization: this.state.organization }, true);
+    }
+    this.setState({ loadingCredentials: false });
+  }
+
+  render() {
+    const { credentials, organization, authorized, loadingCredentials } = this.state;
+    const value = {
+      authorized,
+      credentials,
+      organization,
+      loadingCredentials,
+      actions: {
+        signup: this.signup,
+        login: this.login,
+        logout: this.logout,
+        getRole: this.getRole
+      }
+    };
+    return &lt;Context.Provider value={value}>{this.props.children}&lt;/Context.Provider>;
+  }
+
+  signup = async (email, username, password, remember) => {
+    return await CredentialAPI.signup(email, username, password, remember).then(async (res) => {
+      this.setCredentials(res, true);
+      await UsersAPI.getUsersFromBackend(null, null, {withDetails: ["UserSize", "Equipment"]});
+      await InventoryAPI.getInventoryFromBackend(null, null, {});
+      await SportsAPI.getSportsFromBackend();
+      return res;
+    });
+  };
+
+  login = async (email, password, remember) => {
+    return await CredentialAPI.login(email, password, remember).then(async (res) => {
+      this.setCredentials(res, true);
+      await UsersAPI.getUsersFromBackend(null, null, {withDetails: ["UserSize", "Equipment"]});
+      await InventoryAPI.getInventoryFromBackend(null, null, {});
+      await SportsAPI.getSportsFromBackend();
+      return res;
+    });
+  };
+
+  logout = async () => {
+    return await CredentialAPI.logout().then(async (res) => {
+      this.setCredentials(res, false);
+      return res;
+    });
+  };
+
+  /**
+   * converts boolean object to string for representation.
+   * @param {*} user
+   */
+  getRole = (credentials) => {
+    let role = "Athlete";
+    if (credentials?.isAdmin) {
+      role = "Admin";
+    } else if (credentials?.isEmployee) {
+      role = "Employee";
+    } else if (credentials?.isCoach) {
+      role = "Coach";
+    } else if (credentials?.isAthlete) {
+      role = "Athlete";
+    }
+    return role;
+  };
+
+  setCredentials = (credentials, authorized) => {
+    this.setState({
+      authorized,
+      credentials: {
+        email: credentials?.email,
+        username: credentials?.username,
+        isAdmin: credentials?.isAdmin,
+        isEmployee: credentials?.isEmployee,
+        isCoach: credentials?.isCoach,
+        isAthlete: credentials?.isAthlete,
+        role: this.getRole(credentials)
+      },
+      organization: credentials?.organization
+    });
+    if(credentials?.isOwner) {
+      this.setState(prev => {
+        return {credentials: {...prev.credentials, isOwner: credentials.isOwner}}
+      })
+    } 
+    if (credentials?.organization?.logo) {
+      let url = window.location.protocol + "//" + window.location.hostname + (window.location.port ? `:${window.location.port}` : "") + "/assets/" + credentials.organization.logo;
+      changeFavicon(url);
+    }
+  };
+}
+
+export const Consumer = Context.Consumer;
+
+/**
+ * A higher-order component that wraps the provided component in a Context Consumer component.
+ * @param {class} Component - A React component.
+ * @returns {function} A higher-order component.
+ */
+
+export default function withContext(Component) {
+  return function ContextComponent(props) {
+    return &lt;Context.Consumer>{(context) => &lt;Component {...props} context={context} />}&lt;/Context.Consumer>;
+  };
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="App.html">App</a></li><li><a href="Dashboard.html">Dashboard</a></li><li><a href="Login.html">Login</a></li><li><a href="NewPassword.html">NewPassword</a></li><li><a href="Reset.html">Reset</a></li><li><a href="Signup.html">Signup</a></li></ul><h3>Global</h3><ul><li><a href="global.html#a11yProps">a11yProps</a></li><li><a href="global.html#changePassword">changePassword</a></li><li><a href="global.html#getCredentials">getCredentials</a></li><li><a href="global.html#getCurrentEquipment">getCurrentEquipment</a></li><li><a href="global.html#getEquipment">getEquipment</a></li><li><a href="global.html#getOrganizations">getOrganizations</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#Navbar">Navbar</a></li><li><a href="global.html#onClickDismiss">onClickDismiss</a></li><li><a href="global.html#signup">signup</a></li><li><a href="global.html#SizeTextField">SizeTextField</a></li><li><a href="global.html#updateCredentials">updateCredentials</a></li><li><a href="global.html#updateCurrentCredentials">updateCurrentCredentials</a></li><li><a href="global.html#useStyles">useStyles</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Fri May 08 2020 21:07:43 GMT-0500 (Central Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

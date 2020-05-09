@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Dashboard/Views/AdminComponents/RolesTable.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Dashboard/Views/AdminComponents/RolesTable.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React from "react";
+import MaterialTable from "material-table";
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from '@material-ui/core/Button';
+import TextField from "@material-ui/core/TextField";
+import { CredentialAPI, UsersAPI } from "../../../api";
+/**
+ * Contains the Role table and update password dialog logic.
+ * 
+ * @param {Object} props - passed down from Admin
+ */
+export default function RolesTable(props) {
+  const [isRoleLoading, updateRoleLoading] = [props.isRoleLoading, props.updateRoleLoading];
+  const [roleData, updateRoleData] = [props.roleData, props.updateRoleData];
+  const roleColumns = props.roleColumns;
+  const [rolePageSize, updateRolePageSize] = [props.rolePageSize, props.updateRolePageSize];
+
+  const [passwordDialogOpen, setPasswordDialogOpen, closePasswordDialog] = [props.passwordDialogOpen, props.setPasswordDialogOpen, props.closePasswordDialog];
+  const [passwordDialogTitle, setPasswordDialogTitle] = [props.passwordDialogTitle, props.setPasswordDialogTitle];
+  const [setPasswordDialogId] = [props.setPasswordDialogId];
+  const [passwordDialogValue, setPasswordDialogValue] = [props.passwordDialogValue, props.setPasswordDialogValue];
+  const passwordError = passwordDialogValue.length > 0 &amp;&amp; (passwordDialogValue.length &lt; 8 || passwordDialogValue.length > 32);
+  return (
+    &lt;React.Fragment>
+      &lt;MaterialTable
+        title="Security"
+        isLoading={isRoleLoading}
+        columns={roleColumns}
+        data={roleData}
+        pageSize={rolePageSize}
+        onChangeRowsPerPage={updateRolePageSize}
+        options={{
+          search: true,
+          filtering: true,
+          actionsColumnIndex: -1,
+          tableLayout: "auto"
+        }}
+        editable={{
+          onRowUpdate: (newData, oldData) =>
+            new Promise((resolve, reject) => {
+              const fullName = newData.firstName + " " + newData.lastName;
+              const testValidity = (role) => role.isAdmin || role.isAthlete || role.isEmployee || role.isCoach;
+              if (JSON.stringify(oldData.role) === JSON.stringify(newData.role)) {
+                resolve();
+                props.showMessage(`You didn't change the role for ${fullName}.`, "info");
+              } else if (!testValidity(newData.role)) {
+                reject();
+                props.showMessage(`You must select at least one role for ${fullName}.`, "error");
+              } else {
+                const updatedUser = {
+                  id: newData.id,
+                  isAdmin: newData.role.isAdmin,
+                  isAthlete: newData.role.isAthlete,
+                  isCoach: newData.role.isCoach,
+                  isEmployee: newData.role.isEmployee
+                };
+                CredentialAPI.updateCredentials(updatedUser)
+                  .then((res) => {
+                    console.log(res);
+                    updateRoleData(roleData.map((user) => (newData.id === user.id ? newData : user)));
+                    props.showMessage(`${fullName}'s role successfully changed!`);
+                    resolve();
+                  })
+                  .catch((err) => {
+                    reject();
+                    props.showMessage(`Unable to change the role for ${fullName} ${err}!`, "error");
+                  });
+              }
+            })
+        }}
+        actions={[
+          {
+            icon: "update",
+            tooltip: "Refresh Users",
+            isFreeAction: true,
+            onClick: async (event, rowData) => {
+              props.showMessage("Refreshing users...", "info");
+              updateRoleLoading(true);
+              await UsersAPI.getUsersFromBackend(null, null, {
+                isAdmin: true,
+                isEmployee: true,
+                isCoach: true,
+                isAthlete: true
+              })
+                .then((users) => {
+                  updateRoleData(props.mapUsers(users));
+                  updateRoleLoading(false);
+                  props.showMessage("Successfully updated users!");
+                })
+                .catch((err) => {
+                  updateRoleLoading(false);
+                  props.showMessage("Failed to update users.", "error");
+                });
+            }
+          },
+          {
+            icon: "vpn_key",
+            tooltip: "Update Password",
+            onClick: (event, rowData) => {
+              updateRoleLoading(true);
+              setPasswordDialogTitle(`${rowData.fullName}`);
+              setPasswordDialogId(rowData.id);
+              setPasswordDialogValue("");
+              setPasswordDialogOpen(true);
+            }
+          }
+        ]}
+      />
+      &lt;Dialog open={passwordDialogOpen} onClose={closePasswordDialog} disableBackdropClick fullWidth>
+        &lt;DialogTitle>Edit Password for {passwordDialogTitle}&lt;/DialogTitle>
+          &lt;DialogContent>
+              &lt;div>
+              &lt;TextField
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+                value={passwordDialogValue}
+                onChange={(e) => setPasswordDialogValue(e.target.value)}
+                error={passwordError}
+                helperText={passwordError ? "Password needs to be between 8 and 32 characters long" : ""}
+              />
+              &lt;/div>
+          &lt;/DialogContent>
+        &lt;DialogActions>
+            &lt;Button onClick={()=> closePasswordDialog(false)} color="primary">
+                Cancel
+            &lt;/Button>
+            &lt;Button onClick={() => closePasswordDialog(true)} color="primary">
+                Confirm
+            &lt;/Button>
+        &lt;/DialogActions>
+      &lt;/Dialog>
+    &lt;/React.Fragment>
+  );
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="App.html">App</a></li><li><a href="Dashboard.html">Dashboard</a></li><li><a href="Login.html">Login</a></li><li><a href="NewPassword.html">NewPassword</a></li><li><a href="Reset.html">Reset</a></li><li><a href="Signup.html">Signup</a></li></ul><h3>Global</h3><ul><li><a href="global.html#a11yProps">a11yProps</a></li><li><a href="global.html#changePassword">changePassword</a></li><li><a href="global.html#getCredentials">getCredentials</a></li><li><a href="global.html#getCurrentEquipment">getCurrentEquipment</a></li><li><a href="global.html#getEquipment">getEquipment</a></li><li><a href="global.html#getOrganizations">getOrganizations</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#Navbar">Navbar</a></li><li><a href="global.html#onClickDismiss">onClickDismiss</a></li><li><a href="global.html#signup">signup</a></li><li><a href="global.html#SizeTextField">SizeTextField</a></li><li><a href="global.html#updateCredentials">updateCredentials</a></li><li><a href="global.html#updateCurrentCredentials">updateCurrentCredentials</a></li><li><a href="global.html#useStyles">useStyles</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Fri May 08 2020 21:07:43 GMT-0500 (Central Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

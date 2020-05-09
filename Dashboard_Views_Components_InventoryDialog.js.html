@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Dashboard/Views/Components/InventoryDialog.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Dashboard/Views/Components/InventoryDialog.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React from "react";
+import Button from "@material-ui/core/Button";
+import TextField from "@material-ui/core/TextField";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import Checkbox from "@material-ui/core/Checkbox";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import MaterialTable from "material-table";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+// import { CompactPicker } from 'react-color';
+
+import Grid from "@material-ui/core/Grid";
+
+/**
+ * Contains the elements in Dialog box form.
+ *
+ * Props Passed down from Staff:
+ * dialogOpen - contains the state of dialog box
+ * dialogTitle - contains the title for dialog box
+ * inputs - Object containing all form data to be modified
+ * sport - list of sports selected in form
+ * sports - object containing all sports available
+ * sportIdLookup - Lookup for Sport Objects
+ *
+ * @param {*} props props passed down from Staff
+ */
+export default function InventoryDialog(props) {
+  const [dialogOpen, closeDialog] = [props.dialogOpen, props.closeDialog];
+  const [inputs, changeInput] = [props.inputs, props.changeInput];
+  const [sportObjects, sportObject, setSportObject] = [props.sportObjects, props.sportObject, props.setSportObject];
+  const [sportSizes, sportSize, setSportSize, setSportSizes] = [
+    props.sportSizes,
+    props.sportSize,
+    props.setSportSize,
+    props.setSportSizes
+  ];
+  const [state, setState] = React.useState({
+    alertQuantity: false,
+    jerseyNumbers: false
+  });
+
+  const dialogTitle = props.dialogTitle;
+  const isEditDialog = dialogTitle.includes("Edit");
+
+  const handleSportChange = (e) => {
+    const sport = e.target.value;
+    setSportObject(sport);
+    let sizes = sportObjects.filter((sp) => sp.default)[0].sportSizes;
+    if (!sport.default) {
+      sizes = sizes.concat(sport.sportSizes);
+    }
+    setSportSizes(sizes);
+  };
+
+  const sizeColumns = [
+    { title: "ID", field: "id", hidden: true },
+    { title: "Size", field: "size" },
+    { title: "Barcode", field: "barcode", hidden: true },
+    { title: "Jersey Numbers", field: "jerseyNumbers", hidden: !inputs.jerseyNumbers },
+    { title: "Price", field: "price", type: "currency" },
+    { title: "Quantity", field: "quantity", type: "numeric" },
+    { title: "Alert Quantity", field: "alertQuantity", type: "numeric", hidden: !inputs.alertQuantity }
+  ];
+
+  const handleChangeComplete = (color) => {
+    changeInput({
+      target: {
+        name: "color",
+        value: color.hex
+      }
+    });
+  };
+
+  const handleSportSizeChange = (e) => {
+    const spSize = e.target.value;
+    setSportSize(spSize);
+    if (!inputs.inventorySizes.length) {
+      let invSizes = [];
+      for (let size of spSize.sizes) {
+        invSizes.push({
+          alertQuantity: 0,
+          price: 0,
+          quantity: 0,
+          size,
+          jerseyNumbers: []
+        });
+      }
+      changeInput({
+        target: {
+          name: "inventorySizes",
+          value: invSizes
+        }
+      });
+    }
+  };
+
+  return (
+    &lt;Dialog open={dialogOpen} onClose={closeDialog} disableBackdropClick>
+      &lt;DialogTitle>{dialogTitle}&lt;/DialogTitle>
+      &lt;DialogContent>
+        &lt;Grid container spacing={2} alignItems="center">
+          &lt;Grid item xs={6}>
+            &lt;TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="name"
+              label="Name"
+              name="name"
+              autoComplete="Name"
+              value={inputs.name}
+              onChange={changeInput}
+              autoFocus
+            />
+          &lt;/Grid>
+          &lt;Grid item xs={6}>
+            {/* &lt;CompactPicker color={{ hex: inputs.color }} onChangeComplete={handleChangeComplete} /> */}
+          &lt;/Grid>
+          &lt;Grid item xs={12}>
+            &lt;TextField
+              variant="outlined"
+              required
+              fullWidth
+              id="description"
+              label="Description"
+              name="description"
+              autoComplete="Description"
+              value={inputs.description}
+              onChange={changeInput}
+            />
+          &lt;/Grid>
+          &lt;Grid item xs={3}>
+            &lt;FormControlLabel
+              control={
+                &lt;Checkbox
+                  checked={inputs.surplus}
+                  value={inputs.surplus}
+                  onClick={changeInput}
+                  name="surplus"
+                  color="primary"
+                />
+              }
+              label="Surplus"
+              labelPlacement="end"
+            />
+          &lt;/Grid>
+          &lt;Grid item xs={3}>
+            &lt;FormControlLabel
+              control={
+                &lt;Checkbox
+                  checked={inputs.taxable}
+                  value={inputs.taxable}
+                  onClick={changeInput}
+                  name="taxable"
+                  color="primary"
+                />
+              }
+              label="Taxable"
+              labelPlacement="end"
+            />
+          &lt;/Grid>
+          &lt;Grid item xs={3}>
+            &lt;FormControlLabel
+              control={
+                &lt;Checkbox
+                  checked={inputs.expendable}
+                  value={inputs.expendable}
+                  onClick={changeInput}
+                  name="expendable"
+                  color="primary"
+                />
+              }
+              label="Expendable"
+              labelPlacement="end"
+            />
+          &lt;/Grid>
+          &lt;Grid item xs={3}>
+            &lt;FormControlLabel
+              control={
+                &lt;Checkbox
+                  checked={inputs.jerseyNumbers}
+                  value={inputs.jerseyNumbers}
+                  onClick={changeInput}
+                  name="jerseyNumbers"
+                  color="primary"
+                />
+              }
+              label="Jersey Numbers"
+              labelPlacement="end"
+            />
+          &lt;/Grid>
+          &lt;Grid item xs={4}>
+            &lt;FormControl variant="outlined" margin="normal" required fullWidth>
+              &lt;InputLabel id="sport-label">Sport&lt;/InputLabel>
+              &lt;Select id="sport" labelId="sport-label" label="Sport" value={sportObject} onChange={handleSportChange}>
+                {sportObjects.map((sport) => (
+                  &lt;MenuItem key={sport.id} value={sport}>
+                    {sport.name}
+                  &lt;/MenuItem>
+                ))}
+              &lt;/Select>
+            &lt;/FormControl>
+          &lt;/Grid>
+          &lt;Grid item xs={4}>
+            &lt;FormControl variant="outlined" margin="normal" required fullWidth>
+              &lt;InputLabel id="size-label">Size&lt;/InputLabel>
+              &lt;Select id="size" labelId="size-label" label="Size" value={sportSize} onChange={handleSportSizeChange}>
+                {sportSizes.map((size) => (
+                  &lt;MenuItem key={size.id} value={size}>
+                    {size.name}
+                  &lt;/MenuItem>
+                ))}
+              &lt;/Select>
+            &lt;/FormControl>
+          &lt;/Grid>
+          &lt;Grid item xs={4}>
+            &lt;FormControlLabel
+              control={
+                &lt;Checkbox
+                  checked={inputs.alertQuantity}
+                  value={inputs.alertQuantity}
+                  onClick={changeInput}
+                  name="alertQuantity"
+                  color="primary"
+                />
+              }
+              label="Alert Quantity"
+              labelPlacement="end"
+            />
+          &lt;/Grid>
+        &lt;/Grid>
+        &lt;MaterialTable
+          title="Sizes"
+          columns={sizeColumns}
+          data={inputs.inventorySizes}
+          options={{
+            search: false,
+            filtering: false,
+            actionsColumnIndex: -1,
+            tableLayout: "auto"
+          }}
+          editable={{
+            onRowAdd: (newData) =>
+              new Promise((resolve, reject) => {
+                const valid = newData.size &amp;&amp; parseFloat(newData.price) &amp;&amp; newData.quantity;
+                const newItem = {
+                  ...newData,
+                  price: parseFloat(newData.price),
+                  quantity: parseInt(newData.quantity),
+                  alertQuantity: parseInt(newData.alertQuantity)
+                };
+                if (valid) {
+                  changeInput({
+                    target: {
+                      name: "inventorySizes",
+                      value: [...inputs.inventorySizes, newItem]
+                    }
+                  });
+                  resolve();
+                } else {
+                  reject();
+                }
+              }),
+            onRowUpdate: (newData, oldData) =>
+              new Promise((resolve, reject) => {
+                const valid = newData.size &amp;&amp; parseFloat(newData.price) &amp;&amp; newData.quantity;
+                const newItem = {
+                  ...newData,
+                  price: parseFloat(newData.price),
+                  quantity: parseInt(newData.quantity),
+                  alertQuantity: parseInt(newData.alertQuantity)
+                };
+                if (valid) {
+                  const items = inputs.inventorySizes.filter((item) => item !== oldData);
+                  changeInput({
+                    target: {
+                      name: "inventorySizes",
+                      value: [...items, newItem]
+                    }
+                  });
+                  resolve();
+                } else {
+                  reject();
+                }
+              })
+          }}
+          actions={[]}
+        />
+      &lt;/DialogContent>
+      &lt;DialogActions>
+        &lt;Button onClick={() => closeDialog(false)} color="primary">
+          Cancel
+        &lt;/Button>
+        &lt;Button onClick={() => closeDialog(true)} color="primary">
+          Confirm
+        &lt;/Button>
+      &lt;/DialogActions>
+    &lt;/Dialog>
+  );
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="App.html">App</a></li><li><a href="Dashboard.html">Dashboard</a></li><li><a href="Login.html">Login</a></li><li><a href="NewPassword.html">NewPassword</a></li><li><a href="Reset.html">Reset</a></li><li><a href="Signup.html">Signup</a></li></ul><h3>Global</h3><ul><li><a href="global.html#a11yProps">a11yProps</a></li><li><a href="global.html#changePassword">changePassword</a></li><li><a href="global.html#getCredentials">getCredentials</a></li><li><a href="global.html#getCurrentEquipment">getCurrentEquipment</a></li><li><a href="global.html#getEquipment">getEquipment</a></li><li><a href="global.html#getOrganizations">getOrganizations</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#Navbar">Navbar</a></li><li><a href="global.html#onClickDismiss">onClickDismiss</a></li><li><a href="global.html#signup">signup</a></li><li><a href="global.html#SizeTextField">SizeTextField</a></li><li><a href="global.html#updateCredentials">updateCredentials</a></li><li><a href="global.html#updateCurrentCredentials">updateCurrentCredentials</a></li><li><a href="global.html#useStyles">useStyles</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Fri May 08 2020 21:07:43 GMT-0500 (Central Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: Login/Reset.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: Login/Reset.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React from 'react';
+import Avatar from '@material-ui/core/Avatar';
+import Button from '@material-ui/core/Button';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import TextField from '@material-ui/core/TextField';
+import VpnKeyIcon from '@material-ui/icons/VpnKey';
+import Typography from '@material-ui/core/Typography';
+import Container from '@material-ui/core/Container';
+import { withSnackbar } from 'notistack';
+
+//Uncomment after adding api for pwd reset
+//import axios from 'axios';
+
+//const apiUrl = "http://localhost:5000/api/v1";
+
+/**
+ * TODO - This Component contains the password reset page along with reset logic. [Deprecated]
+ * 
+ * State variables:
+ * email - string - email of the user 
+ */
+class Reset extends React.Component {
+  /**
+   * Initializes react state.
+   * 
+   * @param {Object} props - passed down from app.js
+   * @param {Function} props.showMessage - helper function to display snackbar messages
+   */
+  constructor(props) {
+    super(props);
+    this.state = {
+      email: "",
+    }
+  }
+   /**
+   * Updates the email state variable
+   * 
+   * @param {Object} e - event triggered if textbox changes
+   */ 
+  handleEmailChange =(e) =>{
+    this.setState(Object.assign(this.state, {email: e.target.value}));
+  }
+  /**
+   * TODO
+   * Email is sent to the API.
+   * 
+   * redirect back to login page if email valid.
+   * 
+   * @param {Object} e - event triggered when form is submitted.
+   */
+  handleSubmit = async (e) => {
+    e.preventDefault();
+    const email = this.state.email;
+    //Pwd Reset API code here
+
+    this.props.history.push('/login/?email=' + email);
+  }
+  render() {
+    return (
+      &lt;Container component="main" maxWidth="xs">
+        &lt;CssBaseline />
+        &lt;div
+          style ={{ marginTop: "64px", display: 'flex', flexDirection: 'column', alignItems: 'center', }}>
+          &lt;Avatar style ={{ marginBottom: "8px"}}>
+            &lt;VpnKeyIcon />
+          &lt;/Avatar>
+          &lt;Typography component="h2" variant="h6">
+            Reset Password
+          &lt;/Typography>
+          &lt;form style ={{ marginTop: "16px"}} onSubmit={this.handleSubmit} noValidate>
+            &lt;TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="Email Address"
+              name="email"
+              autoComplete="email"
+              value = {this.state.email}
+              onChange ={this.handleEmailChange}
+              autoFocus
+            />
+            &lt;Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+            >
+              Reset Password
+            &lt;/Button>
+          &lt;/form>
+        &lt;/div>
+      &lt;/Container>);
+  }
+}
+
+export default withSnackbar(Reset);</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="App.html">App</a></li><li><a href="Dashboard.html">Dashboard</a></li><li><a href="Login.html">Login</a></li><li><a href="NewPassword.html">NewPassword</a></li><li><a href="Reset.html">Reset</a></li><li><a href="Signup.html">Signup</a></li></ul><h3>Global</h3><ul><li><a href="global.html#a11yProps">a11yProps</a></li><li><a href="global.html#changePassword">changePassword</a></li><li><a href="global.html#getCredentials">getCredentials</a></li><li><a href="global.html#getCurrentEquipment">getCurrentEquipment</a></li><li><a href="global.html#getEquipment">getEquipment</a></li><li><a href="global.html#getOrganizations">getOrganizations</a></li><li><a href="global.html#login">login</a></li><li><a href="global.html#logout">logout</a></li><li><a href="global.html#Navbar">Navbar</a></li><li><a href="global.html#onClickDismiss">onClickDismiss</a></li><li><a href="global.html#signup">signup</a></li><li><a href="global.html#SizeTextField">SizeTextField</a></li><li><a href="global.html#updateCredentials">updateCredentials</a></li><li><a href="global.html#updateCurrentCredentials">updateCurrentCredentials</a></li><li><a href="global.html#useStyles">useStyles</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Fri May 08 2020 21:07:43 GMT-0500 (Central Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
