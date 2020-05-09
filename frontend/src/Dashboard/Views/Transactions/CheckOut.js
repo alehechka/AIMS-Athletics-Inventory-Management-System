@@ -12,7 +12,9 @@ import CheckOutCard from "./CheckOutCard";
 import { InventoryAPI, UsersAPI, TransactionAPI, SportsAPI } from "../../../api";
 import SportsChip from "../Components/SportsChip";
 
-/***
+/** @module CheckOut */
+
+/**
  * Contains the logic for admin page containing sport and role tables.
  *
  * Hooks:
@@ -21,6 +23,7 @@ import SportsChip from "../Components/SportsChip";
  * columns - contains column information 
  * 
  * @param {Object} props - props passed down from Dashboard
+ * @returns {Component} returns the component to be rendered
  */
 export default function CheckOut(props) {
   const parser = new URLSearchParams(props.location.search);

@@ -9,7 +9,9 @@ import Card from "@material-ui/core/Card";
 import Box from "@material-ui/core/Box";
 import { UserInfoCard, UserPhysicalCard } from "./UserInfo";
 
-/***
+/** @module TabPanel */
+
+/**
  * Outer component of the tab panel that contains the basic user
  * information and the physical/size information.
  *

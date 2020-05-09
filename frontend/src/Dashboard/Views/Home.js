@@ -7,6 +7,8 @@ import MaterialTable from 'material-table';
 import Grid from "@material-ui/core/Grid";
 const numeral = require('numeral');
 
+/** @module Home */
+
 /**
  * Conatins the dashboard layout and tables displaying relevant data.
  * 

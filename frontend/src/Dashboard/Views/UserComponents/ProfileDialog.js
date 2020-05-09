@@ -20,6 +20,8 @@ import SportsSelect from '../Components/SportsSelect';
 
 import Grid from '@material-ui/core/Grid';
 
+/** @module ProfileDialog */
+
 /**
  * Contains the elements in Dialog box form.
  * 

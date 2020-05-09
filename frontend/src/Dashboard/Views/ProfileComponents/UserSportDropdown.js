@@ -10,6 +10,8 @@ import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import ExpandMore from "@material-ui/icons/ExpandMore";
 
+/** @module UserSportDropdown */
+
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%"
@@ -20,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-/***
+/**
  * Handles display and changing of user Size information.
  * Each sport has it's own collapsible ExpansionPanel and Select fields.
  * All sizes are editable by the user.
@@ -28,6 +30,7 @@ const useStyles = makeStyles((theme) => ({
  * @param {Object} props - props passed down from Profile
  * @param {Function} props.showMessage - Helper function to display snackbar message.
  * @param {Object} props.context - Context variable containing all relevant user information.
+ * @returns {Component} returns the component to be rendered
  */
 export default function UserSportDropdown(props) {
   const classes = useStyles();

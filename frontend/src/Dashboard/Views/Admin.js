@@ -99,7 +99,10 @@ const iconList = [
     value: "sports_volleyball"
   }
 ];
-/***
+
+/** @module Admin */
+
+/**
  * Contains the logic for admin page containing sport and role tables.
  *
  * Hooks:

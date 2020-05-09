@@ -13,6 +13,8 @@ import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import ListSubheader from "@material-ui/core/ListSubheader";
 
+/** @module CheckInCard */
+
 /**
  * Components for displaying the check in card
  * @param {Object} user - User to be displayed

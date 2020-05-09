@@ -2,6 +2,8 @@ import React from "react";
 import Chip from "@material-ui/core/Chip";
 import Icon from "@material-ui/core/Icon";
 
+/** @module SportsChip */
+
 /**
  * Special chip item with icon to be rendered.
  * 

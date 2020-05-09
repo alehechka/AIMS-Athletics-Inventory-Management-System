@@ -11,7 +11,9 @@ import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import UserSportDropdown from "./UserSportDropdown";
 
-/***
+/** @module UserInfoCard */
+
+/**
  * Contains all the basic information about the user, e.g. name, address,
  * role, locker information, etc.
  *
@@ -19,6 +21,7 @@ import UserSportDropdown from "./UserSportDropdown";
  * @param {Object} props - props passed down from UserTabs
  * @param {Function} props.showMessage - Helper function to display snackbar message.
  * @param {Object} props.context - Context variable containing all relevant user information.
+ * @returns {Component} returns the component to be rendered
  */
 function UserInfoCard(props) {
   const {
@@ -169,7 +172,9 @@ function UserInfoCard(props) {
   );
 }
 
-/***
+/** @module UserPhysicalCard */
+
+/**
  * Contains the Size and physical information components of the
  * Profile page. Height, Weight and Gender are editable.
  *
@@ -179,6 +184,7 @@ function UserInfoCard(props) {
  * @param {Object} props - props passed down from UserTabs
  * @param {Function} props.showMessage - Helper function to display snackbar message.
  * @param {Object} props.context - Context variable containing all relevant user information.
+ * @returns {Component} returns the component to be rendered
  */
 function UserPhysicalCard(props) {
   const { username, height, weight, gender, sports, userSizes } = props;

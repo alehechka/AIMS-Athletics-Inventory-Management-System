@@ -6,6 +6,8 @@ import Icon from "@material-ui/core/Icon";
 import { UsersAPI, SportsAPI } from "../../api";
 import { CsvBuilder } from 'filefy';
 
+/** @module Users */
+
 /**
  * Contains the material table which lets the user edit athletes/staff entries.
  *

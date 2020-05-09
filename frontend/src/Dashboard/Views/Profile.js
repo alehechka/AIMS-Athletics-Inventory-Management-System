@@ -5,7 +5,9 @@ import UserItemCard from "./ProfileComponents/UserItems";
 import Button from "@material-ui/core/Button";
 import { UsersAPI } from "../../api";
 
-/***
+/** @module Profile */
+
+/**
  * Contains the logic for Profile page containing basic user information
  *
  * Children:
@@ -15,6 +17,7 @@ import { UsersAPI } from "../../api";
  * @param {Object} props - props passed down from Navbar or Users screen
  * @param {Function} props.showMessage - Helper function to display snackbar message.
  * @param {Object} props.context - Context variable containing all relevant user information.
+ * @returns {Component} returns the component to be rendered
  */
 export default function Profile(props) {
   const parser = new URLSearchParams(props.location.search);

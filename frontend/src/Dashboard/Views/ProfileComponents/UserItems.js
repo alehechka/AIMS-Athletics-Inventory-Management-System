@@ -5,19 +5,22 @@ import Typography from "@material-ui/core/Typography";
 
 import MaterialTable from "material-table";
 
+/** @module UserItemCard */
+
 const formatter = new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
   minimumFractionDigits: 2
 });
 
-/***
+/**
  * Contains the MaterialTable that displays paginated items checked out to the user.
  * Currently it is not possible to check items in or out from this interface. *
  *
  * @param {Object} props - props passed down from Profile
  * @param {Function} props.showMessage - Helper function to display snackbar message.
  * @param {Object} props.context - Context variable containing all relevant user information.
+ * @returns {Component} returns the component to be rendered
  */
 export default function UserItemCard(props) {
   const { firstName, equipment } = props;

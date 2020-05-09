@@ -16,6 +16,8 @@ import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import TextField from "@material-ui/core/TextField";
 
+/** @module CheckOutCard */
+
 /**
  * Components for displaying the check out card
  * @param {Object} user - User to be displayed

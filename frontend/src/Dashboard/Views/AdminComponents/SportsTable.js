@@ -3,6 +3,8 @@ import MaterialTable from "material-table";
 import { SportsAPI } from "../../../api";
 import SizesDialog from "./SizesDialog";
 
+/** @module SportsTable */
+
 /**
  * Displays the sport table along with dialog to edit userSizes.
  * 

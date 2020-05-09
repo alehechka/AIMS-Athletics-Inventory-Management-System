@@ -12,6 +12,8 @@ import IconButton from '@material-ui/core/IconButton';
 
 import MaterialTable from 'material-table';
 
+/** @module SizesDialog */
+
 /**
  * Helper TextField that lets users add a new chip.
  * 

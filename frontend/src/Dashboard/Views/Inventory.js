@@ -4,6 +4,8 @@ import { SportsAPI, InventoryAPI } from "../../api";
 import SportsChip from "./Components/SportsChip";
 import InventoryDialog from "./Components/InventoryDialog";
 
+/** @module Inventory */
+
 /**
  * Contains the material table which lets the user edit staff entries.
  *

@@ -11,7 +11,10 @@ import Grid from "@material-ui/core/Grid";
 import TransactionTable from "./TransactionTable";
 import CheckInCard from "./CheckInCard";
 import { UsersAPI, TransactionAPI, SportsAPI } from "../../../api";
-/***
+
+/** @module CheckIn */
+
+/**
  * Contains the logic for admin page containing sport and role tables.
  *
  * Hooks:
@@ -20,6 +23,7 @@ import { UsersAPI, TransactionAPI, SportsAPI } from "../../../api";
  * columns - contains column information 
  * 
  * @param {Object} props - props passed down from Dashboard
+ * @returns {Component} returns the component to be rendered
  */
 export default function CheckIn(props) {
 

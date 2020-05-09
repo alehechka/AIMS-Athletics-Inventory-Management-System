@@ -1,6 +1,8 @@
 import React from "react";
 import MaterialTable from "material-table";
 
+/** @module TransactionTable */
+
 /**
  * Component for rendering the transaction table which displays all transactions
  * @param {Object} transactionData - Data for the transactions that were completed

@@ -2,6 +2,8 @@ import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 import { Consumer } from './Context';
 
+/** @module PrivateRoute */
+
 /**
  * Routes User to login based on authorization.
  */

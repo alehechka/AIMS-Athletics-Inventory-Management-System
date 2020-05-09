@@ -12,9 +12,9 @@ import InputLabel from "@material-ui/core/InputLabel";
 import MaterialTable from "material-table";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
-// import { CompactPicker } from 'react-color';
-
 import Grid from "@material-ui/core/Grid";
+
+/** @module InventoryDialog */
 
 /**
  * Contains the elements in Dialog box form.
