@@ -1,8 +1,0 @@
-{
-    "editor.formatOnSave": true,
-    "printWidth": 120,
-    "trailingComma": "none",
-    "bracketSpacing": true,
-    "jsxBracketSameLine": false,
-    "arrowParens": "always"
-}
